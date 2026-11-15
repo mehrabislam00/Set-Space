@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 
 export function HostBanner() {
   return (
-    <section className="bg-background py-12 pt-20">
+    <section className="bg-background py-12">
       <Container>
         <div className="relative isolate overflow-hidden rounded-3xl border border-border">
           <Image
@@ -36,7 +36,7 @@ export function HostBanner() {
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/host" className={buttonVariants({ size: "lg" })}>
+              <Link href="/host" className={cn(buttonVariants({ size: "lg" }), "btn-alive")}>
                 List Your Studio
                 <ArrowRight className="size-4" />
               </Link>
@@ -44,7 +44,7 @@ export function HostBanner() {
                 href="/how-it-works"
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
-                  "border-white/15 bg-black/40 text-photo hover:bg-white/10 hover:text-photo"
+                  "btn-alive border-white/15 bg-black/40 text-photo hover:bg-white/10 hover:text-photo"
                 )}
               >
                 Learn more

@@ -30,8 +30,8 @@ export function Navbar({ active = "Home" }: { active?: string }) {
   const fg = scrolled ? "text-foreground" : "text-photo"
   const fgMuted = scrolled ? "text-muted-foreground" : "text-photo-muted"
   const ghost = scrolled
-    ? "text-foreground hover:bg-accent hover:text-foreground"
-    : "text-photo hover:bg-white/10 hover:text-photo"
+    ? "btn-flat group text-foreground hover:bg-accent hover:text-foreground"
+    : "btn-flat group text-photo hover:bg-white/10 hover:text-photo"
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -88,7 +88,11 @@ export function Navbar({ active = "Home" }: { active?: string }) {
             className={ghost}
             onClick={toggleTheme}
           >
-            {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            {isDark ? (
+              <Sun className="size-4 transition-transform duration-500 group-hover:rotate-90" />
+            ) : (
+              <Moon className="size-4 transition-transform duration-500 group-hover:-rotate-12" />
+            )}
           </Button>
 
           <Button
@@ -97,7 +101,7 @@ export function Navbar({ active = "Home" }: { active?: string }) {
             aria-label="Notifications"
             className={cn("relative", ghost)}
           >
-            <Bell className="size-4" />
+            <Bell className="size-4 origin-top transition-transform duration-300 group-hover:rotate-12" />
             <span className="absolute top-1 right-1 flex size-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-primary-foreground">
               3
             </span>

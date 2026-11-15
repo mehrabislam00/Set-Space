@@ -18,14 +18,14 @@ export function FinalCta() {
             href="/studios"
             className={cn(
               buttonVariants({ size: "lg" }),
-              "shadow-[0_0_30px_-6px_var(--primary)]"
+              "btn-alive shadow-[0_0_30px_-6px_var(--primary)]"
             )}
           >
             Find a Studio
           </Link>
           <Link
             href="/signup"
-            className={buttonVariants({ variant: "outline", size: "lg" })}
+            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "btn-alive")}
           >
             Create Account
           </Link>

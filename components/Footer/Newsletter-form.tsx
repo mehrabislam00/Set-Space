@@ -31,7 +31,7 @@ export function NewsletterForm() {
         size="icon"
         aria-label="Subscribe"
         disabled={sent}
-        className="size-10 shrink-0 rounded-l-none"
+        className="btn-flat size-10 shrink-0 rounded-l-none hover:brightness-110"
       >
         {sent ? <Check className="size-4" /> : <ArrowRight className="size-4" />}
       </Button>

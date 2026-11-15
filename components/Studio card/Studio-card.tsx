@@ -50,7 +50,7 @@ export function StudioCard({ studio }: { studio: Studio }) {
           aria-label={saved ? "Remove from favorites" : "Save to favorites"}
           aria-pressed={saved}
           onClick={() => setSaved((v) => !v)}
-          className="absolute top-3 right-3 z-10 size-8 rounded-full border-0 bg-black/55 text-photo backdrop-blur-sm hover:bg-black/75"
+          className="btn-flat absolute top-3 right-3 z-10 size-8 rounded-full border-0 bg-black/55 text-photo backdrop-blur-sm hover:scale-110 hover:bg-black/75"
         >
           <Heart
             className={cn(

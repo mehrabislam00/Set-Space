@@ -3,6 +3,7 @@
 @import "shadcn/tailwind.css";
 @import "./theme.css"; /* all color values live here */
 @import "./theme-transition.css"; /* soft light/dark fade */
+@import "./button-effects.css"; /* button hover effects */
 
 @custom-variant dark (&:is(.dark *));
 
