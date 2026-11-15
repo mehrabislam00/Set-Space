@@ -2,6 +2,9 @@ import type { Metadata } from "next"
 
 import studioContent from "@/assets/studio-content.jpg"
 import { PageBanner } from "@/components/How It Works/Page-banner"
+import { StepsSection } from "@/components/How It Works/Steps-section"
+import { HostSteps } from "@/components/How It Works/Host-steps"
+import { FaqSection } from "@/components/How It Works/Faq-section"
 
 
 export const metadata: Metadata = {
@@ -23,7 +26,11 @@ export default function HowItWorksPage() {
         imageAlt="Cozy content studio with a sofa, ring light and camera"
       />
 
-      {/* add the next sections of this page here */}
+      <StepsSection />
+
+      <HostSteps />
+
+      <FaqSection />
 
     </main>
   )

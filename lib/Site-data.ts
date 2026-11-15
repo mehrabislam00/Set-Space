@@ -123,6 +123,91 @@ export const steps = [
   },
 ]
 
+export const howItWorksSteps = [
+  {
+    title: "Explore Studios",
+    description: "Search by discipline, city, price and amenities.",
+    image: studioPhoto,
+    imageAlt: "White cyclorama photo studio with softbox lights",
+  },
+  {
+    title: "Choose Your Space",
+    description: "Compare photos, gear lists and reviews from real creators.",
+    image: studioLoft,
+    imageAlt: "Brick loft studio with a leather chair and studio light",
+  },
+  {
+    title: "Book Your Time",
+    description: "Pick a date and hours. See the full price upfront.",
+    image: studioContent,
+    imageAlt: "Cozy content set with a wooden table and string lights",
+  },
+  {
+    title: "Create Something Great",
+    description: "Arrive, set up and make your best work. The space is yours.",
+    image: studioFilm,
+    imageAlt: "Night film set with crew and street lights",
+  },
+]
+
+export const hostSteps = [
+  {
+    title: "Create an Account",
+    description: "One account lets you rent and host.",
+  },
+  {
+    title: "List Your Studio",
+    description: "Add photos, pricing, amenities and availability.",
+  },
+  {
+    title: "Manage Bookings",
+    description: "Accept or decline every request yourself.",
+  },
+  {
+    title: "Welcome Creators",
+    description: "Host great sessions and grow your reviews.",
+  },
+]
+
+export const faqs = [
+  {
+    id: "book",
+    question: "How do I book a studio?",
+    answer:
+      "Find a studio, pick a date and hours in the booking panel, and send a request. The host confirms, and you'll see the update in My Bookings and Notifications.",
+  },
+  {
+    id: "charged",
+    question: "When am I charged?",
+    answer:
+      "Your card is authorized when you send the request and charged only once the host confirms. If the host declines, you are never charged.",
+  },
+  {
+    id: "cancel",
+    question: "Can I cancel a booking?",
+    answer:
+      "Yes. Cancel at least 24 hours before the start time for a full refund. Later cancellations are charged at 50% of the booking total.",
+  },
+  {
+    id: "both",
+    question: "Can I be both a renter and a host?",
+    answer:
+      "Absolutely. One account covers both — switch between booking studios and managing your listings from the same dashboard.",
+  },
+  {
+    id: "list",
+    question: "How do I list my studio?",
+    answer:
+      "Click Add Studio, fill in the details, upload photos and set your availability. Save as draft or publish right away.",
+  },
+  {
+    id: "verified",
+    question: "Are hosts verified?",
+    answer:
+      "Every host completes identity verification before a listing goes live, and every review comes from a real booking.",
+  },
+]
+
 export const testimonials = [
   {
     quote:

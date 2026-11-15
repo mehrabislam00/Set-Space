@@ -19,14 +19,14 @@ export function PageBanner({
   imageAlt,
 }: PageBannerProps) {
   return (
-    <section className="relative isolate flex min-h-[460px] items-center overflow-hidden bg-background md:min-h-[520px]">
+    <section className="group relative isolate flex min-h-[460px] items-center overflow-hidden bg-background md:min-h-[520px]">
       <Image
         src={image}
         alt={imageAlt}
         fill
         priority
         sizes="100vw"
-        className="-z-20 object-cover"
+        className="-z-20 object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none"
       />
       {/* darkening layers keep the text readable in both themes */}
       <div className="absolute inset-0 -z-10 bg-black/60" />
