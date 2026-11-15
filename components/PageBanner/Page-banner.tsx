@@ -3,7 +3,7 @@ import { Container } from "../Container/Container"
 
 
 type PageBannerProps = {
-  eyebrow: string
+  eyebrow?: string
   title: string
   description?: string
   image: StaticImageData
@@ -35,9 +35,11 @@ export function PageBanner({
 
       <Container className="pt-28 pb-20">
         <div className="stagger-in">
-          <p className="mb-4 text-[11px] font-semibold tracking-[0.18em] text-primary uppercase">
-            {eyebrow}
-          </p>
+          {eyebrow && (
+            <p className="mb-4 text-[11px] font-semibold tracking-[0.18em] text-primary uppercase">
+              {eyebrow}
+            </p>
+          )}
           <h1 className="max-w-3xl font-heading text-4xl leading-[1.08] font-extrabold tracking-tight text-photo sm:text-5xl lg:text-6xl">
             {title}
           </h1>

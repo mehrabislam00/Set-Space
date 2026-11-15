@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 
 import studioLoft from "@/assets/studio-loft.jpg"
-import { ContactSection } from "@/components/Contact/Contact-section"
+
 import { PageBanner } from "@/components/PageBanner/Page-banner"
+import { ContactSection } from "@/components/Contact/Contact-section"
 
 export const metadata: Metadata = {
   title: "Contact — SetSpace",

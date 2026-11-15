@@ -7,6 +7,8 @@ import {
   Sparkles,
   WandSparkles,
 } from "lucide-react"
+import type { StaticImageData } from "next/image"
+import heroStudio from "@/assets/hero-studio.jpg"
 import studioArt from "@/assets/studio-art.jpg"
 import studioContent from "@/assets/studio-content.jpg"
 import studioFilm from "@/assets/studio-film.jpg"
@@ -17,7 +19,7 @@ import studioPodcast from "@/assets/studio-podcast.jpg"
 
 export const navLinks = [
   { label: "Home", href: "/" },
-  { label: "Explore Studios", href: "/studios" },
+  { label: "Explore Studios", href: "/explore-studio" },
   { label: "How It Works", href: "/how-it-works" },
   { label: "About Us", href: "/about" },
 ]
@@ -43,37 +45,37 @@ export const disciplines = [
     title: "Photo Studios",
     description: "Cycloramas, strobes & backdrops",
     image: studioPhoto,
-    href: "/studios?category=photo",
+    href: "/explore-studio?category=photo",
   },
   {
     title: "Film Stages",
     description: "Sound stages & grip gear",
     image: studioFilm,
-    href: "/studios?category=film",
+    href: "/explore-studio?category=film",
   },
   {
     title: "Podcast Rooms",
     description: "Treated rooms, broadcast mics",
     image: studioPodcast,
-    href: "/studios?category=podcast",
+    href: "/explore-studio?category=podcast",
   },
   {
     title: "Music Suites",
     description: "Consoles, monitors & live rooms",
     image: studioMusic,
-    href: "/studios?category=music",
+    href: "/explore-studio?category=music",
   },
   {
     title: "Art Workshops",
     description: "Easels, north light & benches",
     image: studioArt,
-    href: "/studios?category=art",
+    href: "/explore-studio?category=art",
   },
   {
     title: "Content Studios",
     description: "Ready-styled creator sets",
     image: studioContent,
-    href: "/studios?category=content",
+    href: "/explore-studio?category=content",
   },
 ]
 
@@ -81,9 +83,9 @@ export const featuredStudios = [
   { id: 1, name: "The Aurora Studio", category: "Photo Studio", location: "New York, USA", price: 80, rating: 4.8, reviews: 245, image: studioPhoto },
   { id: 2, name: "Velvet Sound Suite", category: "Music Suite", location: "Nashville, USA", price: 95, rating: 4.9, reviews: 302, image: studioMusic },
   { id: 3, name: "Brick & Shadow Loft", category: "Photo Studio", location: "New York, USA", price: 110, rating: 4.9, reviews: 211, image: studioLoft },
-  { id: 4, name: "Lumen Film Stage", category: "Film Stage", location: "Los Angeles, USA", price: 120, rating: 4.7, reviews: 189, image: studioFilm },
-  { id: 5, name: "Hearth Creator Set", category: "Content Studio", location: "Austin, USA", price: 55, rating: 4.7, reviews: 156, image: studioContent },
-  { id: 6, name: "Echo Podcast Room", category: "Podcast Room", location: "Chicago, USA", price: 60, rating: 4.8, reviews: 120, image: studioPodcast },
+  { id: 5, name: "Lumen Film Stage", category: "Film Stage", location: "Los Angeles, USA", price: 120, rating: 4.7, reviews: 189, image: studioFilm },
+  { id: 6, name: "Hearth Creator Set", category: "Content Studio", location: "Austin, USA", price: 55, rating: 4.7, reviews: 156, image: studioContent },
+  { id: 7, name: "Echo Podcast Room", category: "Podcast Room", location: "Chicago, USA", price: 60, rating: 4.8, reviews: 120, image: studioPodcast },
 ]
 
 export const whyFeatures = [
@@ -245,7 +247,7 @@ export const footerColumns = [
     title: "Quick Links",
     links: [
       { label: "Home", href: "/" },
-      { label: "Explore Studios", href: "/studios" },
+      { label: "Explore Studios", href: "/explore-studio" },
       { label: "How It Works", href: "/how-it-works" },
       { label: "About Us", href: "/about" },
       { label: "Contact", href: "/contact" },
@@ -254,11 +256,11 @@ export const footerColumns = [
   {
     title: "Categories",
     links: [
-      { label: "Photo Studios", href: "/studios?category=photo" },
-      { label: "Film Stages", href: "/studios?category=film" },
-      { label: "Podcast Rooms", href: "/studios?category=podcast" },
-      { label: "Music Suites", href: "/studios?category=music" },
-      { label: "Art Workshops", href: "/studios?category=art" },
+      { label: "Photo Studios", href: "/explore-studio?category=photo" },
+      { label: "Film Stages", href: "/explore-studio?category=film" },
+      { label: "Podcast Rooms", href: "/explore-studio?category=podcast" },
+      { label: "Music Suites", href: "/explore-studio?category=music" },
+      { label: "Art Workshops", href: "/explore-studio?category=art" },
     ],
   },
   {
@@ -345,3 +347,102 @@ export const contactTopics = [
   "Billing & payments",
   "Something else",
 ]
+
+/* ---------- Explore Studios page ---------- */
+
+export type ExploreStudioItem = {
+  id: number
+  name: string
+  category: string // badge text, singular
+  discipline: string // matches an entry of `categories`
+  city: string // used for filtering, matches an entry of `locations`
+  location: string // shown on the card, e.g. "New York, USA"
+  price: number
+  rating: number
+  reviews: number
+  image: StaticImageData
+  amenities: string[]
+}
+
+export const locations = [
+  "All Locations",
+  "Atlanta",
+  "Austin",
+  "Chicago",
+  "Los Angeles",
+  "Miami",
+  "Nashville",
+  "New York",
+  "Portland",
+  "Seattle",
+]
+
+export const amenitiesList = [
+  "Professional Lighting",
+  "Air Conditioning",
+  "Wi-Fi",
+  "Soundproofing",
+  "Parking",
+  "Changing Room",
+  "Makeup Station",
+  "Photography Equipment",
+  "Kitchen Access",
+]
+
+export const sortOptions = [
+  "Sort: Recommended",
+  "Sort: Highest Rated",
+  "Sort: Lowest Price",
+  "Sort: Highest Price",
+  "Sort: Most Popular",
+]
+
+export const priceRanges = [
+  { label: "$0–$50", min: 0, max: 50 },
+  { label: "$50–$100", min: 50, max: 100 },
+  { label: "$100–$200+", min: 100, max: 200 },
+]
+
+export const ratingOptions = [
+  { label: "4.8+ & above", value: 4.8 },
+  { label: "4.5+ & above", value: 4.5 },
+  { label: "4+ & above", value: 4 },
+]
+
+/** Maps the ?category= value used in links to a `categories` entry. */
+export const categoryKeyMap: Record<string, string> = {
+  photo: "Photo Studios",
+  film: "Film Stages",
+  podcast: "Podcast Rooms",
+  music: "Music Suites",
+  art: "Art Workshops",
+  content: "Content Studios",
+}
+
+type RawStudio = Omit<ExploreStudioItem, "city" | "location"> & {
+  location: string // city name only; "USA" is added below
+}
+
+const rawExploreStudios: RawStudio[] = [
+  { id: 1, name: "The Aurora Studio", category: "Photo Studio", discipline: "Photo Studios", location: "New York", price: 80, rating: 4.8, reviews: 245, image: studioPhoto, amenities: ["Professional Lighting", "Air Conditioning", "Wi-Fi", "Photography Equipment", "Changing Room"] },
+  { id: 2, name: "Velvet Sound Suite", category: "Music Suite", discipline: "Music Suites", location: "Nashville", price: 95, rating: 4.9, reviews: 302, image: studioMusic, amenities: ["Soundproofing", "Air Conditioning", "Wi-Fi", "Parking"] },
+  { id: 3, name: "Brick & Shadow Loft", category: "Photo Studio", discipline: "Photo Studios", location: "New York", price: 110, rating: 4.9, reviews: 211, image: studioLoft, amenities: ["Professional Lighting", "Wi-Fi", "Makeup Station", "Photography Equipment"] },
+  { id: 4, name: "Moonlight Loft", category: "Photo Studio", discipline: "Photo Studios", location: "New York", price: 90, rating: 4.8, reviews: 41, image: studioLoft, amenities: ["Professional Lighting", "Air Conditioning", "Changing Room"] },
+  { id: 5, name: "Lumen Film Stage", category: "Film Stage", discipline: "Film Stages", location: "Los Angeles", price: 120, rating: 4.7, reviews: 189, image: studioFilm, amenities: ["Professional Lighting", "Soundproofing", "Parking", "Kitchen Access"] },
+  { id: 6, name: "Hearth Creator Set", category: "Content Studio", discipline: "Content Studios", location: "Austin", price: 55, rating: 4.7, reviews: 156, image: studioContent, amenities: ["Wi-Fi", "Professional Lighting", "Kitchen Access"] },
+  { id: 7, name: "Echo Podcast Room", category: "Podcast Room", discipline: "Podcast Rooms", location: "Chicago", price: 60, rating: 4.8, reviews: 120, image: studioPodcast, amenities: ["Soundproofing", "Wi-Fi", "Air Conditioning"] },
+  { id: 8, name: "Midnight Stage", category: "Film Stage", discipline: "Film Stages", location: "Atlanta", price: 150, rating: 4.8, reviews: 97, image: heroStudio, amenities: ["Professional Lighting", "Soundproofing", "Parking", "Air Conditioning"] },
+  { id: 9, name: "Golden Hour Studio", category: "Photo Studio", discipline: "Photo Studios", location: "Miami", price: 70, rating: 4.6, reviews: 134, image: studioContent, amenities: ["Professional Lighting", "Makeup Station", "Changing Room", "Photography Equipment"] },
+  { id: 10, name: "Canvas & Light Atelier", category: "Art Workshop", discipline: "Art Workshops", location: "Portland", price: 45, rating: 4.7, reviews: 88, image: studioArt, amenities: ["Wi-Fi", "Kitchen Access", "Parking"] },
+  { id: 11, name: "Northwind Sound", category: "Music Suite", discipline: "Music Suites", location: "Seattle", price: 85, rating: 4.6, reviews: 76, image: studioMusic, amenities: ["Soundproofing", "Wi-Fi", "Air Conditioning"] },
+  { id: 12, name: "The Clay Room", category: "Art Workshop", discipline: "Art Workshops", location: "Austin", price: 40, rating: 4.5, reviews: 63, image: studioArt, amenities: ["Air Conditioning", "Kitchen Access"] },
+  { id: 13, name: "Studio Pulse", category: "Podcast Room", discipline: "Podcast Rooms", location: "Nashville", price: 50, rating: 4.6, reviews: 52, image: studioPodcast, amenities: ["Soundproofing", "Wi-Fi", "Parking"] },
+]
+
+export const exploreStudios: ExploreStudioItem[] = rawExploreStudios.map(
+  (studio) => ({
+    ...studio,
+    city: studio.location,
+    location: `${studio.location}, USA`,
+  })
+)
