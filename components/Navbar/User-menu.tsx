@@ -35,9 +35,9 @@ const groups = [
     { label: "Saved Studios", href: "/dashboard/saved-studios", icon: Heart },
   ],
   [
-    { label: "Host Dashboard", href: "/host/dashboard", icon: Briefcase },
-    { label: "Manage My Studios", href: "/host/studios", icon: Building2 },
-    { label: "Booking Requests", href: "/host/requests", icon: Inbox },
+    { label: "Host Dashboard", href: "/host", icon: Briefcase },
+    { label: "Manage My Studios", href: "/host/my-studios", icon: Building2 },
+    { label: "Booking Requests", href: "/host/bookings-request", icon: Inbox },
   ],
   [{ label: "Settings", href: "/dashboard/settings", icon: Settings }],
 ]

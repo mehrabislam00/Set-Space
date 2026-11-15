@@ -9,7 +9,7 @@ import logo from "@/assets/logo.svg"
 
 import { Button } from "@/components/ui/button"
 
-import { navLinks } from "@/lib/Site-data"
+import { navLinks, solidNavRoutes } from "@/lib/Site-data"
 import { cn } from "@/lib/utils"
 import { Container } from "../Container/Container"
 import { MobileMenu } from "./Mobile-menu"
@@ -30,11 +30,15 @@ export function Navbar() {
   const [scrolled, setScrolled] = React.useState(false)
   const isDark = mounted ? resolvedTheme === "dark" : true
 
-  // Over the photo (top of page) text is always light.
-  // After scrolling the bar gets the page background, so text follows the theme.
-  const fg = scrolled ? "text-foreground" : "text-photo"
-  const fgMuted = scrolled ? "text-muted-foreground" : "text-photo-muted"
-  const ghost = scrolled
+  // Pages without a hero photo (dashboard, host...) always use the solid look.
+  const solid =
+    scrolled || solidNavRoutes.some((route) => pathname.startsWith(route))
+
+  // Over the photo (top of a hero page) text is always light.
+  // On solid pages the bar gets the page background, so text follows the theme.
+  const fg = solid ? "text-foreground" : "text-photo"
+  const fgMuted = solid ? "text-muted-foreground" : "text-photo-muted"
+  const ghost = solid
     ? "btn-flat group text-foreground hover:bg-accent hover:text-foreground"
     : "btn-flat group text-photo hover:bg-white/10 hover:text-photo"
 
@@ -108,7 +112,7 @@ export function Navbar() {
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300",
-        scrolled
+        solid
           ? "border-border bg-background/80 backdrop-blur-md"
           : "border-transparent bg-transparent"
       )}
@@ -184,7 +188,7 @@ export function Navbar() {
 
           <NotificationsMenu className={ghost} />
 
-          <UserMenu scrolled={scrolled} className="hidden sm:block" />
+          <UserMenu scrolled={solid} className="hidden sm:block" />
 
           <Button size="sm" className="ml-1 hidden text-xs sm:inline-flex">
             Add Studio

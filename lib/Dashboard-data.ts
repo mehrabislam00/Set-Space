@@ -26,7 +26,15 @@ export const dashboardUser = {
   initials: "AC",
 }
 
-export const dashboardNav: { label: string; href: string; icon: LucideIcon }[] = [
+/** One link of the account sidebar (renter dashboard and host dashboard). */
+export type NavItem = {
+  label: string
+  href: string
+  icon: LucideIcon
+  badge?: number // small count pill, e.g. pending requests
+}
+
+export const dashboardNav: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "My Bookings", href: "/dashboard/bookings", icon: CalendarDays },
   { label: "Saved Studios", href: "/dashboard/saved-studios", icon: Heart },

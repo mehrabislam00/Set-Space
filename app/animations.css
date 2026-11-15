@@ -32,6 +32,55 @@
   }
 }
 
+@keyframes setspace-bar-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* Switch icon: each arrow slides out one side and re-enters from the other,
+   the top one going left and the bottom one going right. */
+@keyframes setspace-arrow-left {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  40% {
+    transform: translateX(-9px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(9px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes setspace-arrow-right {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  40% {
+    transform: translateX(9px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-9px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* Full-page entrance. Replays on every navigation because
    PageTransition remounts its keyed wrapper (app/layout.tsx). */
 .page-enter {
@@ -47,6 +96,24 @@
 /* Full-bleed images zoom instead of translate so no edge gaps appear. */
 .img-in {
   animation: setspace-zoom-in 600ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* Chart bars grow up from the baseline. Set the delay inline per bar. */
+.bar-grow {
+  transform-origin: bottom;
+  animation: setspace-bar-grow 700ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* <SwitchIcon/>: swaps only on press. Plays while the button is held down
+   (`.group:active`) and keeps going while `.is-switching` until the page changes. */
+.group:active .switch-icon .switch-arrow-a,
+.switch-icon.is-switching .switch-arrow-a {
+  animation: setspace-arrow-left 550ms ease-in-out infinite;
+}
+
+.group:active .switch-icon .switch-arrow-b,
+.switch-icon.is-switching .switch-arrow-b {
+  animation: setspace-arrow-right 550ms ease-in-out infinite;
 }
 
 /* Scroll reveal — stays hidden until <Reveal/> marks it .is-visible.
@@ -68,8 +135,11 @@
 @media (prefers-reduced-motion: reduce) {
   .page-enter,
   .stagger-in,
-  .img-in {
-    animation: none;
+  .img-in,
+  .bar-grow,
+  .switch-icon .switch-arrow-a,
+  .switch-icon .switch-arrow-b {
+    animation: none !important;
   }
 
   .reveal {

@@ -1,11 +1,34 @@
-import React from 'react'
+import type { Metadata } from "next"
 
-const Host = () => {
+import { Reveal } from "@/components/Animation/Reveal"
+import { EarningsChart } from "@/components/Host/Earnings-chart"
+import { HostHeader } from "@/components/Host/Host-header"
+import { HostStats } from "@/components/Host/Host-stats"
+import { PendingRequests } from "@/components/Host/Pending-requests"
+
+
+export const metadata: Metadata = {
+  title: "Host Dashboard — SetSpace",
+  description: "Your studios, booking requests and earnings on SetSpace.",
+}
+
+export default function HostPage() {
   return (
-    <div>
-      
+    <div className="space-y-10">
+      <div className="space-y-6">
+        <Reveal>
+          <HostHeader />
+        </Reveal>
+        <Reveal delay={80}>
+          <HostStats />
+        </Reveal>
+        <Reveal delay={80}>
+          <EarningsChart />
+        </Reveal>
+      </div>
+      <Reveal>
+        <PendingRequests />
+      </Reveal>
     </div>
   )
 }
-
-export default Host

@@ -275,9 +275,9 @@ export const footerColumns = [
   {
     title: "For Hosts",
     links: [
-      { label: "List Your Studio", href: "/host" },
-      { label: "Host Dashboard", href: "/host/dashboard" },
-      { label: "Booking Requests", href: "/host/requests" },
+      { label: "List Your Studio", href: "/host/my-studios/add-studio" },
+      { label: "Host Dashboard", href: "/host" },
+      { label: "Booking Requests", href: "/host/bookings-request" },
       { label: "Help & Support", href: "/support" },
     ],
   },
@@ -456,36 +456,6 @@ export const exploreStudios: ExploreStudioItem[] = rawExploreStudios.map(
   })
 )
 
-/* ==========================================================================
-   ADD TO lib/Site-data.ts  (matched to your current file)
-
-   STEP 1 — replace the two import lines at the very top:
-
-     import {
-       AirVent,
-       CalendarClock,
-       Camera,
-       CircleCheck,
-       CircleParking,
-       Coffee,
-       Lightbulb,
-       Mail,
-       MapPin,
-       Phone,
-       Shirt,
-       Sparkles,
-       VolumeX,
-       WandSparkles,
-       Wifi,
-       type LucideIcon,
-     } from "lucide-react"
-
-   (the `StaticImageData` type import and `heroStudio` import are already there)
-
-   STEP 2 — paste everything below at the very bottom of the file,
-   after `exploreStudios`.
-   ========================================================================== */
-
 /* ---------- Studio detail page ---------- */
 
 export type StudioReview = {
@@ -627,10 +597,6 @@ export function getStudioDetail(id: string): StudioDetail | undefined {
   }
 }
 
-/* ==========================================================================
-   ADD TO THE BOTTOM OF lib/Site-data.ts
-   ========================================================================== */
-
 /* ---------- Navbar notifications ---------- */
 
 export type NotificationType =
@@ -694,8 +660,18 @@ export const notifications: NotificationItem[] = [
     body: "Your changes to The Sunroom Set were saved as a draft.",
     time: "1w ago",
     unread: false,
-    href: "/host/studios",
+    href: "/host/my-studios",
   },
+]
+
+/** Routes with no hero photo behind the navbar. The navbar uses its solid
+ *  (scrolled) look from the top of the page on these (see components/Navbar/navbar.tsx). */
+export const solidNavRoutes = [
+  "/dashboard",
+  "/dashbord",
+  "/host",
+  "/notifications",
+  "/explore-studio/", // studio detail pages (the trailing slash skips the list page, which has a banner)
 ]
 
 /* ---------- Auth pages ---------- */
