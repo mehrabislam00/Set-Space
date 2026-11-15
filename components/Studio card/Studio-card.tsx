@@ -24,8 +24,8 @@ export function StudioCard({ studio }: { studio: Studio }) {
   const [saved, setSaved] = React.useState(false)
 
   return (
-    <article className="group">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-card">
+    <article className="group transition-transform duration-300 hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-card transition-[box-shadow,border-color] duration-300 group-hover:border-primary/40 group-hover:shadow-card-hover">
         <Link
           href={`/studios/${studio.id}`}
           aria-label={studio.name}
@@ -63,7 +63,7 @@ export function StudioCard({ studio }: { studio: Studio }) {
 
       <div className="mt-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate font-heading text-sm font-bold text-foreground">
+          <h3 className="truncate font-heading text-sm font-bold text-foreground transition-colors duration-300 group-hover:text-primary">
             {studio.name}
           </h3>
           <p className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">

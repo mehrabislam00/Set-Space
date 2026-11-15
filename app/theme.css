@@ -95,6 +95,7 @@
   --sidebar-ring: #d4a374;
 }
 
+
 /* ---------- Shared (same in both themes) ---------- */
 :root,
 .dark {
@@ -105,4 +106,10 @@
 
   --photo: #f7eddc; /* text over photos */
   --photo-muted: #d3cdc3; /* secondary text over photos */
+
+  /* Card hover glow: built from --primary, so it follows the gold in both themes.
+     Raise/lower the % values to make it stronger/softer. */
+  --card-hover-shadow:
+    0 20px 45px -10px color-mix(in srgb, var(--primary) 50%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--primary) 45%, transparent);
 }

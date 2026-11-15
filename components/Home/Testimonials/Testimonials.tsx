@@ -21,9 +21,15 @@ export function Testimonials() {
 
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {testimonials.map((t) => (
-            <Card key={t.name} className="gap-0 rounded-2xl py-0">
+            <Card
+              key={t.name}
+              className="group gap-0 rounded-2xl py-0 transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+            >
               <CardContent className="flex h-full flex-col p-6">
-                <Quote className="size-5 text-primary" strokeWidth={1.5} />
+                <Quote
+                  className="size-5 text-primary transition-transform duration-300 group-hover:scale-125"
+                  strokeWidth={1.5}
+                />
                 <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-foreground">
                   {t.quote}
                 </blockquote>
@@ -36,7 +42,7 @@ export function Testimonials() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="text-xs font-bold text-foreground">
+                      <p className="text-xs font-bold text-foreground transition-colors duration-300 group-hover:text-primary">
                         {t.name}
                       </p>
                       <p className="text-[11px] text-muted-foreground">

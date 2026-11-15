@@ -56,6 +56,9 @@
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
 
+    /* shadows */
+    --shadow-card-hover: var(--card-hover-shadow);
+
     /* radius */
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);

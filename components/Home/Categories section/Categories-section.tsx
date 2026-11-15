@@ -4,7 +4,7 @@ import Link from "next/link"
 
 
 import { disciplines } from "@/lib/Site-data"
-import { Container } from "../../Container/Container"
+import { Container } from "@/components/Container/Container"
 
 export function CategoriesSection() {
   return (
@@ -34,7 +34,7 @@ export function CategoriesSection() {
             <Link
               key={item.title}
               href={item.href}
-              className="group relative block aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-card focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              className="group relative block aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-card-hover focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             >
               <Image
                 src={item.image}
