@@ -1,15 +1,23 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import type { Metadata } from "next"
+import { DM_Sans, Geist_Mono, Manrope } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
+import { Nav } from "react-day-picker"
+import { Navbar } from "@/components/Navbar/navbar"
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'})
+// Body font
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
+// Headings (use the `font-heading` class)
+const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" })
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+export const metadata: Metadata = {
+  title: "SetSpace — Create. Rent. Inspire.",
+  description:
+    "Rent premium studios for photography, filmmaking, podcasting, music production, and more.",
+}
 
 export default function RootLayout({
   children,
@@ -20,10 +28,17 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
+      className={cn(
+        "antialiased",
+        dmSans.variable,
+        manrope.variable,
+        geistMono.variable
+      )}
     >
       <body>
+        <Navbar />
         <ThemeProvider>{children}</ThemeProvider>
+        
       </body>
     </html>
   )

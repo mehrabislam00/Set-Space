@@ -1,0 +1,108 @@
+/* ==========================================================================
+   SetSpace theme — ALL colors live here. Edit a hex once, the whole site updates.
+   Light is :root, dark is the .dark class on <html>.
+   ========================================================================== */
+
+/* ---------- Light theme ---------- */
+:root {
+  --background: #f4f0e7;
+  --foreground: #222222;
+
+  --card: #ffffff;
+  --card-foreground: #222222;
+
+  --popover: #ffffff;
+  --popover-foreground: #222222;
+
+  --primary: #a87346; /* gold accent */
+  --primary-foreground: #fefbf8; /* text on gold buttons */
+
+  --secondary: #ede3d6;
+  --secondary-foreground: #222222;
+
+  --muted: #ede7dd;
+  --muted-foreground: #636363;
+
+  --accent: #eadcc9; /* highlight background */
+  --accent-foreground: #222222;
+
+  --border: #d9cfc3;
+  --input: #d9cfc3;
+  --ring: #a87346;
+
+  /* charts */
+  --chart-1: #a87346;
+  --chart-2: #709c79;
+  --chart-3: #d9a440;
+  --chart-4: #697056;
+  --chart-5: #cf6963;
+
+  /* sidebar */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #222222;
+  --sidebar-primary: #a87346;
+  --sidebar-primary-foreground: #fefbf8;
+  --sidebar-accent: #eadcc9;
+  --sidebar-accent-foreground: #222222;
+  --sidebar-border: #d9cfc3;
+  --sidebar-ring: #a87346;
+
+  --radius: 0.625rem;
+}
+
+/* ---------- Dark theme ---------- */
+.dark {
+  --background: #0f0f0f;
+  --foreground: #f4ead9;
+
+  --card: #171717;
+  --card-foreground: #f4ead9;
+
+  --popover: #1b1b1b;
+  --popover-foreground: #f4ead9;
+
+  --primary: #d4a374; /* gold accent */
+  --primary-foreground: #130e0b; /* text on gold buttons */
+
+  --secondary: #232323;
+  --secondary-foreground: #f4ead9;
+
+  --muted: #1e1e1e;
+  --muted-foreground: #a8a8a8;
+
+  --accent: #2a2621; /* highlight background */
+  --accent-foreground: #f4ead9;
+
+  --border: #333333;
+  --input: #333333;
+  --ring: #d4a374;
+
+  /* charts */
+  --chart-1: #d4a374;
+  --chart-2: #709c79;
+  --chart-3: #d9a440;
+  --chart-4: #697056;
+  --chart-5: #cf6963;
+
+  /* sidebar */
+  --sidebar: #171717;
+  --sidebar-foreground: #f4ead9;
+  --sidebar-primary: #d4a374;
+  --sidebar-primary-foreground: #130e0b;
+  --sidebar-accent: #2a2621;
+  --sidebar-accent-foreground: #f4ead9;
+  --sidebar-border: #333333;
+  --sidebar-ring: #d4a374;
+}
+
+/* ---------- Shared (same in both themes) ---------- */
+:root,
+.dark {
+  --success: #709c79; /* confirmed */
+  --warning: #d9a440; /* pending */
+  --destructive: #cf6963; /* error / cancelled */
+  --olive: #697056; /* completed */
+
+  --photo: #f7eddc; /* text over photos */
+  --photo-muted: #d3cdc3; /* secondary text over photos */
+}
