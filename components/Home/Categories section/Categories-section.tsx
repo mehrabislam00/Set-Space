@@ -5,13 +5,14 @@ import Link from "next/link"
 
 import { disciplines } from "@/lib/Site-data"
 import { Container } from "@/components/Container/Container"
+import { Reveal } from "@/components/Animation/Reveal"
 
 export function CategoriesSection() {
   return (
     <section className="bg-background py-20">
       <Container>
         {/* Heading */}
-        <div className="flex items-end justify-between gap-4">
+        <Reveal className="flex items-end justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="h-px w-6 bg-primary" />
             <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground">
@@ -21,15 +22,15 @@ export function CategoriesSection() {
 
           <Link
             href="/studios"
-            className="flex items-center gap-1 text-xs font-medium text-primary transition-opacity hover:opacity-80"
+            className="btn-alive flex items-center gap-1 text-xs font-medium text-primary transition-opacity hover:opacity-80"
           >
             View All
             <ArrowRight className="size-3.5" />
           </Link>
-        </div>
+        </Reveal>
 
         {/* Cards */}
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <Reveal delay={120} className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {disciplines.map((item) => (
             <Link
               key={item.title}
@@ -60,7 +61,7 @@ export function CategoriesSection() {
               </div>
             </Link>
           ))}
-        </div>
+        </Reveal>
       </Container>
     </section>
   )

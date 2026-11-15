@@ -4,12 +4,13 @@ import { buttonVariants } from "@/components/ui/button"
 import { featuredStudios } from "@/lib/Site-data"
 import { Container } from "../../Container/Container"
 import { StudioCard } from "../../Studio card/Studio-card"
+import { Reveal } from "@/components/Animation/Reveal"
 
 export function FeaturedStudios() {
   return (
     <section className="bg-background py-16">
       <Container>
-        <div className="flex items-end justify-between gap-4">
+        <Reveal className="flex items-end justify-between gap-4">
           <div>
             <p className="mb-2 text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">
               Hand-picked this week
@@ -27,18 +28,18 @@ export function FeaturedStudios() {
             className={buttonVariants({
               variant: "outline",
               size: "sm",
-              className: "rounded-full text-xs",
+              className: "btn-alive rounded-full text-xs",
             })}
           >
             See all
           </Link>
-        </div>
+        </Reveal>
 
-        <div className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        <Reveal delay={120} className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {featuredStudios.map((studio) => (
             <StudioCard key={studio.id} studio={studio} />
           ))}
-        </div>
+        </Reveal>
       </Container>
     </section>
   )

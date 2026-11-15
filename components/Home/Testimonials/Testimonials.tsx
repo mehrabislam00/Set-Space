@@ -4,22 +4,25 @@ import { Container } from "@/components/Container/Container"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { testimonials } from "@/lib/Site-data"
+import { Reveal } from "@/components/Animation/Reveal"
 
 export function Testimonials() {
   return (
     <section className="bg-background py-16">
       <Container>
-        <p className="mb-2 text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">
-          Loved by creators
-        </p>
-        <div className="flex items-center gap-3">
-          <span className="h-px w-6 bg-primary" />
-          <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-            What our community says
-          </h2>
-        </div>
+        <Reveal>
+          <p className="mb-2 text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">
+            Loved by creators
+          </p>
+          <div className="flex items-center gap-3">
+            <span className="h-px w-6 bg-primary" />
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+              What our community says
+            </h2>
+          </div>
+        </Reveal>
 
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
+        <Reveal delay={120} className="mt-8 grid gap-5 md:grid-cols-3">
           {testimonials.map((t) => (
             <Card
               key={t.name}
@@ -60,7 +63,7 @@ export function Testimonials() {
               </CardContent>
             </Card>
           ))}
-        </div>
+        </Reveal>
       </Container>
     </section>
   )

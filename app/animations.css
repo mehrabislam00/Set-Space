@@ -1,0 +1,80 @@
+/* Shared entrance-animation system — see components/Animation/.
+   Everything here respects prefers-reduced-motion at the bottom of this file. */
+
+@keyframes setspace-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes setspace-page-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes setspace-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Full-page entrance. Replays on every navigation because
+   PageTransition remounts its keyed wrapper (app/layout.tsx). */
+.page-enter {
+  animation: setspace-page-enter 450ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* Mount-time stagger for above-the-fold blocks.
+   Set the delay inline: style={{ animationDelay: "120ms" }} */
+.stagger-in {
+  animation: setspace-fade-up 480ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* Full-bleed images zoom instead of translate so no edge gaps appear. */
+.img-in {
+  animation: setspace-zoom-in 600ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* Scroll reveal — stays hidden until <Reveal/> marks it .is-visible.
+   Delay comes from --reveal-delay (set by the Reveal component). */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 500ms ease,
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .stagger-in,
+  .img-in {
+    animation: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -7,6 +7,7 @@ import studioMusic from "@/assets/studio-music.jpg"
 import { Container } from "@/components/Container/Container"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { Reveal } from "@/components/Animation/Reveal"
 
 export function HostBanner() {
   return (
@@ -23,7 +24,7 @@ export function HostBanner() {
           {/* keeps the text readable in both themes */}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/90 via-black/60 to-black/10" />
 
-          <div className="max-w-lg px-6 py-12 sm:px-10 sm:py-14">
+          <Reveal className="max-w-lg px-6 py-12 sm:px-10 sm:py-14">
             <p className="mb-3 text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">
               Become a host
             </p>
@@ -50,7 +51,7 @@ export function HostBanner() {
                 Learn more
               </Link>
             </div>
-          </div>
+          </Reveal>
         </div>
       </Container>
     </section>

@@ -31,21 +31,25 @@ export function HeroBanner() {
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/50" />
 
       <Container className="relative z-10 pt-24 pb-16">
-        <p className="mb-4 text-[11px] font-semibold tracking-[0.18em] text-primary uppercase">
-          The Creative Space Marketplace
-        </p>
+        {/* 1. Heading + intro copy enter first */}
+        <div className="stagger-in">
+          <p className="mb-4 text-[11px] font-semibold tracking-[0.18em] text-primary uppercase">
+            The Creative Space Marketplace
+          </p>
 
-        <h1 className="font-heading text-5xl leading-[1.05] font-extrabold tracking-tight text-photo sm:text-6xl">
-          Find Your Perfect
-          <span className="block text-primary">Creative Space</span>
-        </h1>
+          <h1 className="font-heading text-5xl leading-[1.05] font-extrabold tracking-tight text-photo sm:text-6xl">
+            Find Your Perfect
+            <span className="block text-primary">Creative Space</span>
+          </h1>
 
-        <p className="mt-6 max-w-md text-[15px] leading-relaxed text-photo-muted">
-          Rent premium studios for photography, filmmaking, podcasting, music
-          production, and more.
-        </p>
+          <p className="mt-6 max-w-md text-[15px] leading-relaxed text-photo-muted">
+            Rent premium studios for photography, filmmaking, podcasting, music
+            production, and more.
+          </p>
+        </div>
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        {/* 2. Hero actions next */}
+        <div className="stagger-in mt-8 flex flex-wrap gap-3" style={{ animationDelay: "120ms" }}>
           <Button size="lg">
             Explore Studios
             <ArrowRight className="size-4" />
@@ -60,8 +64,11 @@ export function HeroBanner() {
           </Button>
         </div>
 
-        {/* Search bar */}
-        <form className="mt-12 flex max-w-4xl flex-col gap-2 rounded-xl border border-white/10 bg-black/50 p-2 backdrop-blur-md md:flex-row md:items-center md:gap-0">
+        {/* 3. Search bar after */}
+        <form
+          className="stagger-in mt-12 flex max-w-4xl flex-col gap-2 rounded-xl border border-white/10 bg-black/50 p-2 backdrop-blur-md md:flex-row md:items-center md:gap-0"
+          style={{ animationDelay: "220ms" }}
+        >
           <div className="relative flex-1">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-primary" />
             <Input
@@ -111,8 +118,11 @@ export function HeroBanner() {
           </Button>
         </form>
 
-        {/* Stats */}
-        <dl className="mt-8 flex flex-wrap gap-x-8 gap-y-2">
+        {/* 4. Stats last */}
+        <dl
+          className="stagger-in mt-8 flex flex-wrap gap-x-8 gap-y-2"
+          style={{ animationDelay: "320ms" }}
+        >
           {stats.map((s) => (
             <div key={s.label} className="flex items-baseline gap-1.5">
               <dt className="font-heading text-xl font-bold text-photo">

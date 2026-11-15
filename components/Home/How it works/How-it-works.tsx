@@ -1,5 +1,6 @@
 
 import { Container } from "@/components/Container/Container"
+import { Reveal } from "@/components/Animation/Reveal"
 import { steps } from "@/lib/Site-data"
 
 export function HowItWorks() {
@@ -7,16 +8,20 @@ export function HowItWorks() {
     // bg-card gives this band a different shade from the sections around it
     <section className="border-y border-border bg-card py-20">
       <Container>
-        <div className="text-center">
+        <Reveal className="text-center">
           <p className="mb-4 text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">
             How it works
           </p>
           <h2 className="font-heading text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
             From idea to set in minutes
           </h2>
-        </div>
+        </Reveal>
 
-        <ol className="relative mx-auto mt-14 grid max-w-4xl gap-10 md:grid-cols-3">
+        <Reveal
+          as="ol"
+          delay={120}
+          className="relative mx-auto mt-14 grid max-w-4xl gap-10 md:grid-cols-3"
+        >
           {/* connecting line, runs from the 1st to the 3rd circle */}
           <div
             aria-hidden
@@ -36,7 +41,7 @@ export function HowItWorks() {
               </p>
             </li>
           ))}
-        </ol>
+        </Reveal>
       </Container>
     </section>
   )

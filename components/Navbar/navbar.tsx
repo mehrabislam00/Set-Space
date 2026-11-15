@@ -14,9 +14,11 @@ import { navLinks } from "@/lib/Site-data"
 import { cn } from "@/lib/utils"
 import { Container } from "../Container/Container"
 import { useSmoothTheme } from "@/lib/Use-smooth-theme"
+import { usePathname } from "next/navigation"
 
-export function Navbar({ active = "Home" }: { active?: string }) {
+export function Navbar() {
   const { resolvedTheme, toggleTheme } = useSmoothTheme()
+  const pathname = usePathname()
   const mounted = React.useSyncExternalStore(
     () => () => {},
     () => true,
@@ -32,6 +34,65 @@ export function Navbar({ active = "Home" }: { active?: string }) {
   const ghost = scrolled
     ? "btn-flat group text-foreground hover:bg-accent hover:text-foreground"
     : "btn-flat group text-photo hover:bg-white/10 hover:text-photo"
+
+  // ---- sliding active indicator ----------------------------------------
+  const navRef = React.useRef<HTMLElement>(null)
+  const itemRefs = React.useRef<Record<string, HTMLAnchorElement | null>>({})
+  const [indicator, setIndicator] = React.useState<{
+    x: number
+    w: number
+    visible: boolean
+  }>({ x: 0, w: 0, visible: false })
+  const previousPathname = React.useRef(pathname)
+  const initialMeasureComplete = React.useRef(false)
+
+  const isActive = React.useCallback(
+    (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href)),
+    [pathname]
+  )
+
+  const measureIndicator = React.useCallback(() => {
+    const active = navLinks.find((link) => isActive(link.href))
+    const el = active ? itemRefs.current[active.href] : null
+
+    if (!el || el.offsetWidth === 0) {
+      return
+    }
+
+    setIndicator({
+      x: el.offsetLeft,
+      w: el.offsetWidth,
+      visible: true,
+    })
+  }, [isActive])
+
+  // Establish the initial position before the first paint. This prevents a
+  // flash at x=0 while still allowing later route changes to animate.
+  React.useLayoutEffect(() => {
+    if (initialMeasureComplete.current) {
+      return
+    }
+
+    initialMeasureComplete.current = true
+    measureIndicator()
+  }, [measureIndicator])
+
+  React.useEffect(() => {
+    if (previousPathname.current === pathname) {
+      return
+    }
+
+    previousPathname.current = pathname
+    const frame = window.requestAnimationFrame(measureIndicator)
+    return () => window.cancelAnimationFrame(frame)
+  }, [measureIndicator, pathname])
+
+  React.useEffect(() => {
+    window.addEventListener("resize", measureIndicator)
+    return () => window.removeEventListener("resize", measureIndicator)
+  }, [measureIndicator])
+  // ----------------------------------------------------------------------
+
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -64,19 +125,42 @@ export function Navbar({ active = "Home" }: { active?: string }) {
         </Link>
 
         {/* Links */}
-        <nav className="hidden items-center gap-7 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className={cn(
-                "border-b-2 border-transparent pb-0.5 text-xs font-medium transition-colors hover:text-primary",
-                active === link.label ? "border-primary text-primary" : fg
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav
+          ref={navRef}
+          className="relative hidden items-center gap-7 md:flex"
+        >
+          {navLinks.map((link) => {
+            const active = isActive(link.href)
+            return (
+              <Link
+                key={link.label}
+                href={link.href}
+                ref={(el) => {
+                  itemRefs.current[link.href] = el
+                }}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "text-xs font-medium transition-colors duration-300 hover:text-primary motion-reduce:transition-none",
+                  active ? "text-primary" : fg
+                )}
+              >
+                {link.label}
+              </Link>
+            )
+          })}
+
+          {/* One continuous gold bar that slides between items */}
+          <span
+            aria-hidden
+            className={cn(
+              "absolute bottom-0 left-0 h-0.5 rounded-full bg-primary transition-[transform,width,opacity] duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] motion-reduce:transition-none",
+              indicator.visible ? "opacity-100" : "opacity-0"
+            )}
+            style={{
+              width: `${indicator.w}px`,
+              transform: `translateX(${indicator.x}px)`,
+            }}
+          />
         </nav>
 
         {/* Actions */}

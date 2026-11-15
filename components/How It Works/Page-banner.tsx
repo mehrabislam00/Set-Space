@@ -26,7 +26,7 @@ export function PageBanner({
         fill
         priority
         sizes="100vw"
-        className="-z-20 object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none"
+        className="img-in -z-20 object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none"
       />
       {/* darkening layers keep the text readable in both themes */}
       <div className="absolute inset-0 -z-10 bg-black/60" />
@@ -34,14 +34,19 @@ export function PageBanner({
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-transparent to-black/40" />
 
       <Container className="pt-28 pb-20">
-        <p className="mb-4 text-[11px] font-semibold tracking-[0.18em] text-primary uppercase">
-          {eyebrow}
-        </p>
-        <h1 className="max-w-3xl font-heading text-4xl leading-[1.08] font-extrabold tracking-tight text-photo sm:text-5xl lg:text-6xl">
-          {title}
-        </h1>
+        <div className="stagger-in">
+          <p className="mb-4 text-[11px] font-semibold tracking-[0.18em] text-primary uppercase">
+            {eyebrow}
+          </p>
+          <h1 className="max-w-3xl font-heading text-4xl leading-[1.08] font-extrabold tracking-tight text-photo sm:text-5xl lg:text-6xl">
+            {title}
+          </h1>
+        </div>
         {description && (
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-photo-muted">
+          <p
+            className="stagger-in mt-5 max-w-xl text-base leading-relaxed text-photo-muted"
+            style={{ animationDelay: "120ms" }}
+          >
             {description}
           </p>
         )}

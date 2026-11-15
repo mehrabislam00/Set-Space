@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import { Navbar } from "@/components/Navbar/navbar"
 import { Footer } from "@/components/Footer/Footer"
+import { PageTransition } from "@/components/Animation/Page-transition"
 
 // Body font
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
@@ -38,7 +39,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <Navbar />
-          {children}
+          <PageTransition>{children}</PageTransition>
           <Footer />
         </ThemeProvider>
       </body>

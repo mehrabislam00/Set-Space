@@ -4,13 +4,14 @@ import studioLoft from "@/assets/studio-loft.jpg"
 
 import { whyFeatures } from "@/lib/Site-data"
 import { Container } from "@/components/Container/Container"
+import { Reveal } from "@/components/Animation/Reveal"
 
 export function WhySetSpace() {
   return (
     <section className="bg-background py-20">
       <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
         {/* Photo + host badge */}
-        <div className="relative aspect-square overflow-hidden rounded-3xl border border-border bg-card">
+        <Reveal delay={100} className="relative aspect-square overflow-hidden rounded-3xl border border-border bg-card">
           <Image
             src={studioLoft}
             alt="Brick & Shadow Loft studio with a leather armchair and softbox"
@@ -26,10 +27,10 @@ export function WhySetSpace() {
               Brick &amp; Shadow Loft · 4.9★
             </p>
           </div>
-        </div>
+        </Reveal>
 
         {/* Copy + features */}
-        <div>
+        <Reveal>
           <p className="mb-4 text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">
             Why SetSpace
           </p>
@@ -50,7 +51,7 @@ export function WhySetSpace() {
               </div>
             ))}
           </dl>
-        </div>
+        </Reveal>
       </Container>
     </section>
   )

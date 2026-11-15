@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react"
 import studioMusic from "@/assets/studio-music.jpg"
 import { buttonVariants } from "@/components/ui/button"
 import { Container } from "@/components/Container/Container"
+import { Reveal } from "@/components/Animation/Reveal"
 import { hostSteps } from "@/lib/Site-data"
 import { cn } from "@/lib/utils"
 
@@ -14,7 +15,7 @@ export function HostSteps() {
     <section className="border-y border-border bg-card py-20">
       <Container>
         <div className="grid items-center gap-12 md:grid-cols-2 md:gap-16">
-          <div>
+          <Reveal>
             <p className="text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">
               For hosts
             </p>
@@ -50,10 +51,13 @@ export function HostSteps() {
               List Your Studio
               <ArrowRight className="size-4" />
             </Link>
-          </div>
+          </Reveal>
 
           {/* hover matches StudioCard */}
-          <div className="group overflow-hidden rounded-2xl border border-border bg-card transition-[box-shadow,border-color,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+          <Reveal
+            delay={120}
+            className="group overflow-hidden rounded-2xl border border-border bg-card transition-[box-shadow,border-color,transform] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+          >
             <Image
               src={studioMusic}
               alt="Recording studio with a mixing console and monitors"
@@ -61,7 +65,7 @@ export function HostSteps() {
               height={900}
               className="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
             />
-          </div>
+          </Reveal>
         </div>
       </Container>
     </section>
