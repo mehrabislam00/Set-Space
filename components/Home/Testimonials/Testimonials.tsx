@@ -1,9 +1,9 @@
 import { Quote, Star } from "lucide-react"
 
-import { Container } from "@/components/container"
+import { Container } from "@/components/Container/Container"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
-import { testimonials } from "@/lib/site-data"
+import { testimonials } from "@/lib/Site-data"
 
 export function Testimonials() {
   return (

@@ -3,13 +3,14 @@ import Image from "next/image"
 import Link from "next/link"
 
 import studioMusic from "@/assets/studio-music.jpg"
-import { Container } from "@/components/container"
+
+import { Container } from "@/components/Container/Container"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export function HostBanner() {
   return (
-    <section className="bg-background py-12">
+    <section className="bg-background py-12 pt-20">
       <Container>
         <div className="relative isolate overflow-hidden rounded-3xl border border-border">
           <Image

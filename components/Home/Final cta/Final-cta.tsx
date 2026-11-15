@@ -1,8 +1,9 @@
 import Link from "next/link"
 
-import { Container } from "@/components/container"
+
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { Container } from "@/components/Container/Container"
 
 export function FinalCta() {
   return (
