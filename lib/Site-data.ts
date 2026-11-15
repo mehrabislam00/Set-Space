@@ -146,3 +146,41 @@ export const testimonials = [
     initials: "PS",
   },
 ]
+
+export const footerColumns = [
+  {
+    title: "Quick Links",
+    links: [
+      { label: "Home", href: "/" },
+      { label: "Explore Studios", href: "/studios" },
+      { label: "How It Works", href: "/how-it-works" },
+      { label: "About Us", href: "/about" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    title: "Categories",
+    links: [
+      { label: "Photo Studios", href: "/studios?category=photo" },
+      { label: "Film Stages", href: "/studios?category=film" },
+      { label: "Podcast Rooms", href: "/studios?category=podcast" },
+      { label: "Music Suites", href: "/studios?category=music" },
+      { label: "Art Workshops", href: "/studios?category=art" },
+    ],
+  },
+  {
+    title: "For Hosts",
+    links: [
+      { label: "List Your Studio", href: "/host" },
+      { label: "Host Dashboard", href: "/host/dashboard" },
+      { label: "Booking Requests", href: "/host/requests" },
+      { label: "Help & Support", href: "/support" },
+    ],
+  },
+]
+
+export const legalLinks = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Service", href: "/terms" },
+  { label: "FAQ", href: "/faq" },
+]
