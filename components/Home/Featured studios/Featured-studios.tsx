@@ -24,7 +24,7 @@ export function FeaturedStudios() {
           </div>
 
           <Link
-            href="/studios"
+            href="/explore-studio"
             className={buttonVariants({
               variant: "outline",
               size: "sm",

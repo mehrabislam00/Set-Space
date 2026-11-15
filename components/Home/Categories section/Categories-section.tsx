@@ -21,7 +21,7 @@ export function CategoriesSection() {
           </div>
 
           <Link
-            href="/studios"
+            href="/explore-studio"
             className="btn-alive flex items-center gap-1 text-xs font-medium text-primary transition-opacity hover:opacity-80"
           >
             View All

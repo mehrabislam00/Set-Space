@@ -27,7 +27,7 @@ export function StudioCard({ studio }: { studio: Studio }) {
     <article className="group transition-transform duration-300 hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
       <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-card transition-[box-shadow,border-color] duration-300 group-hover:border-primary/40 group-hover:shadow-card-hover">
         <Link
-          href={`/studios/${studio.id}`}
+          href={`/explore-studio/${studio.id}`}
           aria-label={studio.name}
           className="absolute inset-0 z-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >

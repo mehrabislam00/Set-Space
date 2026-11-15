@@ -66,7 +66,7 @@ export function StepsSection() {
 
         <Reveal delay={180} className="mt-14 w-fit">
           <Link
-            href="/studios"
+            href="/explore-studio"
             className={cn(buttonVariants({ size: "lg" }), "btn-alive rounded-full")}
           >
             Start exploring

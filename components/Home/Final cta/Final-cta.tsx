@@ -18,7 +18,7 @@ export function FinalCta() {
 
         <Reveal delay={120} className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
-            href="/studios"
+            href="/explore-studio"
             className={cn(
               buttonVariants({ size: "lg" }),
               "btn-alive shadow-[0_0_30px_-6px_var(--primary)]"

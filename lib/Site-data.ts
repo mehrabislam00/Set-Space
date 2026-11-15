@@ -1,11 +1,20 @@
 import {
+  AirVent,
   CalendarClock,
+  Camera,
   CircleCheck,
+  CircleParking,
+  Coffee,
+  Lightbulb,
   Mail,
   MapPin,
   Phone,
+  Shirt,
   Sparkles,
   WandSparkles,
+  VolumeX,
+  Wifi,
+  LucideIcon,
 } from "lucide-react"
 import type { StaticImageData } from "next/image"
 import heroStudio from "@/assets/hero-studio.jpg"
@@ -446,3 +455,174 @@ export const exploreStudios: ExploreStudioItem[] = rawExploreStudios.map(
     location: `${studio.location}, USA`,
   })
 )
+
+/* ==========================================================================
+   ADD TO lib/Site-data.ts  (matched to your current file)
+
+   STEP 1 — replace the two import lines at the very top:
+
+     import {
+       AirVent,
+       CalendarClock,
+       Camera,
+       CircleCheck,
+       CircleParking,
+       Coffee,
+       Lightbulb,
+       Mail,
+       MapPin,
+       Phone,
+       Shirt,
+       Sparkles,
+       VolumeX,
+       WandSparkles,
+       Wifi,
+       type LucideIcon,
+     } from "lucide-react"
+
+   (the `StaticImageData` type import and `heroStudio` import are already there)
+
+   STEP 2 — paste everything below at the very bottom of the file,
+   after `exploreStudios`.
+   ========================================================================== */
+
+/* ---------- Studio detail page ---------- */
+
+export type StudioReview = {
+  id: string
+  name: string
+  initials: string
+  rating: number
+  date: string
+  comment: string
+}
+
+export type StudioDetail = {
+  id: number
+  name: string
+  category: string
+  location: string
+  price: number
+  rating: number
+  reviews: number
+  images: { src: StaticImageData; alt: string }[]
+  description: string
+  size: string
+  capacity: number
+  minHours: number
+  serviceFeeRate: number
+  suitableFor: string[]
+  rules: string[]
+  amenities: { icon: LucideIcon; label: string }[]
+  host: {
+    name: string
+    initials: string
+    rating: number
+    since: number
+    bio: string
+  }
+  ratingBreakdown: { stars: number; percent: number }[]
+  reviewList: StudioReview[]
+}
+
+/** Icon for each entry of `amenitiesList`. */
+export const amenityIcons: Record<string, LucideIcon> = {
+  "Professional Lighting": Lightbulb,
+  "Air Conditioning": AirVent,
+  "Wi-Fi": Wifi,
+  Soundproofing: VolumeX,
+  Parking: CircleParking,
+  "Changing Room": Shirt,
+  "Makeup Station": Sparkles,
+  "Photography Equipment": Camera,
+  "Kitchen Access": Coffee,
+}
+
+const auroraStudio: StudioDetail = {
+  id: 1,
+  name: "The Aurora Studio",
+  category: "Photo Studio",
+  location: "Brooklyn, New York, USA",
+  price: 80,
+  rating: 4.8,
+  reviews: 245,
+  images: [
+    { src: studioPhoto, alt: "White cyclorama wall with two softbox lights" },
+    { src: studioLoft, alt: "Brick loft corner with a leather armchair" },
+    { src: heroStudio, alt: "Cinema camera on a tripod in a warm-lit studio" },
+    { src: studioContent, alt: "Cozy content set with a sofa and ring light" },
+    { src: studioFilm, alt: "Crew shooting on a lit stage with a dolly track" },
+  ],
+  description:
+    "A premium photography studio with professional lighting, a seamless cyclorama wall and multiple backdrops. Floor-to-ceiling windows give soft north light by day, while full blackout lets you sculpt every shadow at night.",
+  size: "1,000 sq ft",
+  capacity: 20,
+  minHours: 2,
+  serviceFeeRate: 0.08,
+  suitableFor: ["Fashion shoots", "Product photography", "Portraits", "Lookbooks"],
+  rules: [
+    "No confetti or glitter",
+    "Shoes off on the cyc",
+    "Leave the space as you found it",
+    "Free cancellation up to 24h before",
+  ],
+  amenities: [
+    "Professional Lighting",
+    "Air Conditioning",
+    "Wi-Fi",
+    "Changing Room",
+    "Makeup Station",
+    "Photography Equipment",
+  ].map((label) => ({ icon: amenityIcons[label], label })),
+  host: {
+    name: "Maya Thompson",
+    initials: "MT",
+    rating: 4.9,
+    since: 2021,
+    bio: "Fashion photographer turned studio owner. I built Aurora for the shoots I always wanted.",
+  },
+  ratingBreakdown: [
+    { stars: 5, percent: 80 },
+    { stars: 4, percent: 20 },
+    { stars: 3, percent: 0 },
+    { stars: 2, percent: 0 },
+    { stars: 1, percent: 0 },
+  ],
+  reviewList: [
+    { id: "r1", name: "Leo Martins", initials: "LM", rating: 5, date: "May 1, 2026", comment: "Absolutely stunning space. Light was perfect and the host was incredibly helpful." },
+    { id: "r2", name: "Ava Johnson", initials: "AJ", rating: 5, date: "Jun 8, 2026", comment: "Everything we needed for a full-day shoot. Will be booking again for our next campaign." },
+    { id: "r3", name: "Noah Brooks", initials: "NB", rating: 5, date: "Jul 15, 2026", comment: "Clean, well-equipped and exactly as pictured. Check-in was effortless." },
+    { id: "r4", name: "Chloe Dubois", initials: "CD", rating: 5, date: "Aug 22, 2026", comment: "Great acoustics and a really calm vibe. Our team loved it." },
+    { id: "r5", name: "Ethan Wright", initials: "EW", rating: 4, date: "Sep 2, 2026", comment: "A couple of stands were missing, but the host sorted it within minutes." },
+  ],
+}
+
+/** Looks up a studio by route param (any id in `exploreStudios`).
+ *  Only Aurora has hand-written detail; every other studio takes its own
+ *  name, price, rating, photo and amenities from `exploreStudios` and reuses
+ *  Aurora's description, host and reviews until real data exists. */
+export function getStudioDetail(id: string): StudioDetail | undefined {
+  const studio = exploreStudios.find((s) => String(s.id) === id)
+  if (!studio) return undefined
+  if (studio.id === auroraStudio.id) return auroraStudio
+
+  return {
+    ...auroraStudio,
+    id: studio.id,
+    name: studio.name,
+    category: studio.category,
+    location: studio.location,
+    price: studio.price,
+    rating: studio.rating,
+    reviews: studio.reviews,
+    images: [
+      { src: studio.image, alt: studio.name },
+      ...auroraStudio.images
+        .filter((img) => img.src !== studio.image)
+        .slice(0, 4),
+    ],
+    amenities: studio.amenities
+      .filter((label) => amenityIcons[label])
+      .map((label) => ({ icon: amenityIcons[label], label })),
+  }
+}
