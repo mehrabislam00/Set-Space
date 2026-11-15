@@ -2,11 +2,18 @@ import { ArrowRight, CalendarDays, Play, Search } from "lucide-react"
 import Image from "next/image"
 
 import heroImage from "@/assets/hero-studio.jpg"
+import { Container } from "@/components/Container/Container"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { categories, stats } from "@/lib/Site-data"
-
 
 export function HeroBanner() {
   return (
@@ -23,7 +30,7 @@ export function HeroBanner() {
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/50" />
 
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-6 pt-24 pb-16">
+      <Container className="relative z-10 pt-24 pb-16">
         <p className="mb-4 text-[11px] font-semibold tracking-[0.18em] text-primary uppercase">
           The Creative Space Marketplace
         </p>
@@ -54,7 +61,7 @@ export function HeroBanner() {
         </div>
 
         {/* Search bar */}
-        <form className="mt-12 flex max-w-3xl flex-col gap-2 rounded-xl border border-white/10 bg-black/50 p-2 backdrop-blur-md md:flex-row md:items-center md:gap-0">
+        <form className="mt-12 flex max-w-4xl flex-col gap-2 rounded-xl border border-white/10 bg-black/50 p-2 backdrop-blur-md md:flex-row md:items-center md:gap-0">
           <div className="relative flex-1">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-primary" />
             <Input
@@ -65,16 +72,28 @@ export function HeroBanner() {
 
           <div className="hidden h-8 w-px bg-white/10 md:block" />
 
-          <NativeSelect
-            aria-label="Category"
-            className="h-10 w-full border-0 bg-transparent text-photo shadow-none focus-visible:ring-0 md:w-44 dark:bg-transparent"
-          >
-            {categories.map((c) => (
-              <NativeSelectOption key={c} value={c}>
-                {c}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
+          <Select defaultValue={categories[0]}>
+            <SelectTrigger
+              aria-label="Category"
+              className="h-10 w-full justify-between border-0 bg-transparent px-4 text-sm text-photo shadow-none focus-visible:ring-0 md:w-48 dark:bg-transparent dark:hover:bg-white/5 [&_svg]:text-photo-muted"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent
+              sideOffset={14}
+              className="min-w-48 rounded-xl border-border bg-popover p-1.5 text-popover-foreground shadow-2xl"
+            >
+              {categories.map((c) => (
+                <SelectItem
+                  key={c}
+                  value={c}
+                  className="rounded-md py-2 text-xs focus:bg-accent focus:text-accent-foreground"
+                >
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           <div className="hidden h-8 w-px bg-white/10 md:block" />
 
@@ -103,7 +122,7 @@ export function HeroBanner() {
             </div>
           ))}
         </dl>
-      </div>
+      </Container>
     </section>
   )
 }

@@ -4,7 +4,6 @@ import { DM_Sans, Geist_Mono, Manrope } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
-import { Nav } from "react-day-picker"
 import { Navbar } from "@/components/Navbar/navbar"
 
 // Body font
@@ -36,9 +35,10 @@ export default function RootLayout({
       )}
     >
       <body>
-        <Navbar />
-        <ThemeProvider>{children}</ThemeProvider>
-        
+        <ThemeProvider>
+          <Navbar />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

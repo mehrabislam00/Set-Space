@@ -1,27 +1,44 @@
 "use client"
 
-import { Bell, Clapperboard, Moon, Plus, Sun } from "lucide-react"
+import { Bell, Moon, Plus, Sun } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { useTheme } from "next-themes"
+import * as React from "react"
 
+import logo from "@/assets/logo.svg"
+import { Container } from "@/components/Container/Container"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
 
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import { navLinks } from "@/lib/Site-data"
+import { cn } from "@/lib/utils"
 
 export function Navbar({ active = "Home" }: { active?: string }) {
   const { resolvedTheme, setTheme } = useTheme()
   const isDark = resolvedTheme !== "light"
+  const [scrolled, setScrolled] = React.useState(false)
+
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   return (
-    <header className="absolute inset-x-0 top-0 z-20">
-      <div className="mx-auto flex h-20 max-w-5xl items-center justify-between gap-6 px-6">
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300",
+        scrolled
+          ? "border-border bg-background/80 backdrop-blur-md"
+          : "border-transparent bg-transparent"
+      )}
+    >
+      <Container className="flex h-20 items-center justify-between gap-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Clapperboard className="size-5" />
-          </span>
+          <Image src={logo} alt="SetSpace logo" priority className="size-9" />
           <span className="leading-none">
             <span className="block font-heading text-lg font-bold text-photo">
               Set<span className="text-primary">Space</span>
@@ -85,7 +102,7 @@ export function Navbar({ active = "Home" }: { active?: string }) {
             <Plus className="size-3.5" />
           </Button>
         </div>
-      </div>
+      </Container>
     </header>
   )
 }

@@ -1,11 +1,12 @@
-import { HeroBanner } from "@/components/Hero banner/Hero-banner"
-import { Navbar } from "@/components/Navbar/navbar"
+import { CategoriesSection } from "@/components/Categories section/Categories-section";
+import { HeroBanner } from "@/components/Hero banner/Hero-banner";
+
 
 export default function Page() {
   return (
-    <main className="relative min-h-svh">
-      <Navbar />
+    <main className="relative">
       <HeroBanner />
+      <CategoriesSection />
     </main>
   )
 }
