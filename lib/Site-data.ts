@@ -1,4 +1,12 @@
-import { CalendarClock, CircleCheck, Sparkles, WandSparkles } from "lucide-react"
+import {
+  CalendarClock,
+  CircleCheck,
+  Mail,
+  MapPin,
+  Phone,
+  Sparkles,
+  WandSparkles,
+} from "lucide-react"
 import studioArt from "@/assets/studio-art.jpg"
 import studioContent from "@/assets/studio-content.jpg"
 import studioFilm from "@/assets/studio-film.jpg"
@@ -305,4 +313,35 @@ export const aboutStats = [
   { value: "48", label: "Cities" },
   { value: "85k", label: "Sessions booked" },
   { value: "4.8★", label: "Average rating" },
+]
+
+/* ---------- Contact page ---------- */
+
+export const contactInfo = [
+  {
+    icon: Mail,
+    label: "Email",
+    value: "support@setspace.co",
+    href: "mailto:support@setspace.co",
+  },
+  {
+    icon: Phone,
+    label: "Phone",
+    value: "+1 (555) 010-7788",
+    href: "tel:+15550107788",
+  },
+  {
+    icon: MapPin,
+    label: "Studio HQ",
+    value: "Brooklyn, New York",
+    href: undefined as string | undefined,
+  },
+]
+
+export const contactTopics = [
+  "Booking help",
+  "Hosting a studio",
+  "Partnerships",
+  "Billing & payments",
+  "Something else",
 ]
