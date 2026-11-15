@@ -684,3 +684,8 @@ export const notifications: NotificationItem[] = [
     href: "/explore-studio/7",
   },
 ]
+
+/* ---------- Auth pages ---------- */
+
+/** Routes that render without the Navbar and Footer (see components/Layout/Site-chrome.tsx). */
+export const authRoutes = ["/login", "/signup", "/forgot-password"]

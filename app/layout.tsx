@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils"
 import { Navbar } from "@/components/Navbar/navbar"
 import { Footer } from "@/components/Footer/Footer"
 import { PageTransition } from "@/components/Animation/Page-transition"
+import { SiteChrome } from "@/components/Auth/Site-chrome"
+
 
 // Body font
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
@@ -38,9 +40,13 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <Navbar />
+          <SiteChrome>
+            <Navbar />
+          </SiteChrome>
           <PageTransition>{children}</PageTransition>
-          <Footer />
+          <SiteChrome>
+            <Footer />
+          </SiteChrome>
         </ThemeProvider>
       </body>
     </html>
