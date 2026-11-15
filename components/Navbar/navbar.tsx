@@ -6,18 +6,18 @@ import Link from "next/link"
 import * as React from "react"
 
 import logo from "@/assets/logo.svg"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 import { Button } from "@/components/ui/button"
 
 import { navLinks } from "@/lib/Site-data"
 import { cn } from "@/lib/utils"
 import { Container } from "../Container/Container"
+import { MobileMenu } from "./Mobile-menu"
 
+import { UserMenu } from "./User-menu"
 import { useSmoothTheme } from "@/lib/Use-smooth-theme"
 import { usePathname } from "next/navigation"
 import { NotificationsMenu } from "../Notifications menu/Notifications-menu"
-import { MobileMenu } from "./Mobile-menu"
 
 export function Navbar() {
   const { resolvedTheme, toggleTheme } = useSmoothTheme()
@@ -184,20 +184,7 @@ export function Navbar() {
 
           <NotificationsMenu className={ghost} />
 
-          <Avatar
-            className={cn(
-              "hidden size-8 border sm:flex",
-              scrolled
-                ? "border-border bg-secondary"
-                : "border-white/20 bg-black/40"
-            )}
-          >
-            <AvatarFallback
-              className={cn("bg-transparent text-[10px] font-semibold", fg)}
-            >
-              AC
-            </AvatarFallback>
-          </Avatar>
+          <UserMenu scrolled={scrolled} className="hidden sm:block" />
 
           <Button size="sm" className="ml-1 hidden text-xs sm:inline-flex">
             Add Studio
