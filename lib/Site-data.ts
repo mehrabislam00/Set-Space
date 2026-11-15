@@ -267,5 +267,42 @@ export const footerColumns = [
 export const legalLinks = [
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Service", href: "/terms" },
-  { label: "FAQ", href: "/faq" },
+  { label: "FAQ", href: "/frequenty-asked-questions" },
+]
+
+/* ---------- About page ---------- */
+
+export const aboutIntro = [
+  {
+    eyebrow: "Our story",
+    title: "It started with a missed shoot.",
+    body: "In 2022, our founder lost a campaign because she couldn't find a cyc studio in time. Great spaces were hidden behind word-of-mouth, PDFs and email chains. SetSpace exists to make every creative room in the city discoverable and bookable in minutes.",
+  },
+  {
+    eyebrow: "Our mission",
+    title: "Put the right room behind every idea.",
+    body: "We connect photographers, filmmakers, podcasters, musicians and artists with hosts who care about their spaces—and help those hosts build sustainable businesses.",
+  },
+]
+
+export const aboutDifferences = [
+  {
+    title: "Curated, not crowded",
+    description: "We review every listing for light, sound and accuracy.",
+  },
+  {
+    title: "Creator-first pricing",
+    description: "Clear hourly rates. No surprise fees at checkout.",
+  },
+  {
+    title: "One account, two roles",
+    description: "Rent on Monday, host on Friday—no second login.",
+  },
+]
+
+export const aboutStats = [
+  { value: "1,200+", label: "Studios" },
+  { value: "48", label: "Cities" },
+  { value: "85k", label: "Sessions booked" },
+  { value: "4.8★", label: "Average rating" },
 ]

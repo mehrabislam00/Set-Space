@@ -11,7 +11,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Commands
 
 - `npm run dev` — dev server (also rewrites the managed block above; commit it)
-- `npm run lint` — ESLint (flat config). **Currently fails with 2 pre-existing errors** in generated shadcn files (`components/ui/carousel.tsx`, `hooks/use-mobile.ts`, rule `react-hooks/set-state-in-effect`). Don't chase them; just don't add new errors.
+- `npm run lint` — ESLint (flat config). **Currently fails with 3 pre-existing errors**, all rule `react-hooks/set-state-in-effect`: `components/ui/carousel.tsx` and `hooks/use-mobile.ts` (shadcn-generated — fixing by hand is wasted effort, regeneration restores them) and `components/Animation/Reveal.tsx` (app code). Don't chase them; just don't add new errors.
 - `npm run typecheck` — `tsc --noEmit`
 - `npm run format` — Prettier, only `**/*.{ts,tsx}`
 - No test runner exists. Verify with `lint` + `typecheck` (then `npm run build` if unsure).
@@ -20,15 +20,18 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - **Next.js 16.4.5 / React 19.3** — version-matched docs live in `node_modules/next/dist/docs/`. Read them before touching routing, data fetching, or config; APIs differ from older Next.
 - **shadcn/ui style `base-nova` on `@base-ui/react` (not Radix).** Add components with `npx shadcn@latest add <name>` — hand-written primitives will drift from the registry. Config: `components.json`.
-- **Tailwind CSS v4** — no `tailwind.config.*`; theme tokens are CSS vars in `app/globals.css`.
+- **Tailwind CSS v4** — no `tailwind.config.*`. `app/globals.css` only imports partials; **all color values live in `app/theme.css`**, and `theme-transition.css` / `button-effects.css` / `animations.css` hold the shared effects. Dark variant is `@custom-variant dark` (class-based) in `globals.css`.
+- **Fonts** (Google, via `app/layout.tsx`): DM Sans = body, Manrope = headings (`font-heading` class), Geist Mono. Don't re-declare font utilities elsewhere.
 - **`cn` is the npm package `cn`**, not `clsx`+`tailwind-merge`. Re-exported from `lib/utils.ts`; generated components import `from "cn"` directly. Either works.
 - Path alias `@/*` → repo root (`tsconfig.json`).
 - Dark mode: `next-themes` with `class` attribute + `suppressHydrationWarning` on `<html>` (already set in `app/layout.tsx`). Press `d` toggles it.
-- Prettier: **no semicolons**, double quotes, 2-space, `prettier-plugin-tailwindcss` sorts classes. Run `npm run format` before committing.
+- Prettier (`.prettierrc`): **no semicolons**, double quotes, 2-space, printWidth 80, **LF line endings**, `prettier-plugin-tailwindcss` sorts classes (works inside `cn`/`cva`). Run `npm run format` before committing.
 
 ## Layout
 
-- `app/` — App Router entry (`layout.tsx`, `page.tsx`); no route segments yet
+- Routes: `app/page.tsx` (home) and `app/how-it-works/`. Root `layout.tsx` wraps **every** page in `ThemeProvider` → `Navbar` → `PageTransition` → `Footer` — don't add those per-page.
+- App components live in `components/<Section>/` with spaced folder names (e.g. `components/How It Works/`, `components/Home/Testimonials/`); shared primitives in `components/ui/`.
+- Site copy/data comes from `lib/Site-data.ts`.
 - `components/ui/` — shadcn-generated, don't hand-edit beyond what regeneration tolerates
-- `components/`, `hooks/`, `lib/`, `assets/` — app code; `public/` — static files
+- `hooks/`, `lib/`, `assets/` (images incl. `logo.svg`) — app code; `public/` — static files
 - `CLAUDE.md` just imports this file — keep both in sync by editing only here

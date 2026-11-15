@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 import studioContent from "@/assets/studio-content.jpg"
-import { PageBanner } from "@/components/How It Works/Page-banner"
+import { PageBanner } from "@/components/PageBanner/Page-banner"
 import { StepsSection } from "@/components/How It Works/Steps-section"
 import { HostSteps } from "@/components/How It Works/Host-steps"
 import { FaqSection } from "@/components/How It Works/Faq-section"
