@@ -17,7 +17,7 @@ import { MobileMenu } from "./Mobile-menu"
 import { UserMenu } from "./User-menu"
 import { useSmoothTheme } from "@/lib/Use-smooth-theme"
 import { usePathname } from "next/navigation"
-import { NotificationsMenu } from "../Notifications menu/Notifications-menu"
+import { NotificationsMenu } from "../Notifications/Notifications-menu"
 
 export function Navbar() {
   const { resolvedTheme, toggleTheme } = useSmoothTheme()

@@ -11,7 +11,7 @@ function ThemeProvider({
     <NextThemesProvider
       attribute="class"
       defaultTheme="dark"
-      enableSystem={false}
+      enableSystem
       scriptProps={{ type: "application/json" }}
       disableTransitionOnChange
       {...props}

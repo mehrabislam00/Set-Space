@@ -16,7 +16,7 @@ export function DashboardSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="lg:sticky lg:top-8 lg:w-54 lg:shrink-0 lg:self-start">
+    <aside className="lg:sticky lg:top-28 lg:w-54 lg:shrink-0 lg:self-start">
       <div className="flex items-center gap-3">
         <Avatar className="size-11 border border-primary/40 bg-secondary">
           <AvatarFallback className="bg-transparent text-xs font-semibold text-primary">

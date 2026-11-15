@@ -19,7 +19,7 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import * as React from "react"
 
 import logo from "@/assets/logo.svg"
@@ -39,15 +39,15 @@ import { cn } from "@/lib/utils"
 const user = { name: "Alex Carter" }
 
 const accountLinks = [
-  { label: "My Profile", href: "/profile", icon: User },
+  { label: "My Profile", href: "/dashboard/profile", icon: User },
   { label: "My Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "My Bookings", href: "/dashboard/bookings", icon: CalendarDays },
-  { label: "Saved Studios", href: "/saved", icon: Heart },
+  { label: "Saved Studios", href: "/dashboard/saved-studios", icon: Heart },
   { label: "Host Dashboard", href: "/host/dashboard", icon: Briefcase },
   { label: "Manage My Studios", href: "/host/studios", icon: Building2 },
   { label: "Booking Requests", href: "/host/requests", icon: Inbox },
   { label: "Notifications", href: "/notifications", icon: Bell },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 /** Hamburger button + slide-in menu. Only visible below the `md` breakpoint.
@@ -55,6 +55,7 @@ const accountLinks = [
 export function MobileMenu({ className }: { className?: string }) {
   const [open, setOpen] = React.useState(false)
   const pathname = usePathname()
+  const router = useRouter()
   const { resolvedTheme, toggleTheme } = useSmoothTheme()
   const mounted = React.useSyncExternalStore(
     () => () => {},
@@ -164,8 +165,9 @@ export function MobileMenu({ className }: { className?: string }) {
               <button
                 type="button"
                 onClick={() => {
-                  // TODO: call your sign-out action
+                  // TODO: clear the session with your auth provider first
                   close()
+                  router.push("/login")
                 }}
                 className="flex w-full items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive transition-colors duration-200 hover:bg-destructive/10"
               >

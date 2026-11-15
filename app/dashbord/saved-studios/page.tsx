@@ -1,11 +1,18 @@
-import React from 'react'
+import type { Metadata } from "next"
 
-const SavedStudios = () => {
-  return (
-    <div>
-      
-    </div>
-  )
+import { Reveal } from "@/components/Animation/Reveal"
+import { SavedStudios } from "@/components/Dashboard/Saved studios/Saved-studios"
+
+
+export const metadata: Metadata = {
+  title: "Saved Studios — SetSpace",
+  description: "The studios you've saved on SetSpace, ready to book.",
 }
 
-export default SavedStudios
+export default function SavedStudiosPage() {
+  return (
+    <Reveal>
+      <SavedStudios />
+    </Reveal>
+  )
+}

@@ -12,6 +12,7 @@ import {
   User,
 } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -28,17 +29,17 @@ const user = { name: "Alex Carter", email: "alex@example.com", initials: "AC" }
 
 const groups = [
   [
-    { label: "My Profile", href: "/profile", icon: User },
+    { label: "My Profile", href: "/dashboard/profile", icon: User },
     { label: "My Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "My Bookings", href: "/dashboard/bookings", icon: CalendarDays },
-    { label: "Saved Studios", href: "/saved", icon: Heart },
+    { label: "Saved Studios", href: "/dashboard/saved-studios", icon: Heart },
   ],
   [
     { label: "Host Dashboard", href: "/host/dashboard", icon: Briefcase },
     { label: "Manage My Studios", href: "/host/studios", icon: Building2 },
     { label: "Booking Requests", href: "/host/requests", icon: Inbox },
   ],
-  [{ label: "Settings", href: "/settings", icon: Settings }],
+  [{ label: "Settings", href: "/dashboard/settings", icon: Settings }],
 ]
 
 const itemClass =
@@ -53,6 +54,13 @@ export function UserMenu({
   scrolled: boolean
   className?: string
 }) {
+  const router = useRouter()
+
+  function signOut() {
+    // TODO: clear the session with your auth provider first
+    router.push("/login")
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -111,9 +119,7 @@ export function UserMenu({
 
         <DropdownMenuItem
           variant="destructive"
-          onClick={() => {
-            // TODO: call your sign-out action
-          }}
+          onClick={signOut}
           className={itemClass}
         >
           <LogOut className="size-4" strokeWidth={1.5} />

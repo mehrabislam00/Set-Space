@@ -633,8 +633,16 @@ export function getStudioDetail(id: string): StudioDetail | undefined {
 
 /* ---------- Navbar notifications ---------- */
 
+export type NotificationType =
+  | "booking"
+  | "request"
+  | "review"
+  | "cancelled"
+  | "listing"
+
 export type NotificationItem = {
   id: string
+  type: NotificationType
   title: string
   body: string
   time: string
@@ -645,6 +653,7 @@ export type NotificationItem = {
 export const notifications: NotificationItem[] = [
   {
     id: "n1",
+    type: "booking",
     title: "Booking confirmed",
     body: "The Aurora Studio confirmed your booking for Nov 28, 9:00 AM.",
     time: "2h ago",
@@ -653,6 +662,7 @@ export const notifications: NotificationItem[] = [
   },
   {
     id: "n2",
+    type: "request",
     title: "New booking request",
     body: "Sarah Kim requested Moonlight Loft for Nov 22.",
     time: "5h ago",
@@ -661,6 +671,7 @@ export const notifications: NotificationItem[] = [
   },
   {
     id: "n3",
+    type: "review",
     title: "New 5-star review",
     body: "Noah Brooks left a review on Moonlight Loft.",
     time: "1d ago",
@@ -669,6 +680,7 @@ export const notifications: NotificationItem[] = [
   },
   {
     id: "n4",
+    type: "cancelled",
     title: "Booking cancelled",
     body: "Your Lumen Film Stage booking on Sep 20 was cancelled.",
     time: "3d ago",
@@ -677,11 +689,12 @@ export const notifications: NotificationItem[] = [
   },
   {
     id: "n5",
-    title: "Listing is live",
-    body: "Echo Podcast Room is now visible to creators.",
-    time: "5d ago",
+    type: "listing",
+    title: "Listing updated",
+    body: "Your changes to The Sunroom Set were saved as a draft.",
+    time: "1w ago",
     unread: false,
-    href: "/explore-studio/7",
+    href: "/host/studios",
   },
 ]
 
