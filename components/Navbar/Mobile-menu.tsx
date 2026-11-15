@@ -46,7 +46,7 @@ const accountLinks = [
   { label: "Host Dashboard", href: "/host/dashboard", icon: Briefcase },
   { label: "Manage My Studios", href: "/host/studios", icon: Building2 },
   { label: "Booking Requests", href: "/host/requests", icon: Inbox },
-  { label: "Notifications", href: "/notifications", icon: Bell },
+  { label: "Notifications", href: "/dashboard/notifications", icon: Bell },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 

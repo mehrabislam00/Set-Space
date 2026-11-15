@@ -30,7 +30,7 @@ export const dashboardNav: { label: string; href: string; icon: LucideIcon }[] =
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "My Bookings", href: "/dashboard/bookings", icon: CalendarDays },
   { label: "Saved Studios", href: "/dashboard/saved-studios", icon: Heart },
-  { label: "Notifications", href: "/notifications", icon: Bell },
+  { label: "Notifications", href: "/dashboard/notifications", icon: Bell },
   { label: "Profile", href: "/dashboard/profile", icon: User },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ]

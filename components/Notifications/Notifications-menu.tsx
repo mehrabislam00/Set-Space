@@ -108,7 +108,7 @@ export function NotificationsMenu({ className }: { className?: string }) {
         {/* Footer */}
         <div className="border-t border-border">
           <Link
-            href="/notifications"
+            href="/dashboard/notifications"
             onClick={() => setOpen(false)}
             className="block rounded-b-2xl py-3.5 text-center text-sm font-medium text-primary transition-colors duration-200 hover:bg-muted/60"
           >
