@@ -626,3 +626,61 @@ export function getStudioDetail(id: string): StudioDetail | undefined {
       .map((label) => ({ icon: amenityIcons[label], label })),
   }
 }
+
+/* ==========================================================================
+   ADD TO THE BOTTOM OF lib/Site-data.ts
+   ========================================================================== */
+
+/* ---------- Navbar notifications ---------- */
+
+export type NotificationItem = {
+  id: string
+  title: string
+  body: string
+  time: string
+  unread: boolean
+  href: string
+}
+
+export const notifications: NotificationItem[] = [
+  {
+    id: "n1",
+    title: "Booking confirmed",
+    body: "The Aurora Studio confirmed your booking for Nov 28, 9:00 AM.",
+    time: "2h ago",
+    unread: false,
+    href: "/explore-studio/1",
+  },
+  {
+    id: "n2",
+    title: "New booking request",
+    body: "Sarah Kim requested Moonlight Loft for Nov 22.",
+    time: "5h ago",
+    unread: true,
+    href: "/explore-studio/4",
+  },
+  {
+    id: "n3",
+    title: "New 5-star review",
+    body: "Noah Brooks left a review on Moonlight Loft.",
+    time: "1d ago",
+    unread: true,
+    href: "/explore-studio/4",
+  },
+  {
+    id: "n4",
+    title: "Booking cancelled",
+    body: "Your Lumen Film Stage booking on Sep 20 was cancelled.",
+    time: "3d ago",
+    unread: false,
+    href: "/explore-studio/5",
+  },
+  {
+    id: "n5",
+    title: "Listing is live",
+    body: "Echo Podcast Room is now visible to creators.",
+    time: "5d ago",
+    unread: false,
+    href: "/explore-studio/7",
+  },
+]

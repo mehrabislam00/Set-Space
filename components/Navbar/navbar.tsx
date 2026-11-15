@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, Moon, Plus, Sun } from "lucide-react"
+import { Moon, Plus, Sun } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import * as React from "react"
@@ -13,8 +13,11 @@ import { Button } from "@/components/ui/button"
 import { navLinks } from "@/lib/Site-data"
 import { cn } from "@/lib/utils"
 import { Container } from "../Container/Container"
+
 import { useSmoothTheme } from "@/lib/Use-smooth-theme"
 import { usePathname } from "next/navigation"
+import { NotificationsMenu } from "../Notifications menu/Notifications-menu"
+import { MobileMenu } from "./Mobile-menu"
 
 export function Navbar() {
   const { resolvedTheme, toggleTheme } = useSmoothTheme()
@@ -110,7 +113,7 @@ export function Navbar() {
           : "border-transparent bg-transparent"
       )}
     >
-      <Container className="flex h-20 items-center justify-between gap-6">
+      <Container className="flex h-20 items-center justify-between gap-3 sm:gap-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
           <Image src={logo} alt="SetSpace logo" priority className="size-9" />
@@ -179,21 +182,11 @@ export function Navbar() {
             )}
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Notifications"
-            className={cn("relative", ghost)}
-          >
-            <Bell className="size-4 origin-top transition-transform duration-300 group-hover:rotate-12" />
-            <span className="absolute top-1 right-1 flex size-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-primary-foreground">
-              3
-            </span>
-          </Button>
+          <NotificationsMenu className={ghost} />
 
           <Avatar
             className={cn(
-              "size-8 border",
+              "hidden size-8 border sm:flex",
               scrolled
                 ? "border-border bg-secondary"
                 : "border-white/20 bg-black/40"
@@ -210,6 +203,8 @@ export function Navbar() {
             Add Studio
             <Plus className="size-3.5" />
           </Button>
+
+          <MobileMenu className={ghost} />
         </div>
       </Container>
     </header>

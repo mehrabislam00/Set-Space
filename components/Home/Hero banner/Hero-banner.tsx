@@ -1,19 +1,15 @@
-import { ArrowRight, CalendarDays, Play, Search } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 import heroImage from "@/assets/hero-studio.jpg"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { categories, stats } from "@/lib/Site-data"
+import { buttonVariants } from "@/components/ui/button"
+import { stats } from "@/lib/Site-data"
+import { cn } from "@/lib/utils"
 import { Container } from "@/components/Container/Container"
+import { HowItWorksDialog } from "./How-it-works-dialog"
+import { HomeSearch } from "./Home-search"
 
 export function HeroBanner() {
   return (
@@ -50,73 +46,18 @@ export function HeroBanner() {
 
         {/* 2. Hero actions next */}
         <div className="stagger-in mt-8 flex flex-wrap gap-3" style={{ animationDelay: "120ms" }}>
-          <Button size="lg">
+          <Link
+            href="/explore-studio"
+            className={cn(buttonVariants({ size: "lg" }), "btn-alive")}
+          >
             Explore Studios
             <ArrowRight className="size-4" />
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-white/15 bg-black/30 text-photo hover:bg-white/10 hover:text-photo"
-          >
-            <Play className="size-3.5 fill-current" />
-            How It Works
-          </Button>
+          </Link>
+          <HowItWorksDialog />
         </div>
 
         {/* 3. Search bar after */}
-        <form
-          className="stagger-in mt-12 flex max-w-4xl flex-col gap-2 rounded-xl border border-white/10 bg-black/50 p-2 backdrop-blur-md md:flex-row md:items-center md:gap-0"
-          style={{ animationDelay: "220ms" }}
-        >
-          <div className="relative flex-1">
-            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-primary" />
-            <Input
-              placeholder="Search studios or cities..."
-              className="h-10 border-0 bg-transparent pl-9 text-photo shadow-none placeholder:text-photo-muted/70 focus-visible:ring-0 dark:bg-transparent"
-            />
-          </div>
-
-          <div className="hidden h-8 w-px bg-white/10 md:block" />
-
-          <Select defaultValue={categories[0]}>
-            <SelectTrigger
-              aria-label="Category"
-              className="h-10 w-full justify-between border-0 bg-transparent px-4 text-sm text-photo shadow-none focus-visible:ring-0 md:w-48 dark:bg-transparent dark:hover:bg-white/5 [&_svg]:text-photo-muted"
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent
-              sideOffset={14}
-              className="min-w-48 rounded-xl border-border bg-popover p-1.5 text-popover-foreground shadow-2xl"
-            >
-              {categories.map((c) => (
-                <SelectItem
-                  key={c}
-                  value={c}
-                  className="rounded-md py-2 text-xs focus:bg-accent focus:text-accent-foreground"
-                >
-                  {c}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <div className="hidden h-8 w-px bg-white/10 md:block" />
-
-          <div className="relative md:w-48">
-            <CalendarDays className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-primary" />
-            <Input
-              type="date"
-              aria-label="Date"
-              className="h-10 cursor-pointer border-0 bg-transparent pl-9 text-photo shadow-none [color-scheme:dark] focus-visible:ring-0 dark:bg-transparent [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:size-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0"
-            />
-          </div>
-
-          <Button type="submit" size="lg" className="md:ml-2">
-            Search
-          </Button>
-        </form>
+        <HomeSearch />
 
         {/* 4. Stats last */}
         <dl
