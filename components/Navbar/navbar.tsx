@@ -3,21 +3,35 @@
 import { Bell, Moon, Plus, Sun } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useTheme } from "next-themes"
 import * as React from "react"
 
 import logo from "@/assets/logo.svg"
-import { Container } from "@/components/Container/Container"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 import { Button } from "@/components/ui/button"
+
 import { navLinks } from "@/lib/Site-data"
 import { cn } from "@/lib/utils"
+import { Container } from "../Container/Container"
+import { useSmoothTheme } from "@/lib/Use-smooth-theme"
 
 export function Navbar({ active = "Home" }: { active?: string }) {
-  const { resolvedTheme, setTheme } = useTheme()
-  const isDark = resolvedTheme !== "light"
+  const { resolvedTheme, toggleTheme } = useSmoothTheme()
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
   const [scrolled, setScrolled] = React.useState(false)
+  const isDark = mounted ? resolvedTheme === "dark" : true
+
+  // Over the photo (top of page) text is always light.
+  // After scrolling the bar gets the page background, so text follows the theme.
+  const fg = scrolled ? "text-foreground" : "text-photo"
+  const fgMuted = scrolled ? "text-muted-foreground" : "text-photo-muted"
+  const ghost = scrolled
+    ? "text-foreground hover:bg-accent hover:text-foreground"
+    : "text-photo hover:bg-white/10 hover:text-photo"
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -40,10 +54,10 @@ export function Navbar({ active = "Home" }: { active?: string }) {
         <Link href="/" className="flex items-center gap-2.5">
           <Image src={logo} alt="SetSpace logo" priority className="size-9" />
           <span className="leading-none">
-            <span className="block font-heading text-lg font-bold text-photo">
+            <span className={cn("block font-heading text-lg font-bold", fg)}>
               Set<span className="text-primary">Space</span>
             </span>
-            <span className="mt-1 block text-[10px] text-photo-muted">
+            <span className={cn("mt-1 block text-[10px]", fgMuted)}>
               Create. Rent. Inspire.
             </span>
           </span>
@@ -57,9 +71,7 @@ export function Navbar({ active = "Home" }: { active?: string }) {
               href={link.href}
               className={cn(
                 "border-b-2 border-transparent pb-0.5 text-xs font-medium transition-colors hover:text-primary",
-                active === link.label
-                  ? "border-primary text-primary"
-                  : "text-photo"
+                active === link.label ? "border-primary text-primary" : fg
               )}
             >
               {link.label}
@@ -73,8 +85,8 @@ export function Navbar({ active = "Home" }: { active?: string }) {
             variant="ghost"
             size="icon"
             aria-label="Toggle theme"
-            className="text-photo hover:bg-white/10 hover:text-photo"
-            onClick={() => setTheme(isDark ? "light" : "dark")}
+            className={ghost}
+            onClick={toggleTheme}
           >
             {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </Button>
@@ -83,7 +95,7 @@ export function Navbar({ active = "Home" }: { active?: string }) {
             variant="ghost"
             size="icon"
             aria-label="Notifications"
-            className="relative text-photo hover:bg-white/10 hover:text-photo"
+            className={cn("relative", ghost)}
           >
             <Bell className="size-4" />
             <span className="absolute top-1 right-1 flex size-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-primary-foreground">
@@ -91,8 +103,17 @@ export function Navbar({ active = "Home" }: { active?: string }) {
             </span>
           </Button>
 
-          <Avatar className="size-8 border border-border bg-black/40">
-            <AvatarFallback className="bg-transparent text-[10px] font-semibold text-photo">
+          <Avatar
+            className={cn(
+              "size-8 border",
+              scrolled
+                ? "border-border bg-secondary"
+                : "border-white/20 bg-black/40"
+            )}
+          >
+            <AvatarFallback
+              className={cn("bg-transparent text-[10px] font-semibold", fg)}
+            >
               AC
             </AvatarFallback>
           </Avatar>

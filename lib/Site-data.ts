@@ -1,6 +1,8 @@
+import { CalendarClock, CircleCheck, Sparkles, WandSparkles } from "lucide-react"
 import studioArt from "@/assets/studio-art.jpg"
 import studioContent from "@/assets/studio-content.jpg"
 import studioFilm from "@/assets/studio-film.jpg"
+import studioLoft from "@/assets/studio-loft.jpg"
 import studioMusic from "@/assets/studio-music.jpg"
 import studioPhoto from "@/assets/studio-photo.jpg"
 import studioPodcast from "@/assets/studio-podcast.jpg"
@@ -64,5 +66,83 @@ export const disciplines = [
     description: "Ready-styled creator sets",
     image: studioContent,
     href: "/studios?category=content",
+  },
+]
+
+export const featuredStudios = [
+  { id: 1, name: "The Aurora Studio", category: "Photo Studio", location: "New York, USA", price: 80, rating: 4.8, reviews: 245, image: studioPhoto },
+  { id: 2, name: "Velvet Sound Suite", category: "Music Suite", location: "Nashville, USA", price: 95, rating: 4.9, reviews: 302, image: studioMusic },
+  { id: 3, name: "Brick & Shadow Loft", category: "Photo Studio", location: "New York, USA", price: 110, rating: 4.9, reviews: 211, image: studioLoft },
+  { id: 4, name: "Lumen Film Stage", category: "Film Stage", location: "Los Angeles, USA", price: 120, rating: 4.7, reviews: 189, image: studioFilm },
+  { id: 5, name: "Hearth Creator Set", category: "Content Studio", location: "Austin, USA", price: 55, rating: 4.7, reviews: 156, image: studioContent },
+  { id: 6, name: "Echo Podcast Room", category: "Podcast Room", location: "Chicago, USA", price: 60, rating: 4.8, reviews: 120, image: studioPodcast },
+]
+
+export const whyFeatures = [
+  {
+    icon: WandSparkles,
+    title: "Curated Creative Spaces",
+    description:
+      "Every studio is reviewed for light, sound and the gear you actually need.",
+  },
+  {
+    icon: CalendarClock,
+    title: "Flexible Hourly Booking",
+    description:
+      "Book a single hour for a voiceover or a full week for a feature.",
+  },
+  {
+    icon: CircleCheck,
+    title: "Verified Studio Hosts",
+    description:
+      "Hosts are identity-checked and rated by real creators.",
+  },
+  {
+    icon: Sparkles,
+    title: "Simple Booking Experience",
+    description:
+      "Transparent pricing and instant requests. No email ping-pong.",
+  },
+]
+
+export const steps = [
+  {
+    title: "Discover",
+    description:
+      "Browse curated studios by discipline, city, price and amenities.",
+  },
+  {
+    title: "Book",
+    description:
+      "Pick your date and hours. See the full price before you request.",
+  },
+  {
+    title: "Create",
+    description:
+      "Arrive, set up and make your best work. The space is yours.",
+  },
+]
+
+export const testimonials = [
+  {
+    quote:
+      "SetSpace made finding a cyc studio in Brooklyn take minutes, not days. The listings look exactly like the real rooms.",
+    name: "Sarah Kim",
+    role: "Fashion Photographer",
+    initials: "SK",
+  },
+  {
+    quote:
+      "My suite went from half-empty to booked most weekends. Requests are easy to manage from my phone.",
+    name: "Marcus Hale",
+    role: "Studio Host, Nashville",
+    initials: "MH",
+  },
+  {
+    quote:
+      "I book by the hour for every guest recording. Transparent pricing and zero back-and-forth emails.",
+    name: "Priya Shah",
+    role: "Podcast Producer",
+    initials: "PS",
   },
 ]

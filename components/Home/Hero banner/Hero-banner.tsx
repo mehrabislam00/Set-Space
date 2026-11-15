@@ -2,7 +2,6 @@ import { ArrowRight, CalendarDays, Play, Search } from "lucide-react"
 import Image from "next/image"
 
 import heroImage from "@/assets/hero-studio.jpg"
-import { Container } from "@/components/Container/Container"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { categories, stats } from "@/lib/Site-data"
+import { Container } from "@/components/Container/Container"
 
 export function HeroBanner() {
   return (
@@ -98,11 +98,11 @@ export function HeroBanner() {
           <div className="hidden h-8 w-px bg-white/10 md:block" />
 
           <div className="relative md:w-48">
-            <CalendarDays className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-primary" />
+            <CalendarDays className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-primary" />
             <Input
               type="date"
               aria-label="Date"
-              className="h-10 border-0 bg-transparent pl-9 text-photo shadow-none focus-visible:ring-0 dark:bg-transparent [&::-webkit-calendar-picker-indicator]:invert"
+              className="h-10 cursor-pointer border-0 bg-transparent pl-9 text-photo shadow-none [color-scheme:dark] focus-visible:ring-0 dark:bg-transparent [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:size-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0"
             />
           </div>
 

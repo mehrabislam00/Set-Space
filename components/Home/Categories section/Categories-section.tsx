@@ -4,7 +4,7 @@ import Link from "next/link"
 
 
 import { disciplines } from "@/lib/Site-data"
-import { Container } from "../Container/Container"
+import { Container } from "../../Container/Container"
 
 export function CategoriesSection() {
   return (

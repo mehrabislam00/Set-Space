@@ -1,0 +1,18 @@
+/* Soft fade when switching light/dark.
+   The `theme-transition` class is added to <html> only for ~0.6s while toggling
+   (see hooks/use-smooth-theme.ts), so normal hover/scroll behavior is untouched. */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition:
+      background-color 0.45s ease,
+      color 0.45s ease,
+      border-color 0.45s ease,
+      fill 0.45s ease,
+      stroke 0.45s ease,
+      box-shadow 0.45s ease !important;
+    transition-delay: 0s !important;
+  }
+}

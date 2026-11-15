@@ -12,6 +12,7 @@ function ThemeProvider({
       attribute="class"
       defaultTheme="dark"
       enableSystem={false}
+      scriptProps={{ type: "application/json" }}
       disableTransitionOnChange
       {...props}
     >
