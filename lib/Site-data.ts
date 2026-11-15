@@ -688,4 +688,7 @@ export const notifications: NotificationItem[] = [
 /* ---------- Auth pages ---------- */
 
 /** Routes that render without the Navbar and Footer (see components/Layout/Site-chrome.tsx). */
-export const authRoutes = ["/login", "/signup", "/forgot-password"]
+export const authRoutes = ["/login", "/register", "/forgot-password"]
+
+/** Shortest password the demo auth forms accept. */
+export const MIN_PASSWORD = 6

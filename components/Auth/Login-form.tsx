@@ -4,18 +4,17 @@ import { Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import * as React from "react"
-import { FcGoogle } from "react-icons/fc"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { PasswordInput } from "./Password-input"
 
+import { PasswordInput } from "./Password-input"
+import { SocialAuth } from "./Social-auth"
+import { MIN_PASSWORD } from "@/lib/Site-data"
 
 type Errors = { email?: string; password?: string }
-
-const MIN_PASSWORD = 6
 
 /** Email / password sign-in. Demo only: replace the TODOs with your auth calls. */
 export function LoginForm() {
@@ -45,22 +44,7 @@ export function LoginForm() {
 
   return (
     <div className="stagger-in mt-8" style={{ animationDelay: "120ms" }}>
-      <Button
-        type="button"
-        variant="outline"
-        size="lg"
-        className="btn-alive h-11 w-full rounded-xl text-xs font-semibold"
-        // TODO: start the Google OAuth flow
-      >
-        <FcGoogle className="size-4" />
-        Continue with Google
-      </Button>
-
-      <div className="my-6 flex items-center gap-3 text-[11px] text-muted-foreground">
-        <span className="h-px flex-1 bg-border" />
-        or continue with email
-        <span className="h-px flex-1 bg-border" />
-      </div>
+      <SocialAuth />
 
       <form onSubmit={onSubmit} noValidate className="space-y-5">
         <div className="space-y-2">
@@ -96,7 +80,7 @@ export function LoginForm() {
             autoComplete="current-password"
             placeholder="••••••••"
             value={password}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             aria-invalid={!!errors.password}
             aria-describedby={errors.password ? "password-error" : undefined}
             className="h-10 rounded-xl"
@@ -117,6 +101,7 @@ export function LoginForm() {
               id="remember"
               checked={remember}
               onCheckedChange={(v) => setRemember(v === true)}
+              className="rounded-full"
             />
             Remember me
           </Label>
@@ -142,7 +127,7 @@ export function LoginForm() {
       <p className="mt-6 text-center text-xs text-muted-foreground">
         Don&apos;t have an account?{" "}
         <Link
-          href="/signup"
+          href="/register"
           className="font-bold text-primary underline-offset-4 transition-opacity hover:underline hover:opacity-80"
         >
           Register
