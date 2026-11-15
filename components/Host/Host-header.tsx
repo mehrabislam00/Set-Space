@@ -16,16 +16,7 @@ export function HostHeader() {
         </p>
       </div>
 
-      <Link
-        href="/host/my-studios/add-studio"
-        className={cn(
-          buttonVariants({ size: "lg" }),
-          "btn-alive h-9 px-4 text-xs font-semibold"
-        )}
-      >
-        <Plus className="size-3.5" />
-        Add Studio
-      </Link>
+     
     </header>
   )
 }
