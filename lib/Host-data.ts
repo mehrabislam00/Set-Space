@@ -63,7 +63,7 @@ export const hostNav: NavItem[] = [
     icon: Inbox,
     badge: hostRequests.length,
   },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Settings", href: "/host/settings", icon: Settings },
 ]
 
 // TODO: replace with the host's real numbers

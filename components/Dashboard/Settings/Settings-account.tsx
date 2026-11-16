@@ -5,7 +5,12 @@ import { dashboardUser } from "@/lib/Dashboard-data"
 import { cn } from "@/lib/utils"
 import { SettingsSection } from "./Settings-section"
 
-export function SettingsAccount() {
+export function SettingsAccount({
+  showEditProfile = true,
+}: {
+  /** Hide the "Edit profile" link where the profile page isn't part of the section (e.g. Hosting). */
+  showEditProfile?: boolean
+}) {
   return (
     <SettingsSection
       id="account"
@@ -21,15 +26,17 @@ export function SettingsAccount() {
             {dashboardUser.email}
           </p>
         </div>
-        <Link
-          href="/dashboard/profile"
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "btn-alive h-8 shrink-0 rounded-lg px-3 text-[11px] font-semibold"
-          )}
-        >
-          Edit profile
-        </Link>
+        {showEditProfile && (
+          <Link
+            href="/dashboard/profile"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "btn-alive h-8 shrink-0 rounded-lg px-3 text-[11px] font-semibold"
+            )}
+          >
+            Edit profile
+          </Link>
+        )}
       </div>
     </SettingsSection>
   )
