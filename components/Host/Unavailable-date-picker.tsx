@@ -16,6 +16,7 @@ type UnavailableDatePickerProps = {
   id?: string
   value: string
   onChange: (value: string) => void
+  className?: string
 }
 
 /** Single-date picker that keeps the form's `"yyyy-MM-dd"` value. */
@@ -23,6 +24,7 @@ export function UnavailableDatePicker({
   id,
   value,
   onChange,
+  className,
 }: UnavailableDatePickerProps) {
   const [open, setOpen] = React.useState(false)
   const [direction, setDirection] = React.useState<"next" | "prev">("next")
@@ -55,7 +57,10 @@ export function UnavailableDatePicker({
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger
         id={id}
-        className="group flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-input bg-transparent px-3 text-sm outline-none transition-all duration-200 hover:border-primary/60 hover:bg-primary/[0.03] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 data-[popup-open]:border-primary/60 data-[popup-open]:ring-3 data-[popup-open]:ring-primary/15"
+        className={cn(
+          "group flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-input bg-transparent px-3 text-sm outline-none transition-all duration-200 hover:border-primary/60 hover:bg-primary/[0.03] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 data-[popup-open]:border-primary/60 data-[popup-open]:ring-3 data-[popup-open]:ring-primary/15",
+          className
+        )}
       >
         <span className="flex min-w-0 items-center gap-2">
           <CalendarDays

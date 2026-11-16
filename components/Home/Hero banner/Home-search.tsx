@@ -1,9 +1,10 @@
 "use client"
 
-import { CalendarDays, Search } from "lucide-react"
+import { Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 import * as React from "react"
 
+import { UnavailableDatePicker } from "@/components/Host/Unavailable-date-picker"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -87,15 +88,12 @@ export function HomeSearch() {
 
       <div className="hidden h-8 w-px bg-white/10 md:block" />
 
-      <div className="relative md:w-48">
-        <CalendarDays className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-primary" />
-        <Input
-          type="date"
-          name="date"
+      <div className="md:mx-2 md:w-48">
+        <UnavailableDatePicker
+          id="search-date"
           value={date}
-          onChange={(e) => setDate(e.target.value)}
-          aria-label="Date"
-          className="h-10 cursor-pointer border-0 bg-transparent pl-9 text-photo shadow-none [color-scheme:dark] focus-visible:ring-0 dark:bg-transparent [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:size-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0"
+          onChange={setDate}
+          className="!border-white/20  hover:!border-white/30 data-[popup-open]:!border-white/30"
         />
       </div>
 
