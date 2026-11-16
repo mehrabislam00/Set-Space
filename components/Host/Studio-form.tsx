@@ -369,7 +369,7 @@ export function StudioForm({
         </div>
       </AddStudioSection>
 
-      <div className="sticky bottom-0 z-20 flex flex-wrap items-center justify-end gap-3 border-t border-border bg-background/80 py-4">
+      <div className="sticky bottom-0 z-20 flex flex-wrap items-center justify-end gap-3 border-t border-border bg-background/80 px-4 py-4 backdrop-blur-sm">
         <Button
           type="button"
           variant="ghost"
