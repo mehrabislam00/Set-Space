@@ -15,31 +15,27 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { buttonVariants } from "@/components/ui/button"
-import { hostStudios, type HostStudio } from "@/lib/Host-data"
+import type { HostStudio } from "@/lib/Host-data"
+import {
+  deleteHostStudio,
+  setHostStudioStatus,
+  useHostStudios,
+} from "@/lib/Studio-store"
 import { cn } from "@/lib/utils"
 import { MyStudiosHeader } from "./My-studios-header"
 import { StudioRow } from "./Studio-row"
 
-
 /** Header + listings for /host/my-studios, with publish toggle and delete confirmation. */
 export function MyStudios() {
-  const [studios, setStudios] = React.useState(hostStudios)
+  const studios = useHostStudios()
   const [target, setTarget] = React.useState<HostStudio | null>(null)
 
   function toggle(studio: HostStudio, published: boolean) {
-    // TODO: call your publish / unpublish API
-    setStudios((list) =>
-      list.map((s) =>
-        s.id === studio.id
-          ? { ...s, status: published ? "Published" : "Draft" }
-          : s
-      )
-    )
+    setHostStudioStatus(studio.id, published ? "Published" : "Draft")
   }
 
   function confirmDelete() {
-    // TODO: call your delete-listing API
-    if (target) setStudios((list) => list.filter((s) => s.id !== target.id))
+    if (target) deleteHostStudio(target.id)
     setTarget(null)
   }
 
@@ -87,8 +83,8 @@ export function MyStudios() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this studio?</AlertDialogTitle>
             <AlertDialogDescription>
-              {target?.name} will be removed from your listings. This
-              can&apos;t be undone.
+              {target?.name} will be removed from your listings. This can&apos;t
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

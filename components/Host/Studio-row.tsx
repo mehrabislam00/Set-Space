@@ -110,9 +110,7 @@ export function StudioRow({ studio, onToggle, onDelete }: StudioRowProps) {
               View
             </DropdownMenuItem>
             <DropdownMenuItem
-              render={
-                <Link href={`/host/my-studios/add-studio?edit=${studio.id}`} />
-              }
+              render={<Link href={`/host/my-studios/edit?id=${studio.id}`} />}
               className={itemClass}
             >
               <Pencil className="size-4" strokeWidth={1.5} />
