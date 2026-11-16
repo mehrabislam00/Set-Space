@@ -10,6 +10,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import type { StaticImageData } from "next/image"
+import studioContent from "@/assets/studio-content.jpg"
 import studioLoft from "@/assets/studio-loft.jpg"
 
 import type { NavItem } from "@/lib/Dashboard-data"
@@ -48,6 +49,44 @@ export const hostRequests: HostRequest[] = [
     guests: 3,
     total: 270,
     image: studioLoft,
+  },
+]
+
+/* ---------- My Studios (/host/my-studios) ---------- */
+
+export type HostStudioStatus = "Published" | "Draft"
+
+export type HostStudio = {
+  id: string
+  studioId?: number // id from `exploreStudios`; only set once the listing is live
+  name: string
+  category: string // singular badge text, e.g. "Photo Studio"
+  city: string
+  price: number
+  status: HostStudioStatus
+  image: StaticImageData
+}
+
+// TODO: replace with the host's real listings
+export const hostStudios: HostStudio[] = [
+  {
+    id: "studio-1",
+    studioId: 4,
+    name: "Moonlight Loft",
+    category: "Photo Studio",
+    city: "New York",
+    price: 90,
+    status: "Published",
+    image: studioLoft,
+  },
+  {
+    id: "studio-2",
+    name: "The Sunroom Set",
+    category: "Content Studio",
+    city: "Brooklyn",
+    price: 65,
+    status: "Draft",
+    image: studioContent,
   },
 ]
 
