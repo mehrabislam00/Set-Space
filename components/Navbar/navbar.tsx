@@ -189,11 +189,13 @@ export function Navbar() {
           <NotificationsMenu className={ghost} />
 
           <UserMenu scrolled={solid} className="hidden sm:block" />
-
-          <Button size="sm" className="ml-1 hidden text-xs sm:inline-flex">
+           <Link href="/host/my-studios/add-studio">
+           <Button size="sm" className="ml-1 hidden text-xs sm:inline-flex">
             Add Studio
             <Plus className="size-3.5" />
           </Button>
+           </Link>  
+          
 
           <MobileMenu className={ghost} />
         </div>

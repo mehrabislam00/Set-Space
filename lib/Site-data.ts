@@ -278,7 +278,7 @@ export const footerColumns = [
       { label: "List Your Studio", href: "/host/my-studios/add-studio" },
       { label: "Host Dashboard", href: "/host" },
       { label: "Booking Requests", href: "/host/bookings-request" },
-      { label: "Help & Support", href: "/support" },
+      { label: "Help & Support", href: "/frequenty-asked-questions" },
     ],
   },
 ]
