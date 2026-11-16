@@ -7,13 +7,7 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { TimePicker } from "@/components/Host/Time-picker"
 
 type BookingCardProps = {
   price: number
@@ -26,17 +20,27 @@ type BookingCardProps = {
 const OPEN_HOUR = 6
 const CLOSE_HOUR = 23
 
-function hourLabel(h: number) {
-  return `${h % 12 || 12}:00 ${h < 12 ? "AM" : "PM"}`
+const OPEN_MINUTE = OPEN_HOUR * 60
+const CLOSE_MINUTE = CLOSE_HOUR * 60
+
+function parseTime(value: string) {
+  const [hours, minutes] = value.split(":").map(Number)
+  return (hours || 0) * 60 + (minutes || 0)
 }
 
-const hourOf = (label: string) =>
-  Array.from({ length: CLOSE_HOUR - OPEN_HOUR + 1 }, (_, i) => OPEN_HOUR + i).find(
-    (h) => hourLabel(h) === label
-  ) ?? OPEN_HOUR
+function timeValue(minutes: number) {
+  const hours = Math.floor(minutes / 60)
+  const remainder = minutes % 60
+  return `${String(hours).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`
+}
 
-const startHours = Array.from({ length: CLOSE_HOUR - OPEN_HOUR }, (_, i) => OPEN_HOUR + i)
-const endHours = Array.from({ length: CLOSE_HOUR - OPEN_HOUR }, (_, i) => OPEN_HOUR + 1 + i)
+function timeLabel(value: string) {
+  const minutes = parseTime(value)
+  const hours = Math.floor(minutes / 60)
+  return `${hours % 12 || 12}:${String(minutes % 60).padStart(2, "0")} ${
+    hours < 12 ? "AM" : "PM"
+  }`
+}
 
 /** Sticky booking panel: date, time range, guests and a live price breakdown. */
 export function BookingCard({
@@ -48,12 +52,16 @@ export function BookingCard({
 }: BookingCardProps) {
   const [date, setDate] = React.useState<Date | undefined>()
   const [calendarOpen, setCalendarOpen] = React.useState(false)
-  const [start, setStart] = React.useState(9)
-  const [end, setEnd] = React.useState(9 + minHours)
+  const [start, setStart] = React.useState("09:00")
+  const [end, setEnd] = React.useState(
+    timeValue(Math.min(9 * 60 + minHours * 60, CLOSE_MINUTE))
+  )
   const [guests, setGuests] = React.useState(2)
   const [requested, setRequested] = React.useState(false)
 
-  const hours = end - start
+  const startMinutes = parseTime(start)
+  const endMinutes = parseTime(end)
+  const hours = Math.max(endMinutes - startMinutes, 0) / 60
   const subtotal = price * Math.max(hours, 0)
   const fee = Math.round(subtotal * serviceFeeRate)
   const total = subtotal + fee
@@ -61,10 +69,12 @@ export function BookingCard({
   const tooShort = hours < minHours
   const canRequest = !!date && !tooShort
 
-  function onStartChange(label: string) {
-    const next = hourOf(label)
-    setStart(next)
-    if (end - next < minHours) setEnd(Math.min(next + minHours, CLOSE_HOUR))
+  function onStartChange(value: string) {
+    const next = Math.min(Math.max(parseTime(value), OPEN_MINUTE), CLOSE_MINUTE)
+    setStart(timeValue(next))
+    if (endMinutes - next < minHours * 60) {
+      setEnd(timeValue(Math.min(next + minHours * 60, CLOSE_MINUTE)))
+    }
   }
 
   function onRequest() {
@@ -95,7 +105,7 @@ export function BookingCard({
             Request sent
           </h3>
           <p className="max-w-56 text-xs leading-relaxed text-muted-foreground">
-            {date && format(date, "PPP")}, {hourLabel(start)} – {hourLabel(end)}.
+            {date && format(date, "PPP")}, {timeLabel(start)} – {timeLabel(end)}.
             The host will confirm shortly. You won&apos;t be charged until then.
           </p>
           <Button
@@ -140,40 +150,29 @@ export function BookingCard({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <p className="text-[11px] text-muted-foreground">Start</p>
-                <Select
-                  value={hourLabel(start)}
-                  onValueChange={(v) => v && onStartChange(v)}
-                >
-                  <SelectTrigger aria-label="Start time" className="h-10 w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent sideOffset={8} className="rounded-xl border-border bg-popover p-1.5">
-                    {startHours.map((h) => (
-                      <SelectItem key={h} value={hourLabel(h)} className="rounded-md py-2 text-xs">
-                        {hourLabel(h)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <TimePicker
+                  ariaLabel="Start time"
+                  value={start}
+                  onChange={onStartChange}
+                />
               </div>
 
               <div className="space-y-1.5">
                 <p className="text-[11px] text-muted-foreground">End</p>
-                <Select
-                  value={hourLabel(end)}
-                  onValueChange={(v) => v && setEnd(hourOf(v))}
-                >
-                  <SelectTrigger aria-label="End time" className="h-10 w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent sideOffset={8} className="rounded-xl border-border bg-popover p-1.5">
-                    {endHours.map((h) => (
-                      <SelectItem key={h} value={hourLabel(h)} className="rounded-md py-2 text-xs">
-                        {hourLabel(h)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <TimePicker
+                  ariaLabel="End time"
+                  value={end}
+                  onChange={(value) =>
+                    setEnd(
+                      timeValue(
+                        Math.min(
+                          Math.max(parseTime(value), OPEN_MINUTE),
+                          CLOSE_MINUTE
+                        )
+                      )
+                    )
+                  }
+                />
               </div>
             </div>
 
