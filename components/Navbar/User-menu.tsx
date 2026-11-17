@@ -13,8 +13,9 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import * as React from "react"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,10 +23,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { authClient, type SessionUser } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
-// TODO: replace with the signed-in user
-const user = { name: "Alex Carter", email: "alex@example.com", initials: "AC" }
+/** First letters of the first two words of a name, e.g. "Alex Carter" → "AC". */
+function getInitials({ name, email }: Pick<SessionUser, "name" | "email">) {
+  const source = name.trim() || email.split("@")[0] || "User"
+  const parts = source.split(/\s+/).filter(Boolean)
+
+  return (
+    parts
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase() || "U"
+  )
+}
 
 const groups = [
   [
@@ -48,17 +61,28 @@ const itemClass =
 /** Avatar button + account dropdown (desktop navbar).
  *  `scrolled` mirrors the navbar so the avatar matches the bar over the photo. */
 export function UserMenu({
+  user,
   scrolled,
   className,
 }: {
+  user: SessionUser
   scrolled: boolean
   className?: string
 }) {
   const router = useRouter()
+  const [signingOut, setSigningOut] = React.useState(false)
+  const initials = getInitials(user)
 
-  function signOut() {
-    // TODO: clear the session with your auth provider first
-    router.push("/login")
+  async function signOut() {
+    if (signingOut) return
+    setSigningOut(true)
+
+    try {
+      await authClient.signOut()
+    } finally {
+      router.push("/login")
+      router.refresh()
+    }
   }
 
   return (
@@ -78,13 +102,16 @@ export function UserMenu({
               : "border-white/20 bg-black/40"
           )}
         >
+          {user.image && (
+            <AvatarImage src={user.image} alt="" className="rounded-full" />
+          )}
           <AvatarFallback
             className={cn(
               "bg-transparent text-[11px] font-semibold",
               scrolled ? "text-foreground" : "text-photo"
             )}
           >
-            {user.initials}
+            {initials}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -98,7 +125,9 @@ export function UserMenu({
           <p className="font-heading text-sm font-bold text-foreground">
             {user.name}
           </p>
-          <p className="mt-0.5 text-xs text-muted-foreground">{user.email}</p>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">
+            {user.email}
+          </p>
         </div>
 
         {groups.map((group, i) => (
@@ -120,6 +149,7 @@ export function UserMenu({
         <DropdownMenuItem
           variant="destructive"
           onClick={signOut}
+          disabled={signingOut}
           className={itemClass}
         >
           <LogOut className="size-4" strokeWidth={1.5} />

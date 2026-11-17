@@ -9,6 +9,7 @@ import logo from "@/assets/logo.svg"
 
 import { Button } from "@/components/ui/button"
 
+import { authClient } from "@/lib/auth-client"
 import { navLinks, solidNavRoutes } from "@/lib/Site-data"
 import { cn } from "@/lib/utils"
 import { Container } from "../Container/Container"
@@ -22,6 +23,8 @@ import { NotificationsMenu } from "../Notifications/Notifications-menu"
 export function Navbar() {
   const { resolvedTheme, toggleTheme } = useSmoothTheme()
   const pathname = usePathname()
+  const { data: session, isPending } = authClient.useSession()
+  const user = session?.user ?? null
   const mounted = React.useSyncExternalStore(
     () => () => {},
     () => true,
@@ -54,7 +57,8 @@ export function Navbar() {
   const initialMeasureComplete = React.useRef(false)
 
   const isActive = React.useCallback(
-    (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href)),
+    (href: string) =>
+      href === "/" ? pathname === "/" : pathname.startsWith(href),
     [pathname]
   )
 
@@ -99,7 +103,6 @@ export function Navbar() {
     return () => window.removeEventListener("resize", measureIndicator)
   }, [measureIndicator])
   // ----------------------------------------------------------------------
-
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -186,18 +189,43 @@ export function Navbar() {
             )}
           </Button>
 
-          <NotificationsMenu className={ghost} />
+          {isPending ? (
+            <span
+              aria-hidden
+              className="hidden animate-pulse items-center gap-2 sm:flex"
+            >
+              <span className="size-8 rounded-full bg-foreground/10" />
+              <span className="size-9 rounded-full bg-foreground/10" />
+            </span>
+          ) : user ? (
+            <>
+              <NotificationsMenu className={ghost} />
+              <UserMenu
+                user={user}
+                scrolled={solid}
+                className="hidden sm:block"
+              />
+            </>
+          ) : (
+            <Link href="/login" className="hidden sm:block">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn(ghost, "ml-1 text-xs font-semibold")}
+              >
+                Sign In
+              </Button>
+            </Link>
+          )}
 
-          <UserMenu scrolled={solid} className="hidden sm:block" />
-           <Link href="/host/my-studios/add-studio">
-           <Button size="sm" className="ml-1 hidden text-xs sm:inline-flex">
-            Add Studio
-            <Plus className="size-3.5" />
-          </Button>
-           </Link>  
-          
+          <Link href="/host/my-studios/add-studio">
+            <Button size="sm" className="ml-1 hidden text-xs sm:inline-flex">
+              Add Studio
+              <Plus className="size-3.5" />
+            </Button>
+          </Link>
 
-          <MobileMenu className={ghost} />
+          <MobileMenu user={user} className={ghost} />
         </div>
       </Container>
     </header>

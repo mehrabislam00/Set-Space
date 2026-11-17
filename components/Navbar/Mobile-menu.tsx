@@ -8,6 +8,7 @@ import {
   Heart,
   Inbox,
   LayoutDashboard,
+  LogIn,
   LogOut,
   Menu,
   Moon,
@@ -15,6 +16,7 @@ import {
   Settings,
   Sun,
   User,
+  UserPlus,
   X,
 } from "lucide-react"
 import Image from "next/image"
@@ -31,12 +33,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { authClient, type SessionUser } from "@/lib/auth-client"
 import { navLinks } from "@/lib/Site-data"
 import { useSmoothTheme } from "@/lib/Use-smooth-theme"
 import { cn } from "@/lib/utils"
-
-// TODO: replace with the signed-in user
-const user = { name: "Alex Carter" }
 
 const accountLinks = [
   { label: "My Profile", href: "/dashboard/profile", icon: User },
@@ -52,8 +52,15 @@ const accountLinks = [
 
 /** Hamburger button + slide-in menu. Only visible below the `md` breakpoint.
  *  Pass the navbar's `ghost` classes as className. */
-export function MobileMenu({ className }: { className?: string }) {
+export function MobileMenu({
+  user,
+  className,
+}: {
+  user: SessionUser | null
+  className?: string
+}) {
   const [open, setOpen] = React.useState(false)
+  const [signingOut, setSigningOut] = React.useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const { resolvedTheme, toggleTheme } = useSmoothTheme()
@@ -67,6 +74,19 @@ export function MobileMenu({ className }: { className?: string }) {
   const close = () => setOpen(false)
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href)
+
+  async function signOut() {
+    if (signingOut) return
+    setSigningOut(true)
+    close()
+
+    try {
+      await authClient.signOut()
+    } finally {
+      router.push("/login")
+      router.refresh()
+    }
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -146,35 +166,62 @@ export function MobileMenu({ className }: { className?: string }) {
           <div className="mx-3 my-4 border-t border-border" />
 
           <p className="px-3 pb-2 text-[11px] tracking-wide text-muted-foreground uppercase">
-            {user.name}
+            {user ? user.name : "Account"}
           </p>
           <ul className="space-y-0.5">
-            {accountLinks.map(({ label, href, icon: Icon }) => (
-              <li key={label}>
-                <Link
-                  href={href}
-                  onClick={close}
-                  className="flex items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/60 hover:text-primary"
-                >
-                  <Icon className="size-4 text-primary" strokeWidth={1.5} />
-                  {label}
-                </Link>
-              </li>
-            ))}
-            <li>
-              <button
-                type="button"
-                onClick={() => {
-                  // TODO: clear the session with your auth provider first
-                  close()
-                  router.push("/login")
-                }}
-                className="flex w-full items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive transition-colors duration-200 hover:bg-destructive/10"
-              >
-                <LogOut className="size-4" strokeWidth={1.5} />
-                Sign Out
-              </button>
-            </li>
+            {user ? (
+              <>
+                {accountLinks.map(({ label, href, icon: Icon }) => (
+                  <li key={label}>
+                    <Link
+                      href={href}
+                      onClick={close}
+                      className="flex items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/60 hover:text-primary"
+                    >
+                      <Icon className="size-4 text-primary" strokeWidth={1.5} />
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <button
+                    type="button"
+                    onClick={signOut}
+                    disabled={signingOut}
+                    className="flex w-full items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive transition-colors duration-200 hover:bg-destructive/10 disabled:pointer-events-none disabled:opacity-50"
+                  >
+                    <LogOut className="size-4" strokeWidth={1.5} />
+                    Sign Out
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link
+                    href="/login"
+                    onClick={close}
+                    className="flex items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/60 hover:text-primary"
+                  >
+                    <LogIn className="size-4 text-primary" strokeWidth={1.5} />
+                    Sign In
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/register"
+                    onClick={close}
+                    className="flex items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/60 hover:text-primary"
+                  >
+                    <UserPlus
+                      className="size-4 text-primary"
+                      strokeWidth={1.5}
+                    />
+                    Create Account
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
 

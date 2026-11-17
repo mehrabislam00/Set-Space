@@ -6,3 +6,8 @@ export const authClient = createAuthClient({
 })
 
 export const { signIn, signUp, useSession } = authClient
+
+/** The signed-in user returned by Better Auth's session. */
+export type SessionUser = NonNullable<
+  ReturnType<typeof authClient.useSession>["data"]
+>["user"]
