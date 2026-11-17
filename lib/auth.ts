@@ -1,5 +1,4 @@
 import { betterAuth } from "better-auth"
-import { jwt } from "better-auth/plugins"
 
 import { mongodbAdapter } from "@better-auth/mongo-adapter"
 import { MongoClient } from "mongodb"
@@ -35,9 +34,7 @@ const client = new MongoClient(getMongoUri())
 const db = client.db("auth")
 
 export const auth = betterAuth({
-  plugins: [
-    jwt(),
-  ],
+  
 
   emailAndPassword: {
     enabled: true,
