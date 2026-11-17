@@ -9,37 +9,89 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { authClient } from "@/lib/auth-client"
+import { MIN_PASSWORD } from "@/lib/Site-data"
 
 import { PasswordInput } from "./Password-input"
 import { SocialAuth } from "./Social-auth"
-import { MIN_PASSWORD } from "@/lib/Site-data"
 
 type Errors = { email?: string; password?: string }
+type AuthError = { message?: string; code?: string; status?: number }
 
-/** Email / password sign-in. Demo only: replace the TODOs with your auth calls. */
+/** Email / password sign-in with validation and server error handling. */
 export function LoginForm() {
   const router = useRouter()
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [remember, setRemember] = React.useState(true)
   const [errors, setErrors] = React.useState<Errors>({})
+  const [formError, setFormError] = React.useState<string | null>(null)
   const [loading, setLoading] = React.useState(false)
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function clearError(field?: keyof Errors) {
+    setFormError(null)
+    if (field) {
+      setErrors((previous) =>
+        previous[field] ? { ...previous, [field]: undefined } : previous
+      )
+    }
+  }
+
+  function showServerError(error: AuthError) {
+    const message = error.message ?? ""
+
+    if (/invalid (email|password)|incorrect|unauthorized/i.test(message)) {
+      setFormError("Email or password is incorrect.")
+      return
+    }
+
+    if (error.status === 429) {
+      setFormError("Too many attempts. Please wait a moment and try again.")
+      return
+    }
+
+    setFormError(message || "Something went wrong. Please try again.")
+  }
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    if (loading) return
+    setFormError(null)
 
     const next: Errors = {}
-    if (!/^\S+@\S+\.\S+$/.test(email.trim()))
+    const normalizedEmail = email.trim().toLowerCase()
+
+    if (!normalizedEmail) next.email = "Enter your email address."
+    else if (!/^\S+@\S+\.\S+$/.test(normalizedEmail))
       next.email = "Enter a valid email address."
-    if (password.length < MIN_PASSWORD)
+    if (!password) next.password = "Enter your password."
+    else if (password.length < MIN_PASSWORD)
       next.password = `Password must be at least ${MIN_PASSWORD} characters.`
 
     setErrors(next)
     if (next.email || next.password) return
 
-    // TODO: call your sign-in API with { email, password, remember }
     setLoading(true)
-    window.setTimeout(() => router.push("/"), 700)
+    try {
+      const { error } = await authClient.signIn.email({
+        email: normalizedEmail,
+        password,
+        rememberMe: remember,
+      })
+
+      if (error) {
+        showServerError(error)
+        return
+      }
+
+      router.push("/")
+    } catch {
+      setFormError(
+        "We couldn't reach the server. Check your connection and try again."
+      )
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -58,13 +110,20 @@ export function LoginForm() {
             autoComplete="email"
             placeholder="you@studio.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value)
+              clearError("email")
+            }}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "email-error" : undefined}
             className="h-10 rounded-xl"
           />
           {errors.email && (
-            <p id="email-error" role="alert" className="text-[11px] text-destructive">
+            <p
+              id="email-error"
+              role="alert"
+              className="text-[11px] text-destructive"
+            >
               {errors.email}
             </p>
           )}
@@ -80,13 +139,20 @@ export function LoginForm() {
             autoComplete="current-password"
             placeholder="••••••••"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value)
+              clearError("password")
+            }}
             aria-invalid={!!errors.password}
             aria-describedby={errors.password ? "password-error" : undefined}
             className="h-10 rounded-xl"
           />
           {errors.password && (
-            <p id="password-error" role="alert" className="text-[11px] text-destructive">
+            <p
+              id="password-error"
+              role="alert"
+              className="text-[11px] text-destructive"
+            >
               {errors.password}
             </p>
           )}
@@ -113,6 +179,15 @@ export function LoginForm() {
           </Link>
         </div>
 
+        {formError && (
+          <p
+            role="alert"
+            className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-xs text-destructive"
+          >
+            {formError}
+          </p>
+        )}
+
         <Button
           type="submit"
           size="lg"
@@ -132,9 +207,6 @@ export function LoginForm() {
         >
           Register
         </Link>
-      </p>
-      <p className="mt-4 text-center text-[11px] text-muted-foreground">
-        Demo: any email + {MIN_PASSWORD}-character password works.
       </p>
     </div>
   )
