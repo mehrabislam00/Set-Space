@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "./theme.css"; /* all color values live here */
-@import "./theme-transition.css"; /* soft light/dark fade */
+@import "./Theme-transition.css"; /* soft light/dark fade */
 @import "./button-effects.css"; /* button hover effects */
 @import "./animations.css"; /* shared page/section entrance animations */
 
