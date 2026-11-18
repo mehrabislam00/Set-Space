@@ -1,376 +1,366 @@
-# SetSpace — Creative Studio Rental Marketplace
+<div align="center">
 
-\<p align="center">
-&#x20; \<strong>Discover. Book. Create.\</strong>
-\</p>
+# 🎬 SetSpace
 
-\<p align="center">   A modern marketplace connecting creative professionals with studios and creative spaces. \</p>
+### Creative Studio Rental Marketplace
 
-\<p align="center">   \<a href="[https://set-space-ten.vercel.app/](https://set-space-ten.vercel.app/)">Live Website\</a> ·   \<a href="[https://github.com/mehrabislam00/Set-Space](https://github.com/mehrabislam00/Set-Space)">Frontend Repository\</a> ·   \<a href="[https://github.com/mehrabislam00/set-space-backend](https://github.com/mehrabislam00/set-space-backend)">Backend Repository\</a> \</p>
+**Discover. Book. Create.**
+
+A modern full-stack marketplace connecting photographers, filmmakers, podcasters, musicians, and other creators with studios and creative spaces.
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-black?style=for-the-badge&logo=vercel)](https://set-space-ten.vercel.app/)
+[![Frontend](https://img.shields.io/badge/Frontend-Repo-181717?style=for-the-badge&logo=github)](https://github.com/mehrabislam00/Set-Space)
+[![Backend](https://img.shields.io/badge/Backend-Repo-181717?style=for-the-badge&logo=github)](https://github.com/mehrabislam00/set-space-backend)
+
+</div>
 
 ---
 
-## Overview
+## 📑 Table of Contents
 
-**SetSpace** is a full-stack creative studio rental marketplace designed to connect creators, photographers, filmmakers, podcasters, musicians, and other creative professionals with suitable studio spaces.
+- [Overview](#-overview)
+- [Live Demo](#-live-demo)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Available Scripts](#-available-scripts)
+- [Deployment](#-deployment)
+- [Project Scope](#-project-scope)
+- [Roadmap](#-roadmap)
+- [Repositories](#-repositories)
 
-The platform provides a centralized experience where users can discover creative studios, explore their facilities, check availability, and submit booking requests. Studio owners can also list their spaces, manage their listings, configure opening hours, and handle incoming booking requests.
+---
 
-SetSpace aims to make finding and renting creative spaces easier through an intuitive interface, organized studio listings, and dedicated dashboards for renters and hosts.
+## 🌟 Overview
 
-## Live Demo
+**SetSpace** makes finding and renting creative spaces simple. Renters can discover studios, explore facilities, check availability, and send booking requests. Hosts can list their spaces, set pricing and opening hours, and manage incoming requests, all from dedicated dashboards.
 
-**Explore SetSpace:** [https://set-space-ten.vercel.app/](https://set-space-ten.vercel.app/)
+| 🎨 For Creators | 🏠 For Hosts |
+| --- | --- |
+| Search and filter studios | List and manage studios |
+| Compare amenities, ratings, and hours | Set pricing, hours, and blackout dates |
+| Request bookings in a few clicks | Accept or reject booking requests |
+| Save favorites to a wishlist | Track performance and statistics |
 
-## Features
+## 🚀 Live Demo
 
-### Studio Discovery & Exploration
+👉 **[set-space-ten.vercel.app](https://set-space-ten.vercel.app/)**
 
-- Browse available creative studios.
-- Search studios by name and location.
-- Filter and sort listings based on relevant criteria.
-- Explore studios by creative categories.
-- View detailed studio information, photographs, amenities, and facilities.
-- Explore studio ratings, reviews, and opening hours.
-- Discover similar studio recommendations.
+<!-- Add screenshots here for a big visual boost:
+![Home](./docs/screenshots/home.png)
+![Studio Detail](./docs/screenshots/studio-detail.png)
+![Host Dashboard](./docs/screenshots/host-dashboard.png)
+-->
 
-### Booking Management
+## ✨ Features
 
-- Submit studio booking requests.
-- Select booking dates and time slots.
-- View booking details and booking status.
-- Track upcoming and previous bookings.
-- Manage booking requests through dedicated dashboards.
-- Receive booking-related notifications.
+<details open>
+<summary><b>🔍 Studio Discovery</b></summary>
 
-### User Dashboard
+- Browse all available creative studios
+- Search by name and location
+- Filter and sort listings
+- Explore by creative category
+- Detailed pages with photos, amenities, facilities, ratings, reviews, and opening hours
+- Similar studio recommendations
 
-- Personalized user dashboard.
-- Manage personal profile information.
-- Upload and update profile pictures.
-- View booking history and upcoming bookings.
-- Save favorite studios to a wishlist.
-- Manage notifications.
-- Customize account preferences and appearance settings.
+</details>
 
-### Host Dashboard
+<details open>
+<summary><b>📅 Booking Management</b></summary>
 
-- Dedicated host dashboard.
-- Create and manage studio listings.
-- Edit existing studio information.
-- Upload studio photographs.
-- Configure studio pricing and opening hours.
-- Manage studio availability and unavailable dates.
-- Publish or maintain studio listings.
-- Review incoming booking requests.
-- Accept or reject booking requests.
-- Monitor studio performance and booking statistics.
+- Submit booking requests with date and time-slot selection
+- View booking details and status
+- Track upcoming and past bookings
+- Booking-related notifications
 
-### Authentication & Account Management
+</details>
 
-- User registration and login.
-- Email and password authentication.
-- Google authentication integration.
-- Secure session management using Better Auth.
-- Protected user and host functionality.
+<details>
+<summary><b>👤 User Dashboard</b></summary>
 
-### Additional Features
+- Personalized dashboard and profile management
+- Profile picture upload
+- Booking history and upcoming bookings
+- Wishlist of favorite studios
+- Notification center
+- Account and appearance preferences
 
-- Responsive user interface.
-- Light and dark theme support.
-- Smooth page transitions and interactive animations.
-- FAQ and help sections.
-- Contact form.
-- Newsletter subscription.
-- Privacy policy and terms of service pages.
+</details>
 
-## Technology Stack
+<details>
+<summary><b>🏢 Host Dashboard</b></summary>
 
-| Category            | Technologies              |
-| ------------------- | ------------------------- |
-| Framework           | Next.js 16                |
-| Frontend Library    | React 19                  |
-| Language            | TypeScript                |
-| Styling             | Tailwind CSS 4            |
-| Authentication      | Better Auth               |
-| Database            | MongoDB                   |
-| Backend Integration | REST API                  |
-| Backend Framework   | Express.js 5              |
-| UI Components       | shadcn/ui, Base UI        |
-| Icons               | Lucide React, React Icons |
-| Charts              | Recharts                  |
-| Theme Management    | next-themes               |
-| Date Utilities      | date-fns                  |
-| Code Highlighting   | Shiki                     |
-| Deployment          | Vercel                    |
-| Version Control     | Git & GitHub              |
+- Create, edit, and publish studio listings
+- Upload studio photographs
+- Configure pricing and opening hours
+- Manage availability and unavailable dates
+- Review, accept, or reject booking requests
+- Monitor studio performance and booking statistics
 
-## Project Architecture
+</details>
 
-The frontend follows a modular and component-based architecture using the Next.js App Router.
+<details>
+<summary><b>🔐 Authentication</b></summary>
 
-```text
-Set-Space/
-│
-├── app/                         # Application routes and layouts
-│   ├── (auth)/                  # Authentication pages
-│   ├── about/                   # About page
-│   ├── api/auth/                # Better Auth API handler
-│   ├── contact/                 # Contact page
-│   ├── dashbord/                # User dashboard
-│   ├── explore-studio/          # Studio exploration and details
-│   ├── host/                    # Host dashboard and management
-│   ├── how-it-works/            # Platform workflow
-│   ├── studios/                 # Studio listings and details
-│   ├── privacy/                 # Privacy policy
-│   ├── terms/                   # Terms of service
-│   ├── layout.tsx               # Root layout
-│   └── page.tsx                 # Homepage
-│
-├── assets/                      # Static assets and images
-│
-├── components/                  # Reusable UI components
-│   ├── About/
-│   ├── Animation/
-│   ├── Auth/
-│   ├── Contact/
-│   ├── Dashboard/
-│   ├── Explore studios/
-│   ├── Footer/
-│   ├── Host/
-│   ├── Home/
-│   ├── Navbar/
-│   ├── Notifications/
-│   ├── Studio card/
-│   ├── Studio Detail/
-│   ├── ui/                      # Reusable UI primitives
-│   └── theme-provider.tsx
-│
-├── hooks/                       # Custom React hooks
-│
-├── lib/                         # API clients and utilities
-│   ├── auth-client.ts
-│   ├── auth.ts
-│   ├── Booking-api.ts
-│   ├── Dashboard-data.ts
-│   ├── Host-data.ts
-│   ├── Marketplace-api.ts
-│   ├── Studio-api.ts
-│   ├── Studio-store.ts
-│   └── utils.ts
-│
-├── public/                      # Public static files
-│
-├── components.json
-├── next.config.ts
-├── package.json
-├── tsconfig.json
-└── README.md
+- Email and password registration and login
+- Google sign-in
+- Secure session management with **Better Auth**
+- Protected user and host routes
+
+</details>
+
+<details>
+<summary><b>🎁 Extras</b></summary>
+
+- Fully responsive UI
+- Light and dark themes
+- Smooth page transitions and animations
+- FAQ and help sections
+- Contact form and newsletter subscription
+- Privacy policy and terms of service pages
+
+</details>
+
+## 🧰 Tech Stack
+
+| Category | Technologies |
+| --- | --- |
+| **Framework** | Next.js 16 (App Router) |
+| **UI Library** | React 19 |
+| **Language** | TypeScript |
+| **Styling** | Tailwind CSS 4 |
+| **Components** | shadcn/ui, Base UI |
+| **Icons** | Lucide React, React Icons |
+| **Charts** | Recharts |
+| **Theming** | next-themes |
+| **Dates** | date-fns |
+| **Code Highlighting** | Shiki |
+| **Authentication** | Better Auth |
+| **Backend** | Express.js 5 (REST API) |
+| **Database** | MongoDB |
+| **Deployment** | Vercel |
+
+## 🏗 Architecture
+
+```mermaid
+flowchart LR
+    U[User / Host Browser] --> F[Next.js Frontend<br/>Vercel]
+    F -->|/api/auth/*| A[Better Auth]
+    A --> DB1[(MongoDB<br/>auth)]
+    F -->|REST API| B[Express.js Backend]
+    B -->|Validates session| A
+    B --> DB2[(MongoDB<br/>SetSpace)]
 ```
-
-## Application Architecture
-
-SetSpace separates its frontend presentation, authentication, and marketplace operations into dedicated modules.
 
 ### Frontend
 
-- Next.js App Router handles routing and page layouts.
-- React components are organized by application features.
-- Shared components provide consistent UI across the application.
-- Custom hooks handle reusable client-side logic.
-- API clients manage communication with the backend.
-- Context providers manage shared application state.
+- **App Router** for routing and layouts
+- Feature-based component organization with shared UI primitives
+- Custom hooks for reusable client logic
+- API clients in `lib/` for backend communication
+- Context providers for shared state
 
 ### Authentication
 
-Better Auth handles user authentication through the Next.js API route:
-
-`/api/auth/[...all]`
-
-The authentication system supports email/password and configured Google sign-in.
+Better Auth runs inside the Next.js API route `/api/auth/[...all]` and supports email/password plus Google sign-in.
 
 ### Backend Communication
 
-The frontend communicates with a separate Express.js backend through REST APIs.
+The frontend talks to a separate Express.js backend over REST. It handles:
 
-The integration handles:
+| Domain | Domain |
+| --- | --- |
+| Studio management | Reviews |
+| Booking requests | Wishlist |
+| User profiles | Notifications |
+| Dashboard statistics | Contact messages & newsletter |
 
-- Studio management.
-- Booking requests.
-- User profiles.
-- Reviews.
-- Wishlist management.
-- Notifications.
-- Dashboard statistics.
-- Contact messages.
-- Newsletter subscriptions.
+### Databases
 
-### Database Architecture
+One MongoDB cluster, two databases:
 
-The application uses MongoDB with two separate databases within the same cluster:
-
-| Database   | Responsibility                                                     |
-| ---------- | ------------------------------------------------------------------ |
-| `auth`     | Better Auth users, sessions, accounts, and verification records    |
-| `SetSpace` | Studios, bookings, reviews, profiles, wishlists, and notifications |
+| Database | Responsibility |
+| --- | --- |
+| `auth` | Better Auth users, sessions, accounts, verification records |
+| `SetSpace` | Studios, bookings, reviews, profiles, wishlists, notifications |
 
 The backend validates Better Auth sessions before processing protected operations.
 
-## Getting Started
+## 📂 Project Structure
 
-Follow these instructions to run the frontend locally.
+```text
+Set-Space/
+├── app/                    # Routes and layouts (App Router)
+│   ├── (auth)/             # Authentication pages
+│   ├── about/              # About page
+│   ├── api/auth/           # Better Auth API handler
+│   ├── contact/            # Contact page
+│   ├── dashbord/           # User dashboard
+│   ├── explore-studio/     # Studio exploration and details
+│   ├── host/               # Host dashboard and management
+│   ├── how-it-works/       # Platform workflow
+│   ├── studios/            # Studio listings and details
+│   ├── privacy/            # Privacy policy
+│   ├── terms/              # Terms of service
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Homepage
+├── assets/                 # Static assets and images
+├── components/             # Feature-based UI components
+│   ├── About/  Animation/  Auth/  Contact/  Dashboard/
+│   ├── Explore studios/  Footer/  Host/  Home/  Navbar/
+│   ├── Notifications/  Studio card/  Studio Detail/
+│   ├── ui/                 # Reusable UI primitives
+│   └── theme-provider.tsx
+├── hooks/                  # Custom React hooks
+├── lib/                    # API clients and utilities
+│   ├── auth.ts / auth-client.ts
+│   ├── Booking-api.ts      ├── Marketplace-api.ts
+│   ├── Studio-api.ts       ├── Studio-store.ts
+│   ├── Dashboard-data.ts   ├── Host-data.ts
+│   └── utils.ts
+├── public/                 # Public static files
+├── components.json
+├── next.config.ts
+├── package.json
+└── tsconfig.json
+```
+
+## ⚡ Getting Started
 
 ### Prerequisites
 
-Make sure you have installed:
+- Node.js (a version supported by Next.js 16)
+- npm
+- Git
+- A MongoDB Atlas account
+- Google OAuth credentials *(optional, only for Google sign-in)*
 
-- Node.js (version supported by Next.js 16).
-- npm.
-- Git.
-- MongoDB Atlas account.
-- Google OAuth credentials (if enabling Google sign-in).
-
-### 1. Clone the Repository
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/mehrabislam00/Set-Space.git
-```
-
-### 2. Navigate to the Project
-
-```bash
 cd Set-Space
-```
-
-### 3. Install Dependencies
-
-```bash
 npm install
 ```
 
-### 4. Configure Environment Variables
+### 2. Configure environment
 
-Create a `.env.local` file in the project root.
+Create a `.env.local` file in the project root (see [Environment Variables](#-environment-variables)).
 
-```env
-# Better Auth MongoDB Connection
-BETTER_AUTH_MONGO_URI=your_mongodb_connection_string
-
-# MongoDB Credentials (if required by your connection URI)
-MONGODB_USERNAME=your_mongodb_username
-MONGODB_PASSWORD=your_mongodb_password
-
-# Better Auth Configuration
-BETTER_AUTH_URL=http://localhost:3000
-
-# Google OAuth (Optional)
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-# Backend API
-NEXT_PUBLIC_API_URL=http://localhost:5000
-```
-
-**Important:**
-
-- Configure the MongoDB connection using your own credentials.
-- The authentication database is named `auth`.
-- Google OAuth credentials are required only when using Google sign-in.
-- Keep all sensitive credentials private.
-- Never commit `.env.local` to GitHub.
-- Use the same MongoDB cluster and authentication configuration for both frontend and backend.
-
-### 5. Start the Backend
-
-Clone and configure the companion backend separately.
+### 3. Start the backend
 
 ```bash
 git clone https://github.com/mehrabislam00/set-space-backend.git
-
 cd set-space-backend
-
 npm install
+# configure .env as documented in the backend repository
+npm run dev
 ```
 
-Configure the backend `.env` file using the environment variables documented in the backend repository.
+The backend runs at `http://localhost:5000`.
 
-Start the backend development server:
+### 4. Start the frontend
+
+In a new terminal, from the frontend directory:
 
 ```bash
 npm run dev
 ```
 
-The backend runs on:
+Open **http://localhost:3000** 🎉
 
-`http://localhost:5000`
+## 🔑 Environment Variables
 
-### 6. Start the Frontend
+Create `.env.local` in the project root:
 
-Open another terminal in the frontend project directory.
+| Variable | Required | Description |
+| --- | :---: | --- |
+| `BETTER_AUTH_MONGO_URI` | ✅ | MongoDB connection string (auth database is named `auth`) |
+| `BETTER_AUTH_URL` | ✅ | Frontend base URL, e.g. `http://localhost:3000` |
+| `NEXT_PUBLIC_API_URL` | ✅ | Backend API URL, e.g. `http://localhost:5000` |
+| `MONGODB_USERNAME` | ➖ | Only if your connection URI requires it |
+| `MONGODB_PASSWORD` | ➖ | Only if your connection URI requires it |
+| `GOOGLE_CLIENT_ID` | ➖ | Required only for Google sign-in |
+| `GOOGLE_CLIENT_SECRET` | ➖ | Required only for Google sign-in |
 
-```bash
-npm run dev
+```env
+BETTER_AUTH_MONGO_URI=your_mongodb_connection_string
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:5000
+
+# Optional
+MONGODB_USERNAME=your_mongodb_username
+MONGODB_PASSWORD=your_mongodb_password
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```
 
-Open your browser and visit:
+> [!IMPORTANT]
+> - Use your own credentials and keep them private.
+> - **Never commit `.env.local`** to GitHub.
+> - Frontend and backend must use the same MongoDB cluster and a compatible authentication configuration.
 
-`http://localhost:3000`
+## 📜 Available Scripts
 
-## Available Scripts
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Create a production build |
+| `npm run start` | Start the production server |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Run TypeScript checks |
+| `npm run format` | Format project files |
 
-| Command             | Description                  |
-| ------------------- | ---------------------------- |
-| `npm run dev`       | Start the development server |
-| `npm run build`     | Create a production build    |
-| `npm run start`     | Start the production server  |
-| `npm run lint`      | Run ESLint                   |
-| `npm run typecheck` | Run TypeScript checks        |
-| `npm run format`    | Format project files         |
+## ☁️ Deployment
 
-## Deployment
-
-The frontend is deployed using **Vercel**.
-
-For production deployment:
+The frontend is deployed on **Vercel**.
 
 1. Import the frontend repository into Vercel.
-2. Configure the required environment variables.
-3. Set `NEXT_PUBLIC_API_URL` to the deployed backend API URL.
-4. Configure the backend's `CLIENT_URI` to allow the production frontend origin.
-5. Set `BETTER_AUTH_URL` to the production frontend URL in the appropriate environments.
-6. Ensure both applications use the same authentication database and compatible session configuration.
-7. Deploy both applications and verify their API communication.
+2. Add the required environment variables.
+3. Set `NEXT_PUBLIC_API_URL` to the deployed backend URL.
+4. Set the backend's `CLIENT_URI` to allow the production frontend origin.
+5. Set `BETTER_AUTH_URL` to the production frontend URL.
+6. Ensure both apps share the same auth database and compatible session configuration.
+7. Deploy both apps and verify API communication.
 
-## Project Repositories
+## 📌 Project Scope
 
-| Project      | Link                                                                       |
-| ------------ | -------------------------------------------------------------------------- |
-| Live Website | [SetSpace](https://set-space-ten.vercel.app/)                              |
-| Frontend     | [SetSpace Frontend](https://github.com/mehrabislam00/Set-Space)            |
-| Backend      | [SetSpace Backend API](https://github.com/mehrabislam00/set-space-backend) |
+SetSpace currently supports studio discovery, booking requests, host management, user dashboards, and related marketplace features.
 
-## Current Project Scope
+> [!NOTE]
+> Booking requests and status management are implemented. **Online payment gateway integration is not currently included.**
 
-SetSpace currently supports studio discovery, booking requests, host management, user dashboards, and related marketplace functionality.
+## 🗺 Roadmap
 
-**Note:** Booking requests and status management are implemented. Online payment gateway integration is not currently included.
+- [x] Studio discovery, search, and filtering
+- [x] Booking requests and status management
+- [x] User and host dashboards
+- [x] Email/password and Google authentication
+- [x] Reviews, wishlist, and notifications
+- [ ] Online payment gateway integration
+- [ ] Automated end-to-end testing
+- [ ] Advanced booking and availability management
+- [ ] Additional marketplace analytics
+- [ ] Further UX improvements
 
-## Future Improvements
+## 🔗 Repositories
 
-Potential areas for further development include:
-
-- Online payment gateway integration.
-- Automated end-to-end testing.
-- Advanced booking and availability management.
-- Additional marketplace analytics.
-- Further improvements to the overall user experience.
+| Project | Link |
+| --- | --- |
+| 🌐 Live Website | [set-space-ten.vercel.app](https://set-space-ten.vercel.app/) |
+| 💻 Frontend | [mehrabislam00/Set-Space](https://github.com/mehrabislam00/Set-Space) |
+| ⚙️ Backend API | [mehrabislam00/set-space-backend](https://github.com/mehrabislam00/set-space-backend) |
 
 ---
 
-\<p align="center">
-&#x20; Built with passion for the creative community.
-\</p>
+<div align="center">
 
-\<p align="center">
-&#x20; \<strong>SetSpace — Create. Rent. Inspire.\</strong>
-\</p>
+**SetSpace — Create. Rent. Inspire.**
+
+Built with passion for the creative community. ⭐ Star the repo if you like it!
+
+</div>
