@@ -70,7 +70,8 @@ Auth stores its records in the MongoDB database named `auth` (lowercase).
 
 The browser uses the Better Auth session for sign-in state. The Express API
 checks protected requests against the Better Auth session endpoint; it does
-not trust a user ID supplied by the browser.
+not trust a user ID supplied by the browser. The browser auth client uses the
+current frontend origin so sign-in cookies stay on the deployed frontend host.
 
 ## Architecture
 
@@ -103,8 +104,10 @@ Global layout, typography, theme, and styles live in `app/layout.tsx` and
 ## API integration
 
 The frontend API client uses `NEXT_PUBLIC_API_URL`, defaulting to
-`http://localhost:5000`. It sends requests with credentials so the browser's
-Better Auth session cookie can be checked by the backend.
+`http://localhost:5000`. Browser requests use a same-origin Next.js rewrite
+proxy, which forwards the Better Auth session cookie to the backend without
+requiring the browser to send a cookie to a different host. Server-rendered
+public API requests use `NEXT_PUBLIC_API_URL` directly.
 
 The frontend uses API routes for profiles, studios, bookings, reviews,
 wishlists, dashboard statistics, notifications, host contact details, contact
@@ -129,7 +132,7 @@ BETTER_AUTH_MONGO_URI=YOUR_MONGODB_CONNECTION_URI
 MONGODB_USERNAME=YOUR_MONGODB_USERNAME
 MONGODB_PASSWORD=YOUR_MONGODB_PASSWORD
 
-# Better Auth client base URL
+# Better Auth base URL for server-side auth/session checks
 BETTER_AUTH_URL=http://localhost:3000
 
 # Needed when enabling the configured Google sign-in provider
@@ -174,8 +177,9 @@ npm run start
 
 Set the production environment variables before building or starting the
 application. Deploy as a Next.js Node.js application and configure
-`NEXT_PUBLIC_API_URL` to point to the deployed Express API. The API must allow
-the production frontend origin through its CORS configuration.
+`NEXT_PUBLIC_API_URL` to point to the deployed Express API. Set `BETTER_AUTH_URL`
+to the production frontend URL in the backend deployment, and allow that
+frontend origin through the backend's CORS configuration.
 
 ## Screenshots
 
