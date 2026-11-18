@@ -19,13 +19,6 @@ import studioPodcast from "@/assets/studio-podcast.jpg"
 
 /* ---------- User dashboard (/dashboard) ---------- */
 
-// TODO: replace with the signed-in user
-export const dashboardUser = {
-  name: "Alex Carter",
-  email: "alex@example.com",
-  initials: "AC",
-}
-
 /** One link of the account sidebar (renter dashboard and host dashboard). */
 export type NavItem = {
   label: string
@@ -43,12 +36,12 @@ export const dashboardNav: NavItem[] = [
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
-export const dashboardStats: { label: string; value: string; icon: LucideIcon }[] = [
-  { label: "Total Bookings", value: "5", icon: CalendarDays },
-  { label: "Saved Studios", value: "8", icon: Heart },
-  { label: "Upcoming", value: "2", icon: CalendarCheck },
-  { label: "Total Spent", value: "$770", icon: Wallet },
-]
+export const dashboardStats = [
+  { label: "Total Bookings", key: "totalBookings", icon: CalendarDays },
+  { label: "Saved Studios", key: "savedStudios", icon: Heart },
+  { label: "Upcoming", key: "upcomingBookings", icon: CalendarCheck },
+  { label: "Total Spent", key: "totalSpent", icon: Wallet },
+] as const
 
 export type DashboardBooking = {
   id: string // booking reference, e.g. "SS-10482"
@@ -57,7 +50,7 @@ export type DashboardBooking = {
   when: string
   guests: number
   total: number
-  image: StaticImageData
+  image: StaticImageData | string
 }
 
 export const upcomingBookings: DashboardBooking[] = [
@@ -81,23 +74,25 @@ export const upcomingBookings: DashboardBooking[] = [
   },
 ]
 
-export const quickActions: { label: string; href: string; icon: LucideIcon }[] = [
-  { label: "Explore Studios", href: "/explore-studio", icon: Compass },
-  { label: "My Bookings", href: "/dashboard/bookings", icon: CalendarDays },
-  { label: "Saved Studios", href: "/dashboard/saved-studios", icon: Heart },
-  { label: "Update Profile", href: "/dashboard/profile", icon: User },
-]
+export const quickActions: { label: string; href: string; icon: LucideIcon }[] =
+  [
+    { label: "Explore Studios", href: "/explore-studio", icon: Compass },
+    { label: "My Bookings", href: "/dashboard/bookings", icon: CalendarDays },
+    { label: "Saved Studios", href: "/dashboard/saved-studios", icon: Heart },
+    { label: "Update Profile", href: "/dashboard/profile", icon: User },
+  ]
 
 /** Ids from `exploreStudios` (lib/Site-data.ts) shown under "Recently viewed". */
 export const recentlyViewedIds = [1, 3, 5]
 
 /* ---------- My Bookings (/dashboard/bookings) ---------- */
 
-export type BookingStatus = "Confirmed" | "Pending" | "Completed" | "Cancelled"
+export type BookingStatus =
+  "Confirmed" | "Pending" | "Rejected" | "Completed" | "Cancelled"
 
 export type UserBooking = Omit<DashboardBooking, "status"> & {
   status: BookingStatus
-  studioId: number // id from `exploreStudios`, used for the "View Studio" link
+  studioId: string | number
   location: string
   host: string
   requested: string // date the booking was requested, yyyy-mm-dd
@@ -108,6 +103,7 @@ export const bookingFilters = [
   "Upcoming",
   "Pending",
   "Confirmed",
+  "Rejected",
   "Completed",
   "Cancelled",
 ] as const
@@ -183,25 +179,9 @@ export const allBookings: UserBooking[] = [
   },
 ]
 
-/* ---------- Saved Studios (/dashboard/saved-studios) ---------- */
-
-/** Ids from `exploreStudios` (lib/Site-data.ts) the user has saved.
- *  TODO: replace with the signed-in user's saved list. */
-export const savedStudioIds = [2, 7, 3, 6, 5, 8, 9]
-
 /* ---------- Profile (/dashboard/profile) ---------- */
 
 export const PROFILE_BIO_MAX = 280
-
-/** TODO: replace with the signed-in user's profile. Name and email come from `dashboardUser`. */
-export const dashboardProfile = {
-  phone: "+1 (555) 014-2290",
-  location: "New York, USA",
-  bio: "Photographer and creative director based in New York.",
-  bookings: allBookings.length,
-  listings: 2,
-  memberSince: 2024,
-}
 
 /* ---------- Settings (/dashboard/settings) ---------- */
 

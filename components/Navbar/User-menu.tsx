@@ -23,7 +23,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { authClient, type SessionUser } from "@/lib/auth-client"
+import { Skeleton } from "@/components/ui/skeleton"
+import { toast } from "@/components/ui/toast"
+import { signOutCurrentUser, type SessionUser } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
 /** First letters of the first two words of a name, e.g. "Alex Carter" → "AC". */
@@ -62,26 +64,43 @@ const itemClass =
  *  `scrolled` mirrors the navbar so the avatar matches the bar over the photo. */
 export function UserMenu({
   user,
+  profileLoading,
   scrolled,
   className,
 }: {
   user: SessionUser
+  profileLoading: boolean
   scrolled: boolean
   className?: string
 }) {
   const router = useRouter()
   const [signingOut, setSigningOut] = React.useState(false)
+  const [loadedImage, setLoadedImage] = React.useState<string | null>(null)
+  const [failedImage, setFailedImage] = React.useState<string | null>(null)
+  const image = user.image ?? null
   const initials = getInitials(user)
+  const imagePending =
+    profileLoading ||
+    (!!image && loadedImage !== image && failedImage !== image)
 
   async function signOut() {
     if (signingOut) return
     setSigningOut(true)
 
     try {
-      await authClient.signOut()
-    } finally {
+      await signOutCurrentUser()
+      toast.add({ title: "Signed out", type: "success" })
       router.push("/login")
       router.refresh()
+    } catch (error) {
+      toast.add({
+        title: "Could not sign out",
+        description:
+          error instanceof Error ? error.message : "Please try again.",
+        type: "error",
+      })
+    } finally {
+      setSigningOut(false)
     }
   }
 
@@ -102,8 +121,14 @@ export function UserMenu({
               : "border-white/20 bg-black/40"
           )}
         >
-          {user.image && (
-            <AvatarImage src={user.image} alt="" className="rounded-full" />
+          {image && (
+            <AvatarImage
+              src={image}
+              alt=""
+              className="rounded-full"
+              onLoad={() => setLoadedImage(image)}
+              onError={() => setFailedImage(image)}
+            />
           )}
           <AvatarFallback
             className={cn(
@@ -111,7 +136,11 @@ export function UserMenu({
               scrolled ? "text-foreground" : "text-photo"
             )}
           >
-            {initials}
+            {imagePending ? (
+              <Skeleton className="size-full rounded-full bg-foreground/10 motion-reduce:animate-none" />
+            ) : (
+              initials
+            )}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -121,14 +150,21 @@ export function UserMenu({
         sideOffset={12}
         className="w-64 rounded-xl border border-border p-2 shadow-2xl"
       >
-        <div className="px-2.5 pt-2 pb-3">
-          <p className="font-heading text-sm font-bold text-foreground">
-            {user.name}
-          </p>
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">
-            {user.email}
-          </p>
-        </div>
+        {profileLoading ? (
+          <div aria-busy="true" className="space-y-2 px-2.5 pt-2 pb-3">
+            <Skeleton className="h-4 w-28 motion-reduce:animate-none" />
+            <Skeleton className="h-3 w-36 motion-reduce:animate-none" />
+          </div>
+        ) : (
+          <div className="px-2.5 pt-2 pb-3">
+            <p className="font-heading text-sm font-bold text-foreground">
+              {user.name}
+            </p>
+            <p className="mt-0.5 truncate text-xs text-muted-foreground">
+              {user.email}
+            </p>
+          </div>
+        )}
 
         {groups.map((group, i) => (
           <div key={i}>

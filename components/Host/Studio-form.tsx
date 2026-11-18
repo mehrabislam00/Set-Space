@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { CircleCheck, TriangleAlert } from "lucide-react"
+import { CircleCheck } from "lucide-react"
 
 import AddStudioPhotos from "@/components/Host/Add-studio-photos"
 import AddStudioSection from "@/components/Host/Add-studio-section"
@@ -27,6 +27,12 @@ import {
   STUDIO_CATEGORIES,
   type StudioFormData,
 } from "@/lib/Host-data"
+import {
+  STUDIO_WEEKDAYS,
+  validateWeeklyOpeningHours,
+  type DailyOpeningHours,
+  type StudioWeekday,
+} from "@/lib/Opening-hours"
 
 type PendingAction = "save" | "draft" | null
 
@@ -35,7 +41,6 @@ type StudioFormProps = {
   submitLabel: string
   pendingAction?: PendingAction
   successMessage?: string | null
-  errorMessage?: string | null
   onSubmit: (data: StudioFormData) => void | Promise<void>
   onSaveDraft: (data: StudioFormData) => void | Promise<void>
   onCancel: () => void
@@ -50,7 +55,6 @@ export function StudioForm({
   submitLabel,
   pendingAction = null,
   successMessage,
-  errorMessage,
   onSubmit,
   onSaveDraft,
   onCancel,
@@ -58,8 +62,11 @@ export function StudioForm({
   const [formData, setFormData] = React.useState<StudioFormData>(() =>
     cloneStudioFormData(initialData)
   )
+  const [photosBusy, setPhotosBusy] = React.useState(false)
+  const [scheduleError, setScheduleError] = React.useState<string | null>(null)
 
   const isPending = pendingAction !== null
+  const isBusy = isPending || photosBusy
 
   const updateField = <K extends keyof StudioFormData>(
     key: K,
@@ -68,10 +75,7 @@ export function StudioForm({
     setFormData((prev) => ({ ...prev, [key]: value }))
   }
 
-  const toggleArrayItem = (
-    key: "amenities" | "availableDays",
-    value: string
-  ) => {
+  const toggleArrayItem = (key: "amenities", value: string) => {
     setFormData((prev) => ({
       ...prev,
       [key]: prev[key].includes(value)
@@ -80,19 +84,47 @@ export function StudioForm({
     }))
   }
 
+  function updateOpeningHours(day: StudioWeekday, hours: DailyOpeningHours) {
+    setScheduleError(null)
+    setFormData((prev) => {
+      const openingHours = { ...prev.openingHours, [day]: hours }
+      const availableDays = STUDIO_WEEKDAYS.filter(
+        ({ key }) => !openingHours[key].closed
+      ).map(({ key }) => key)
+      const firstOpenDay = STUDIO_WEEKDAYS.find(
+        ({ key }) => !openingHours[key].closed
+      )
+      const legacyHours = firstOpenDay ? openingHours[firstOpenDay.key] : null
+
+      return {
+        ...prev,
+        openingHours,
+        availableDays,
+        opens: legacyHours?.opens ?? prev.opens,
+        closes: legacyHours?.closes ?? prev.closes,
+      }
+    })
+  }
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (isPending) return
+    if (isBusy) return
+    const error = validateWeeklyOpeningHours(formData.openingHours, true)
+    setScheduleError(error)
+    if (error) return
     void onSubmit(formData)
   }
 
   function handleSaveDraft() {
-    if (isPending) return
+    if (isBusy) return
+    const error = validateWeeklyOpeningHours(formData.openingHours)
+    setScheduleError(error)
+    if (error) return
     void onSaveDraft(formData)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10" aria-busy={isPending}>
+    <form onSubmit={handleSubmit} className="space-y-10" aria-busy={isBusy}>
       {successMessage ? (
         <Alert className="border-success/30 bg-success/10 text-success">
           <CircleCheck aria-hidden />
@@ -100,14 +132,6 @@ export function StudioForm({
           <AlertDescription className="text-success/80">
             Taking you back to My Studios…
           </AlertDescription>
-        </Alert>
-      ) : null}
-
-      {errorMessage ? (
-        <Alert variant="destructive">
-          <TriangleAlert aria-hidden />
-          <AlertTitle>Could not save your changes</AlertTitle>
-          <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       ) : null}
 
@@ -216,7 +240,7 @@ export function StudioForm({
       <AddStudioSection step={3} title="Pricing">
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
-            <Label htmlFor="hourly-rate">Hourly rate ($) *</Label>
+            <Label htmlFor="hourly-rate">Hourly rate (৳) *</Label>
             <Input
               id="hourly-rate"
               type="number"
@@ -241,7 +265,7 @@ export function StudioForm({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="cleaning-fee">Cleaning fee ($)</Label>
+            <Label htmlFor="cleaning-fee">Cleaning fee (৳)</Label>
             <Input
               id="cleaning-fee"
               type="number"
@@ -304,18 +328,16 @@ export function StudioForm({
         <AddStudioPhotos
           photos={formData.photos}
           onChange={(photos) => updateField("photos", photos)}
+          onBusyChange={setPhotosBusy}
         />
       </AddStudioSection>
 
-      <AddStudioSection step={7} title="Availability">
+      <AddStudioSection step={7} title="Opening hours & availability">
         <AvailabilityFields
-          availableDays={formData.availableDays}
-          opens={formData.opens}
-          closes={formData.closes}
+          openingHours={formData.openingHours}
           unavailableDate={formData.unavailableDate}
-          onToggleDay={(day) => toggleArrayItem("availableDays", day)}
-          onOpensChange={(value) => updateField("opens", value)}
-          onClosesChange={(value) => updateField("closes", value)}
+          validationError={scheduleError}
+          onDayChange={updateOpeningHours}
           onUnavailableDateChange={(value) =>
             updateField("unavailableDate", value)
           }
@@ -374,7 +396,7 @@ export function StudioForm({
           type="button"
           variant="ghost"
           onClick={onCancel}
-          disabled={isPending}
+          disabled={isBusy}
         >
           Cancel
         </Button>
@@ -382,12 +404,12 @@ export function StudioForm({
           type="button"
           variant="outline"
           onClick={handleSaveDraft}
-          disabled={isPending}
+          disabled={isBusy}
         >
           {pendingAction === "draft" ? <Spinner /> : null}
           Save as Draft
         </Button>
-        <Button type="submit" disabled={isPending}>
+        <Button type="submit" disabled={isBusy}>
           {pendingAction === "save" ? <Spinner /> : null}
           {submitLabel}
         </Button>

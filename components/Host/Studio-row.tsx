@@ -1,4 +1,4 @@
-import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import { Building2, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Switch } from "@/components/ui/switch"
 import type { HostStudio, HostStudioStatus } from "@/lib/Host-data"
-import { cn } from "@/lib/utils"
+import { cn, formatTaka } from "@/lib/utils"
 
 export const studioStatusClass: Record<HostStudioStatus, string> = {
   Published: "bg-success/15 text-success",
@@ -23,25 +23,41 @@ const itemClass = "gap-3 rounded-lg px-2.5 py-2 text-xs font-medium"
 
 type StudioRowProps = {
   studio: HostStudio
-  onToggle: (studio: HostStudio, published: boolean) => void
+  onToggle: (studio: HostStudio, published: boolean) => void | Promise<void>
   onDelete: (studio: HostStudio) => void
+  pending?: boolean
 }
 
 /** One listing in My Studios: photo, details, publish switch and actions menu. */
-export function StudioRow({ studio, onToggle, onDelete }: StudioRowProps) {
+export function StudioRow({
+  studio,
+  onToggle,
+  onDelete,
+  pending = false,
+}: StudioRowProps) {
   const published = studio.status === "Published"
 
   return (
     <li className="group flex items-center justify-between gap-4 py-4 sm:py-5">
       <div className="flex min-w-0 flex-1 items-center gap-4">
         <div className="relative h-16 w-22 shrink-0 overflow-hidden rounded-xl">
-          <Image
-            src={studio.image}
-            alt={studio.name}
-            fill
-            sizes="88px"
-            className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
-          />
+          {studio.image ? (
+            <Image
+              src={studio.image}
+              alt={studio.name}
+              fill
+              unoptimized={
+                typeof studio.image === "string" &&
+                !studio.image.startsWith("/_next/static/")
+              }
+              sizes="88px"
+              className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+            />
+          ) : (
+            <span className="flex size-full items-center justify-center bg-muted text-muted-foreground">
+              <Building2 className="size-6" strokeWidth={1.25} />
+            </span>
+          )}
         </div>
 
         <div className="min-w-0">
@@ -61,7 +77,7 @@ export function StudioRow({ studio, onToggle, onDelete }: StudioRowProps) {
           <p className="mt-1 text-xs text-muted-foreground">
             {studio.category} · {studio.city} ·{" "}
             <span className="font-bold text-foreground">
-              ${studio.price}/hr
+              {formatTaka(studio.price)}/hr
             </span>
           </p>
         </div>
@@ -79,6 +95,7 @@ export function StudioRow({ studio, onToggle, onDelete }: StudioRowProps) {
           onCheckedChange={(value) => onToggle(studio, value)}
           aria-labelledby={`${studio.id}-label`}
           aria-label={`${published ? "Unpublish" : "Publish"} ${studio.name}`}
+          disabled={pending}
         />
 
         <DropdownMenu>
@@ -102,8 +119,8 @@ export function StudioRow({ studio, onToggle, onDelete }: StudioRowProps) {
             className="w-44 rounded-xl border border-border p-1.5 shadow-2xl"
           >
             <DropdownMenuItem
-              render={<Link href={`/explore-studio/${studio.studioId}`} />}
-              disabled={!studio.studioId}
+              render={<Link href={`/explore-studio/${studio.id}`} />}
+              disabled={!published}
               className={itemClass}
             >
               <Eye className="size-4" strokeWidth={1.5} />

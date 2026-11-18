@@ -2,6 +2,7 @@ import { CalendarClock, Camera, Check, Ruler, Users } from "lucide-react"
 
 import { Reveal } from "@/components/Animation/Reveal"
 import type { StudioDetail } from "@/lib/Site-data"
+import { formatTaka } from "@/lib/utils"
 
 /** Price, description, 4 quick-fact tiles, suitable-for list and house rules. */
 export function StudioOverview({ studio }: { studio: StudioDetail }) {
@@ -16,7 +17,7 @@ export function StudioOverview({ studio }: { studio: StudioDetail }) {
     <section id="overview" className="scroll-mt-40">
       <Reveal>
         <p className="font-heading text-3xl font-extrabold tracking-tight text-foreground">
-          ${studio.price}
+          {formatTaka(studio.price)}
           <span className="ml-1.5 text-sm font-normal text-muted-foreground">
             / hour
           </span>

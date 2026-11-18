@@ -41,7 +41,7 @@ export function PageTransition({
   const pathname = usePathname()
 
   return (
-    <div key={transitionKey(pathname, scope)} className="page-enter">
+    <div key={transitionKey(pathname, scope)} className="page-enter flex-1">
       {children}
     </div>
   )

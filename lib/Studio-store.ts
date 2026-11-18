@@ -1,165 +1,216 @@
 "use client"
 
+import * as React from "react"
 import { useSyncExternalStore } from "react"
 
+import { authClient } from "@/lib/auth-client"
 import {
-  hostStudios,
-  type HostStudio,
-  type HostStudioStatus,
-  type StudioFormData,
+  createStudio,
+  deleteStudio,
+  getMyStudioById,
+  getMyStudios,
+  updateStudio,
+  updateStudioStatus,
+} from "@/lib/Marketplace-api"
+import type {
+  HostStudio,
+  HostStudioStatus,
+  StudioFormData,
 } from "@/lib/Host-data"
+import { toHostStudio } from "@/lib/Studio-api"
 
-/**
- * Small client-side store for the host's studio listings.
- *
- * The project is currently front-end only, so this module is the single
- * "service" boundary the UI talks to. Replace the bodies of the exported
- * functions with API calls when the studio endpoints exist; components and
- * their data flow stay the same.
- */
+type StudioStateStatus = "loading" | "ready" | "error" | "unauthenticated"
 
-const STORAGE_KEY = "setspace.host-studios.v1"
-const FETCH_DELAY = 350
-const SAVE_DELAY = 500
-
-/** Singular badge text for each category used by the form. */
-const CATEGORY_BADGES: Record<string, string> = {
-  "Photo Studios": "Photo Studio",
-  "Music Studios": "Music Suite",
-  "Podcast Studios": "Podcast Room",
-  "Film Studios": "Film Stage",
-  "Content Creation Studios": "Content Studio",
-  "Art Studios": "Art Workshop",
+type StudioState = {
+  userId: string | null
+  status: StudioStateStatus
+  studios: HostStudio[]
+  error: string | null
 }
 
-let snapshot: HostStudio[] | null = null
+const serverSnapshot: StudioState = {
+  userId: null,
+  status: "loading",
+  studios: [],
+  error: null,
+}
+
+let snapshot = serverSnapshot
 const listeners = new Set<() => void>()
-
-function wait(milliseconds: number) {
-  return new Promise<void>((resolve) => {
-    setTimeout(resolve, milliseconds)
-  })
-}
-
-function readStoredStudios(): HostStudio[] | null {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-
-    const parsed = JSON.parse(raw) as unknown
-    return Array.isArray(parsed) ? (parsed as HostStudio[]) : null
-  } catch {
-    return null
-  }
-}
-
-function getSnapshot(): HostStudio[] {
-  if (typeof window === "undefined") return hostStudios
-  snapshot ??= readStoredStudios() ?? hostStudios
-  return snapshot
-}
-
-function getServerSnapshot(): HostStudio[] {
-  return hostStudios
-}
+let loadVersion = 0
 
 function subscribe(listener: () => void) {
   listeners.add(listener)
   return () => listeners.delete(listener)
 }
 
-function commit(next: HostStudio[]) {
+function publish(next: StudioState) {
   snapshot = next
-
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-  } catch {
-    // Storage can be unavailable (private mode / quota); keep the in-memory
-    // snapshot so edits still work for the rest of the session.
-  }
-
   listeners.forEach((listener) => listener())
 }
 
-function coverImage(current: HostStudio["image"], photos: string[]) {
-  const cover = photos[0]
-  // Object URLs cannot be restored after a reload, so keep the previous cover.
-  if (!cover || cover.startsWith("blob:")) return current
-  return cover
-}
-
-/** Keep the My Studios summary fields in sync with the form data. */
-function toSummary(details: StudioFormData) {
-  return {
-    name: details.name.trim(),
-    category: CATEGORY_BADGES[details.category] ?? details.category,
-    city: details.city.trim(),
-    price: Number(details.hourlyRate) || 0,
+function loadStudios(userId: string, force = false) {
+  if (
+    !force &&
+    snapshot.userId === userId &&
+    (snapshot.status === "ready" || snapshot.status === "loading")
+  ) {
+    return
   }
+
+  const version = ++loadVersion
+  publish({
+    userId,
+    status: "loading",
+    studios: snapshot.userId === userId ? snapshot.studios : [],
+    error: null,
+  })
+
+  getMyStudios()
+    .then((records) => {
+      if (
+        version !== loadVersion ||
+        snapshot.userId !== userId ||
+        snapshot.status !== "loading"
+      ) {
+        return
+      }
+      publish({
+        userId,
+        status: "ready",
+        studios: records.map(toHostStudio),
+        error: null,
+      })
+    })
+    .catch((error: unknown) => {
+      if (
+        version !== loadVersion ||
+        snapshot.userId !== userId ||
+        snapshot.status !== "loading"
+      ) {
+        return
+      }
+      publish({
+        userId,
+        status: "error",
+        studios: [],
+        error:
+          error instanceof Error
+            ? error.message
+            : "Could not load your studios.",
+      })
+    })
 }
 
-/** Current listings, kept in sync across every component using the hook. */
+function updateSnapshot(
+  userId: string | undefined,
+  updater: (studios: HostStudio[]) => HostStudio[]
+) {
+  if (!userId || snapshot.userId !== userId) return
+  if (snapshot.status !== "ready") {
+    loadStudios(userId, true)
+    return
+  }
+  publish({ ...snapshot, studios: updater(snapshot.studios) })
+}
+
 export function useHostStudios() {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  const { data: session, isPending } = authClient.useSession()
+  const userId = session?.user.id ?? null
+  const state = useSyncExternalStore(
+    subscribe,
+    () => snapshot,
+    () => serverSnapshot
+  )
+
+  React.useEffect(() => {
+    if (isPending) return
+    if (userId) {
+      loadStudios(userId)
+      return
+    }
+
+    if (snapshot.status !== "unauthenticated" || snapshot.userId !== null) {
+      publish({
+        userId: null,
+        status: "unauthenticated",
+        studios: [],
+        error: null,
+      })
+    }
+  }, [isPending, userId])
+
+  const retry = React.useCallback(() => {
+    if (userId && !isPending) loadStudios(userId, true)
+  }, [isPending, userId])
+
+  if (state.userId !== userId) {
+    return {
+      ...serverSnapshot,
+      status: isPending ? "loading" : userId ? "loading" : "unauthenticated",
+      retry,
+    }
+  }
+
+  return { ...state, retry }
 }
 
-export function getHostStudio(id: string) {
-  return getSnapshot().find((studio) => studio.id === id)
+type StudioSaveStatus = "Published" | "Draft"
+
+function apiStatus(status: StudioSaveStatus) {
+  return status === "Published" ? "published" : "draft"
 }
 
-/** Simulates the GET /studios/:id request so the page can show a loader. */
-export async function fetchHostStudio(
-  id: string
-): Promise<HostStudio | undefined> {
-  await wait(FETCH_DELAY)
-  return getHostStudio(id)
+export async function createHostStudio(
+  details: StudioFormData,
+  status: StudioSaveStatus
+) {
+  const record = await createStudio(details, apiStatus(status))
+  const studio = toHostStudio(record)
+  updateSnapshot(record.ownerId, (studios) => [studio, ...studios])
+  return studio
+}
+
+export async function fetchHostStudio(id: string) {
+  return toHostStudio(await getMyStudioById(id))
 }
 
 type UpdateStudioOptions = {
   status?: HostStudioStatus
 }
 
-/** Simulates PATCH /studios/:id — updates the existing record in place. */
 export async function updateHostStudio(
   id: string,
   details: StudioFormData,
   options: UpdateStudioOptions = {}
-): Promise<HostStudio> {
-  await wait(SAVE_DELAY)
-
-  const studios = getSnapshot()
-  const current = studios.find((studio) => studio.id === id)
-
-  if (!current) {
-    throw new Error("This studio could not be found. It may have been deleted.")
-  }
-
-  const updated: HostStudio = {
-    ...current,
-    ...toSummary(details),
-    status: options.status ?? current.status,
-    details: {
-      ...details,
-      amenities: [...details.amenities],
-      photos: [...details.photos],
-      availableDays: [...details.availableDays],
-    },
-    image: coverImage(current.image, details.photos),
-  }
-
-  commit(studios.map((studio) => (studio.id === id ? updated : studio)))
-  return updated
+) {
+  const record = await updateStudio(
+    id,
+    details,
+    options.status ? apiStatus(options.status) : undefined
+  )
+  const studio = toHostStudio(record)
+  updateSnapshot(record.ownerId, (studios) =>
+    studios.map((current) => (current.id === id ? studio : current))
+  )
+  return studio
 }
 
-/** Publish / unpublish from My Studios. */
-export function setHostStudioStatus(id: string, status: HostStudioStatus) {
-  commit(
-    getSnapshot().map((studio) =>
-      studio.id === id ? { ...studio, status } : studio
-    )
+export async function setHostStudioStatus(
+  id: string,
+  status: HostStudioStatus
+) {
+  const record = await updateStudioStatus(id, apiStatus(status))
+  const studio = toHostStudio(record)
+  updateSnapshot(record.ownerId, (studios) =>
+    studios.map((current) => (current.id === id ? studio : current))
   )
 }
 
-export function deleteHostStudio(id: string) {
-  commit(getSnapshot().filter((studio) => studio.id !== id))
+export async function deleteHostStudio(id: string) {
+  const userId = snapshot.userId ?? undefined
+  await deleteStudio(id)
+  updateSnapshot(userId, (studios) =>
+    studios.filter((studio) => studio.id !== id)
+  )
 }

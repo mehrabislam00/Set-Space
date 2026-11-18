@@ -7,11 +7,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useAccountProfile } from "@/components/Dashboard/Account-profile-provider"
 import {
-  PROFILE_BIO_MAX,
-  dashboardProfile,
-  dashboardUser,
-} from "@/lib/Dashboard-data"
+  MarketplaceApiError,
+  updateMyProfile,
+  uploadMyProfileImage,
+  type ProfileResponse,
+} from "@/lib/Marketplace-api"
+import { PROFILE_BIO_MAX } from "@/lib/Dashboard-data"
+import { toast } from "@/components/ui/toast"
 
 type Values = {
   name: string
@@ -22,11 +26,13 @@ type Values = {
 
 type Errors = Partial<Record<keyof Values, string>>
 
-const initial: Values = {
-  name: dashboardUser.name,
-  phone: dashboardProfile.phone,
-  location: dashboardProfile.location,
-  bio: dashboardProfile.bio,
+function valuesFromProfile(profile: ProfileResponse["profile"]): Values {
+  return {
+    name: profile.name,
+    phone: profile.phone,
+    location: profile.location,
+    bio: profile.bio,
+  }
 }
 
 function FieldError({ id, message }: { id: string; message?: string }) {
@@ -38,17 +44,20 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   )
 }
 
-/** Editable profile fields. Demo only: replace the TODO in onSubmit with your API call. */
-export function ProfileForm() {
+export function ProfileForm({ account }: { account: ProfileResponse }) {
+  const { pendingPhoto, setPendingPhoto, clearPendingPhoto, updateProfile } =
+    useAccountProfile()
+  const initial = valuesFromProfile(account.profile)
   const [saved, setSaved] = React.useState<Values>(initial)
   const [values, setValues] = React.useState<Values>(initial)
   const [errors, setErrors] = React.useState<Errors>({})
   const [loading, setLoading] = React.useState(false)
   const [justSaved, setJustSaved] = React.useState(false)
 
-  const dirty = (Object.keys(saved) as (keyof Values)[]).some(
+  const fieldsDirty = (Object.keys(saved) as (keyof Values)[]).some(
     (key) => values[key] !== saved[key]
   )
+  const dirty = fieldsDirty || pendingPhoto !== null
 
   function update(key: keyof Values, value: string) {
     setValues((v) => ({ ...v, [key]: value }))
@@ -59,6 +68,7 @@ export function ProfileForm() {
   function onCancel() {
     setValues(saved)
     setErrors({})
+    setPendingPhoto(null)
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -72,23 +82,48 @@ export function ProfileForm() {
     if (Object.keys(next).length > 0) return
 
     setLoading(true)
-    // TODO: send `values` to your profile API
-    await new Promise((resolve) => setTimeout(resolve, 600))
-
     const clean = {
       name: values.name.trim(),
       phone: values.phone.trim(),
       location: values.location.trim(),
       bio: values.bio.trim(),
     }
-    setValues(clean)
-    setSaved(clean)
-    setLoading(false)
-    setJustSaved(true)
+
+    try {
+      if (fieldsDirty) {
+        const result = await updateMyProfile(clean)
+        updateProfile(result.profile)
+        setValues(clean)
+        setSaved(clean)
+      }
+
+      if (pendingPhoto) {
+        const photoToUpload = pendingPhoto
+        const result = await uploadMyProfileImage(photoToUpload.file)
+        updateProfile(result.profile)
+        clearPendingPhoto(photoToUpload)
+      }
+
+      setJustSaved(true)
+    } catch (error) {
+      if (!(error instanceof MarketplaceApiError)) {
+        toast.add({
+          title: "Something went wrong. Please try again.",
+          type: "error",
+        })
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-5">
+    <form
+      onSubmit={onSubmit}
+      noValidate
+      aria-busy={loading}
+      className="space-y-5"
+    >
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="name" className="text-xs text-muted-foreground">
@@ -98,6 +133,7 @@ export function ProfileForm() {
             id="name"
             name="name"
             autoComplete="name"
+            maxLength={80}
             value={values.name}
             onChange={(e) => update("name", e.target.value)}
             aria-invalid={!!errors.name}
@@ -115,7 +151,7 @@ export function ProfileForm() {
             id="email"
             name="email"
             type="email"
-            value={dashboardUser.email}
+            value={account.profile.email || account.user.email}
             readOnly
             disabled
             className="h-10"

@@ -1,12 +1,15 @@
 import Link from "next/link"
 
 import { buttonVariants } from "@/components/ui/button"
-import { allBookings } from "@/lib/Dashboard-data"
 import { cn } from "@/lib/utils"
 
-export function BookingsHeader() {
-  const total = allBookings.length
-
+export function BookingsHeader({
+  total,
+  loading,
+}: {
+  total: number
+  loading: boolean
+}) {
   return (
     <header className="flex flex-wrap items-start justify-between gap-4">
       <div>
@@ -14,7 +17,9 @@ export function BookingsHeader() {
           My Bookings
         </h1>
         <p className="mt-1 text-xs text-muted-foreground">
-          {total} {total === 1 ? "booking" : "bookings"} in total
+          {loading
+            ? "Loading your bookings…"
+            : `${total} ${total === 1 ? "booking" : "bookings"} in total`}
         </p>
       </div>
 

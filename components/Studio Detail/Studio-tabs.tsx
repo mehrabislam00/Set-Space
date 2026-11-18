@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 
 const tabs = [
   { id: "overview", label: "Overview" },
+  { id: "opening-hours", label: "Opening Hours" },
   { id: "amenities", label: "Amenities" },
   { id: "host", label: "Host" },
   { id: "reviews", label: "Reviews" },
@@ -37,14 +38,16 @@ export function StudioTabs() {
 
   function go(e: React.MouseEvent, id: string) {
     e.preventDefault()
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" })
     setActive(id)
   }
 
   return (
     <nav
       aria-label="Studio sections"
-      className="sticky top-20 z-30 -mx-1 overflow-x-auto overflow-y-hidden border-b border-border bg-background/90 px-1 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="sticky top-20 z-30 -mx-1 [scrollbar-width:none] overflow-x-auto overflow-y-hidden border-b border-border bg-background/90 px-1 backdrop-blur-md [&::-webkit-scrollbar]:hidden"
     >
       <ul className="flex gap-6">
         {tabs.map((tab) => (

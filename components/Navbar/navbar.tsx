@@ -8,7 +8,9 @@ import * as React from "react"
 import logo from "@/assets/logo.svg"
 
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 
+import { useAccountProfile } from "@/components/Dashboard/Account-profile-provider"
 import { authClient } from "@/lib/auth-client"
 import { navLinks, solidNavRoutes } from "@/lib/Site-data"
 import { cn } from "@/lib/utils"
@@ -24,7 +26,15 @@ export function Navbar() {
   const { resolvedTheme, toggleTheme } = useSmoothTheme()
   const pathname = usePathname()
   const { data: session, isPending } = authClient.useSession()
-  const user = session?.user ?? null
+  const { user: profileUser, loading: profileLoading } = useAccountProfile()
+  const sessionUser = session?.user ?? null
+  const user = sessionUser
+    ? {
+        ...sessionUser,
+        name: profileUser?.name ?? sessionUser.name,
+        image: profileUser?.image ?? null,
+      }
+    : null
   const mounted = React.useSyncExternalStore(
     () => () => {},
     () => true,
@@ -190,18 +200,16 @@ export function Navbar() {
           </Button>
 
           {isPending ? (
-            <span
-              aria-hidden
-              className="hidden animate-pulse items-center gap-2 sm:flex"
-            >
-              <span className="size-8 rounded-full bg-foreground/10" />
-              <span className="size-9 rounded-full bg-foreground/10" />
+            <span aria-hidden className="hidden items-center gap-2 sm:flex">
+              <Skeleton className="size-8 rounded-full bg-foreground/10 motion-reduce:animate-none" />
+              <Skeleton className="size-9 rounded-full bg-foreground/10 motion-reduce:animate-none" />
             </span>
           ) : user ? (
             <>
               <NotificationsMenu className={ghost} />
               <UserMenu
                 user={user}
+                profileLoading={profileLoading}
                 scrolled={solid}
                 className="hidden sm:block"
               />
@@ -225,7 +233,11 @@ export function Navbar() {
             </Button>
           </Link>
 
-          <MobileMenu user={user} className={ghost} />
+          <MobileMenu
+            user={user}
+            loading={isPending || profileLoading}
+            className={ghost}
+          />
         </div>
       </Container>
     </header>

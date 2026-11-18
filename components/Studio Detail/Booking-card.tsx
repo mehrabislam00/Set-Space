@@ -1,17 +1,33 @@
 "use client"
 
 import { format } from "date-fns"
-import { CalendarDays, Check, Minus, Plus, Star } from "lucide-react"
+import { CalendarDays, Check, LoaderCircle, Minus, Plus } from "lucide-react"
 import * as React from "react"
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { toast } from "@/components/ui/toast"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { TimePicker } from "@/components/Host/Time-picker"
+import { StudioRatingDisplay } from "@/components/Studio Metadata/Studio-metadata"
+import { useStudioReviewStats } from "@/hooks/use-studio-review-stats"
+import {
+  createBooking,
+  isMarketplaceStudioId,
+  MarketplaceApiError,
+} from "@/lib/Marketplace-api"
+import { formatTaka } from "@/lib/utils"
 
 type BookingCardProps = {
+  studioId: string | null
   price: number
   rating: number
+  reviews: number
   capacity: number
   minHours: number
   serviceFeeRate: number
@@ -44,8 +60,10 @@ function timeLabel(value: string) {
 
 /** Sticky booking panel: date, time range, guests and a live price breakdown. */
 export function BookingCard({
+  studioId,
   price,
   rating,
+  reviews,
   capacity,
   minHours,
   serviceFeeRate,
@@ -58,6 +76,13 @@ export function BookingCard({
   )
   const [guests, setGuests] = React.useState(2)
   const [requested, setRequested] = React.useState(false)
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [error, setError] = React.useState<Error | null>(null)
+  const reviewStats = useStudioReviewStats(
+    studioId && isMarketplaceStudioId(studioId) ? studioId : null,
+    rating,
+    reviews
+  )
 
   const startMinutes = parseTime(start)
   const endMinutes = parseTime(end)
@@ -67,7 +92,7 @@ export function BookingCard({
   const total = subtotal + fee
 
   const tooShort = hours < minHours
-  const canRequest = !!date && !tooShort
+  const canRequest = !!studioId && !!date && !tooShort && !isSubmitting
 
   function onStartChange(value: string) {
     const next = Math.min(Math.max(parseTime(value), OPEN_MINUTE), CLOSE_MINUTE)
@@ -77,23 +102,52 @@ export function BookingCard({
     }
   }
 
-  function onRequest() {
-    if (!canRequest) return
-    // TODO: send { date, start, end, guests } to your bookings API
-    setRequested(true)
+  async function onRequest() {
+    if (!canRequest || !studioId || !date) return
+
+    setIsSubmitting(true)
+    setError(null)
+    try {
+      await createBooking({
+        studioId,
+        bookingDate: format(date, "yyyy-MM-dd"),
+        startTime: start,
+        endTime: end,
+        guests,
+      })
+      setRequested(true)
+    } catch (requestError) {
+      if (
+        requestError instanceof MarketplaceApiError &&
+        requestError.status === 401
+      ) {
+        setError(requestError)
+      } else if (!(requestError instanceof MarketplaceApiError)) {
+        setError(null)
+        toast.add({
+          title: "Something went wrong. Please try again.",
+          type: "error",
+        })
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between">
         <p className="font-heading text-2xl font-extrabold text-foreground">
-          ${price}
-          <span className="ml-1 text-xs font-normal text-muted-foreground">/hr</span>
+          {formatTaka(price)}
+          <span className="ml-1 text-xs font-normal text-muted-foreground">
+            /hr
+          </span>
         </p>
-        <p className="flex items-center gap-1 text-xs font-bold text-foreground">
-          <Star className="size-3.5 fill-primary text-primary" />
-          {rating}
-        </p>
+        <StudioRatingDisplay
+          rating={reviewStats.rating}
+          reviews={reviewStats.reviews}
+          className="justify-end text-right"
+        />
       </div>
 
       {requested ? (
@@ -105,15 +159,19 @@ export function BookingCard({
             Request sent
           </h3>
           <p className="max-w-56 text-xs leading-relaxed text-muted-foreground">
-            {date && format(date, "PPP")}, {timeLabel(start)} – {timeLabel(end)}.
-            The host will confirm shortly. You won&apos;t be charged until then.
+            {date && format(date, "PPP")}, {timeLabel(start)} – {timeLabel(end)}
+            . The host will confirm shortly. You won&apos;t be charged until
+            then.
           </p>
           <Button
             type="button"
             variant="outline"
             size="sm"
             className="mt-1 text-xs"
-            onClick={() => setRequested(false)}
+            onClick={() => {
+              setRequested(false)
+              setError(null)
+            }}
           >
             Edit request
           </Button>
@@ -126,9 +184,13 @@ export function BookingCard({
               <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                 <PopoverTrigger
                   aria-label="Select date"
-                  className="flex h-10 w-full items-center justify-between rounded-lg border border-input bg-transparent px-3 text-sm outline-none transition-colors hover:border-primary/60 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="flex h-10 w-full items-center justify-between rounded-lg border border-input bg-transparent px-3 text-sm transition-colors outline-none hover:border-primary/60 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
-                  <span className={date ? "text-foreground" : "text-muted-foreground"}>
+                  <span
+                    className={
+                      date ? "text-foreground" : "text-muted-foreground"
+                    }
+                  >
                     {date ? format(date, "PPP") : "Pick a date"}
                   </span>
                   <CalendarDays className="size-4 text-muted-foreground" />
@@ -182,6 +244,12 @@ export function BookingCard({
               </p>
             )}
 
+            {!studioId && (
+              <p className="text-[11px] text-muted-foreground">
+                Booking is unavailable for this listing.
+              </p>
+            )}
+
             <div className="space-y-1.5">
               <p className="text-[11px] text-muted-foreground">
                 Guests (max {capacity})
@@ -198,7 +266,10 @@ export function BookingCard({
                 >
                   <Minus className="size-3" />
                 </Button>
-                <span className="text-sm font-bold text-foreground" aria-live="polite">
+                <span
+                  className="text-sm font-bold text-foreground"
+                  aria-live="polite"
+                >
                   {guests}
                 </span>
                 <Button
@@ -219,21 +290,34 @@ export function BookingCard({
           <dl className="mt-5 space-y-2 border-t border-border pt-4 text-xs">
             <div className="flex justify-between text-muted-foreground">
               <dt>
-                ${price} × {Math.max(hours, 0)} hr
+                {formatTaka(price)} × {Math.max(hours, 0)} hr
               </dt>
-              <dd>${subtotal}</dd>
+              <dd>{formatTaka(subtotal)}</dd>
             </div>
             <div className="flex justify-between text-muted-foreground">
               <dt>Service fee</dt>
-              <dd>${fee}</dd>
+              <dd>{formatTaka(fee)}</dd>
             </div>
             <div className="flex items-center justify-between pt-2">
-              <dt className="font-heading text-sm font-bold text-foreground">Total</dt>
+              <dt className="font-heading text-sm font-bold text-foreground">
+                Total
+              </dt>
               <dd className="font-heading text-base font-extrabold text-primary">
-                ${total}
+                {formatTaka(total)}
               </dd>
             </div>
           </dl>
+
+          {error instanceof MarketplaceApiError && error.status === 401 && (
+            <p role="alert" className="mt-4 text-xs text-destructive">
+              <Link
+                href="/login"
+                className="font-semibold underline underline-offset-2"
+              >
+                Sign in to continue
+              </Link>
+            </p>
+          )}
 
           <Button
             type="button"
@@ -242,12 +326,21 @@ export function BookingCard({
             onClick={onRequest}
             className="btn-alive mt-5 w-full"
           >
-            Request to Book
+            {isSubmitting ? (
+              <>
+                <LoaderCircle className="size-4 animate-spin" />
+                Sending request…
+              </>
+            ) : (
+              "Request to Book"
+            )}
           </Button>
           <p className="mt-3 text-center text-[10px] text-muted-foreground">
-            {date
-              ? "You won't be charged yet · Free cancellation up to 24h"
-              : "Pick a date to request this studio"}
+            {!studioId
+              ? "This studio cannot be booked online"
+              : date
+                ? "You won't be charged yet · Free cancellation up to 24h"
+                : "Pick a date to request this studio"}
           </p>
         </>
       )}

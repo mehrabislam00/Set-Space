@@ -17,7 +17,7 @@ import {
   hasActiveFilters,
   type Filters,
 } from "@/lib/Studio-filters"
-import { cn } from "@/lib/utils"
+import { cn, formatTaka } from "@/lib/utils"
 
 type Props = {
   filters: Filters
@@ -28,7 +28,13 @@ type Props = {
 const optionClass =
   "flex cursor-pointer items-center gap-2.5 text-xs text-muted-foreground transition-colors duration-200 hover:text-primary"
 
-function Group({ title, children }: { title: string; children: React.ReactNode }) {
+function Group({
+  title,
+  children,
+}: {
+  title: string
+  children: React.ReactNode
+}) {
   return (
     <div>
       <h3 className="mb-3 font-heading text-xs font-bold text-foreground">
@@ -41,8 +47,8 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
 
 export function FiltersSidebar({ filters, update, onClear }: Props) {
   const { priceMin, priceMax } = filters
-  const priceLabel = `$${priceMin} - ${
-    priceMax >= PRICE_MAX ? `$${PRICE_MAX}+` : `$${priceMax}`
+  const priceLabel = `${formatTaka(priceMin)} - ${
+    priceMax >= PRICE_MAX ? `${formatTaka(PRICE_MAX)}+` : formatTaka(priceMax)
   }`
 
   function toggleAmenity(name: string) {
@@ -103,7 +109,9 @@ export function FiltersSidebar({ filters, update, onClear }: Props) {
           <h3 className="font-heading text-xs font-bold text-foreground">
             Price per hour
           </h3>
-          <span className="text-[11px] text-muted-foreground">{priceLabel}</span>
+          <span className="text-[11px] text-muted-foreground">
+            {priceLabel}
+          </span>
         </div>
         <Slider
           min={0}
@@ -157,7 +165,10 @@ export function FiltersSidebar({ filters, update, onClear }: Props) {
                 }
               }}
             >
-              <RadioGroupItem id={`rating-${r.value}`} value={String(r.value)} />
+              <RadioGroupItem
+                id={`rating-${r.value}`}
+                value={String(r.value)}
+              />
               {r.label}
             </Label>
           ))}

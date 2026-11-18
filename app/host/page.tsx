@@ -3,9 +3,9 @@ import type { Metadata } from "next"
 import { Reveal } from "@/components/Animation/Reveal"
 import { EarningsChart } from "@/components/Host/Earnings-chart"
 import { HostHeader } from "@/components/Host/Host-header"
+import { HostDashboardStatsProvider } from "@/components/Host/Host-dashboard-stats-provider"
 import { HostStats } from "@/components/Host/Host-stats"
 import { PendingRequests } from "@/components/Host/Pending-requests"
-
 
 export const metadata: Metadata = {
   title: "Host Dashboard — SetSpace",
@@ -19,12 +19,14 @@ export default function HostPage() {
         <Reveal>
           <HostHeader />
         </Reveal>
-        <Reveal delay={80}>
-          <HostStats />
-        </Reveal>
-        <Reveal delay={80}>
-          <EarningsChart />
-        </Reveal>
+        <HostDashboardStatsProvider>
+          <Reveal delay={80}>
+            <HostStats />
+          </Reveal>
+          <Reveal delay={80}>
+            <EarningsChart />
+          </Reveal>
+        </HostDashboardStatsProvider>
       </div>
       <Reveal>
         <PendingRequests />

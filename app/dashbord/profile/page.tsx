@@ -2,9 +2,7 @@ import type { Metadata } from "next"
 
 import { Reveal } from "@/components/Animation/Reveal"
 import { ProfileHeader } from "@/components/Dashboard/Profile/Profile-header"
-import { ProfileAvatar } from "@/components/Dashboard/Profile/Profile-avatar"
-import { ProfileForm } from "@/components/Dashboard/Profile/Profile-form"
-
+import { ProfileContent } from "@/components/Dashboard/Profile/Profile-content"
 
 export const metadata: Metadata = {
   title: "My Profile — SetSpace",
@@ -19,10 +17,7 @@ export default function ProfilePage() {
       </Reveal>
 
       <Reveal delay={80}>
-        <div className="grid gap-8 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-10">
-          <ProfileAvatar />
-          <ProfileForm />
-        </div>
+        <ProfileContent />
       </Reveal>
     </div>
   )

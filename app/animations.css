@@ -41,6 +41,20 @@
   }
 }
 
+@keyframes setspace-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+
+.skeleton-pulse {
+  animation: setspace-skeleton-pulse 4s ease-in-out infinite;
+}
+
 /* Switch icon: each arrow slides out one side and re-enters from the other,
    the top one going left and the bottom one going right. */
 @keyframes setspace-arrow-left {
@@ -137,6 +151,7 @@
   .stagger-in,
   .img-in,
   .bar-grow,
+  .skeleton-pulse,
   .switch-icon .switch-arrow-a,
   .switch-icon .switch-arrow-b {
     animation: none !important;

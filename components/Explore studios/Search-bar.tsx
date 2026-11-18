@@ -11,11 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { categories, locations } from "@/lib/Site-data"
+import { categories } from "@/lib/Site-data"
 import type { Filters } from "@/lib/Studio-filters"
 
 type Props = {
   filters: Filters
+  locations: string[]
   update: (patch: Partial<Filters>) => void
   onSearch?: () => void
 }
@@ -29,7 +30,7 @@ const contentClass =
 const itemClass =
   "rounded-md py-2 text-xs focus:bg-accent focus:text-accent-foreground"
 
-export function SearchBar({ filters, update, onSearch }: Props) {
+export function SearchBar({ filters, locations, update, onSearch }: Props) {
   return (
     <form
       onSubmit={(e) => {
@@ -77,7 +78,7 @@ export function SearchBar({ filters, update, onSearch }: Props) {
           <SelectValue />
         </SelectTrigger>
         <SelectContent sideOffset={12} className={contentClass}>
-          {locations.map((l) => (
+          {["All Locations", ...locations].map((l) => (
             <SelectItem key={l} value={l} className={itemClass}>
               {l}
             </SelectItem>

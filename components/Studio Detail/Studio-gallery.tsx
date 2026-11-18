@@ -68,6 +68,10 @@ export function StudioGallery({ name, images }: StudioGalleryProps) {
               src={img.src}
               alt={img.alt}
               fill
+              unoptimized={
+                typeof img.src === "string" &&
+                !img.src.startsWith("/_next/static/")
+              }
               priority={i === 0}
               sizes={
                 i === 0
@@ -107,6 +111,10 @@ export function StudioGallery({ name, images }: StudioGalleryProps) {
               src={active.src}
               alt={active.alt}
               fill
+              unoptimized={
+                typeof active.src === "string" &&
+                !active.src.startsWith("/_next/static/")
+              }
               sizes="(min-width: 1024px) 1000px, 100vw"
               className="object-cover"
             />
@@ -149,7 +157,7 @@ export function StudioGallery({ name, images }: StudioGalleryProps) {
           </div>
 
           {/* Thumbnails */}
-          <ul className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <ul className="flex [scrollbar-width:none] gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
             {images.map((img, i) => (
               <li key={img.alt} className="shrink-0">
                 <button
@@ -168,6 +176,10 @@ export function StudioGallery({ name, images }: StudioGalleryProps) {
                     src={img.src}
                     alt=""
                     fill
+                    unoptimized={
+                      typeof img.src === "string" &&
+                      !img.src.startsWith("/_next/static/")
+                    }
                     sizes="112px"
                     className="object-cover"
                   />

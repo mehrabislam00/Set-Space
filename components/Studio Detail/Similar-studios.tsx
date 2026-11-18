@@ -1,21 +1,51 @@
+"use client"
+
 import Link from "next/link"
+import * as React from "react"
 
 import { Reveal } from "@/components/Animation/Reveal"
-import { exploreStudios } from "@/lib/Site-data"
+import { Skeleton } from "@/components/ui/skeleton"
+import { getPublicStudios } from "@/lib/Studio-api"
 import { StudioCard } from "../Studio card/Studio-card"
 
 type SimilarStudiosProps = {
-  currentId: number
+  currentId: number | string
   category: string
 }
 
-/** Up to 3 other studios, same category first. Swap for a real query later. */
+/** Up to three published studios, matching the current category first. */
 export function SimilarStudios({ currentId, category }: SimilarStudiosProps) {
-  const others = exploreStudios.filter((s) => s.id !== currentId)
+  const [state, setState] = React.useState<
+    | { status: "loading" }
+    | { status: "ready"; studios: Awaited<ReturnType<typeof getPublicStudios>> }
+    | { status: "error" }
+  >({ status: "loading" })
+
+  React.useEffect(() => {
+    const controller = new AbortController()
+    getPublicStudios(controller.signal)
+      .then((studios) => {
+        if (!controller.signal.aborted) {
+          setState({ status: "ready", studios })
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setState({ status: "error" })
+      })
+
+    return () => controller.abort()
+  }, [])
+
+  const others =
+    state.status === "ready"
+      ? state.studios.filter((studio) => studio.id !== currentId)
+      : []
   const similar = [
-    ...others.filter((s) => s.category === category),
-    ...others.filter((s) => s.category !== category),
+    ...others.filter((studio) => studio.category === category),
+    ...others.filter((studio) => studio.category !== category),
   ].slice(0, 3)
+
+  if (state.status === "ready" && similar.length === 0) return null
 
   return (
     <section className="mt-20">
@@ -34,10 +64,27 @@ export function SimilarStudios({ currentId, category }: SimilarStudiosProps) {
         </Link>
       </Reveal>
 
-      <Reveal delay={120} className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-        {similar.map((studio) => (
-          <StudioCard key={studio.id} studio={studio} />
-        ))}
+      <Reveal
+        delay={120}
+        className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        {state.status === "loading" ? (
+          [0, 1, 2].map((item) => (
+            <div key={item} aria-hidden="true" className="space-y-4">
+              <Skeleton className="aspect-[4/3] rounded-2xl motion-reduce:animate-none" />
+              <Skeleton className="h-4 w-2/3 motion-reduce:animate-none" />
+              <Skeleton className="h-3 w-1/2 motion-reduce:animate-none" />
+            </div>
+          ))
+        ) : state.status === "error" ? (
+          <p role="alert" className="col-span-full text-xs text-destructive">
+            Similar studios could not be loaded.
+          </p>
+        ) : (
+          similar.map((studio) => (
+            <StudioCard key={studio.id} studio={studio} />
+          ))
+        )}
       </Reveal>
     </section>
   )

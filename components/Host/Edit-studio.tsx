@@ -10,8 +10,10 @@ import { StudioForm } from "@/components/Host/Studio-form"
 import { buttonVariants } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { HostStudio, StudioFormData } from "@/lib/Host-data"
+import { MarketplaceApiError } from "@/lib/Marketplace-api"
 import { fetchHostStudio, updateHostStudio } from "@/lib/Studio-store"
 import { cn } from "@/lib/utils"
+import { toast } from "@/components/ui/toast"
 
 type EditState =
   | { status: "loading" }
@@ -32,7 +34,6 @@ export function EditStudio({ studioId }: { studioId?: string }) {
   const [successMessage, setSuccessMessage] = React.useState<string | null>(
     null
   )
-  const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
   const redirectTimer = React.useRef<number | null>(null)
 
   React.useEffect(() => {
@@ -45,11 +46,14 @@ export function EditStudio({ studioId }: { studioId?: string }) {
         if (cancelled) return
         setState(studio ? { status: "ready", studio } : { status: "not-found" })
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (cancelled) return
         setState({
           status: "error",
-          message: "We could not load this studio. Please try again.",
+          message:
+            error instanceof Error
+              ? error.message
+              : "We could not load this studio. Please try again.",
         })
       })
 
@@ -82,18 +86,18 @@ export function EditStudio({ studioId }: { studioId?: string }) {
 
     setPendingAction("save")
     setSuccessMessage(null)
-    setErrorMessage(null)
 
     try {
       await updateHostStudio(studio.id, data)
       setSuccessMessage("Studio updated successfully.")
       scheduleRedirect()
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong while saving. Please try again."
-      )
+      if (!(error instanceof MarketplaceApiError)) {
+        toast.add({
+          title: "Something went wrong. Please try again.",
+          type: "error",
+        })
+      }
       setPendingAction(null)
     }
   }
@@ -103,18 +107,18 @@ export function EditStudio({ studioId }: { studioId?: string }) {
 
     setPendingAction("draft")
     setSuccessMessage(null)
-    setErrorMessage(null)
 
     try {
       await updateHostStudio(studio.id, data, { status: "Draft" })
       setSuccessMessage("Draft saved.")
       scheduleRedirect()
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong while saving. Please try again."
-      )
+      if (!(error instanceof MarketplaceApiError)) {
+        toast.add({
+          title: "Something went wrong. Please try again.",
+          type: "error",
+        })
+      }
       setPendingAction(null)
     }
   }
@@ -147,7 +151,7 @@ export function EditStudio({ studioId }: { studioId?: string }) {
     <div className="space-y-8">
       <AddStudioHeader
         title={`Edit ${state.studio.name}`}
-        description="Changes save to this device."
+        description="Changes save to your SetSpace account."
       />
       <StudioForm
         key={state.studio.id}
@@ -155,7 +159,6 @@ export function EditStudio({ studioId }: { studioId?: string }) {
         submitLabel="Update Studio"
         pendingAction={pendingAction}
         successMessage={successMessage}
-        errorMessage={errorMessage}
         onSubmit={handleUpdate}
         onSaveDraft={handleSaveDraft}
         onCancel={() => router.push("/host/my-studios")}

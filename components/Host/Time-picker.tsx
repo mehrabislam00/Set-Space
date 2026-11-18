@@ -63,6 +63,7 @@ type TimePickerProps = {
   ariaLabel?: string
   icon?: React.ReactNode
   className?: string
+  disabled?: boolean
 }
 
 /**
@@ -77,6 +78,7 @@ export function TimePicker({
   ariaLabel,
   icon,
   className,
+  disabled = false,
 }: TimePickerProps) {
   const [open, setOpen] = React.useState(false)
   const parts = parseTime(value)
@@ -106,8 +108,9 @@ export function TimePicker({
       <PopoverTrigger
         id={id}
         aria-label={ariaLabel}
+        disabled={disabled}
         className={cn(
-          "group flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-input bg-transparent px-3 text-sm outline-none transition-all duration-200 hover:border-primary/60 hover:bg-primary/[0.03] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 data-[popup-open]:border-primary/60 data-[popup-open]:ring-3 data-[popup-open]:ring-primary/15",
+          "group flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-input bg-transparent px-3 text-sm transition-all duration-200 outline-none hover:border-primary/60 hover:bg-primary/[0.03] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 data-[popup-open]:border-primary/60 data-[popup-open]:ring-3 data-[popup-open]:ring-primary/15",
           className
         )}
       >
@@ -118,7 +121,7 @@ export function TimePicker({
           >
             {icon ?? <Clock className="size-4" />}
           </span>
-          <span className="truncate font-medium tabular-nums text-foreground">
+          <span className="truncate font-medium text-foreground tabular-nums">
             {toLabel(parts)}
           </span>
         </span>
@@ -134,10 +137,10 @@ export function TimePicker({
         className="w-60 gap-0 overflow-hidden rounded-xl border border-border bg-popover p-0 shadow-xl ring-0"
       >
         <div className="flex items-center justify-between gap-2 border-b border-border/70 px-3 py-2.5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
             {title}
           </p>
-          <p className="font-heading text-sm font-bold tabular-nums text-primary">
+          <p className="font-heading text-sm font-bold text-primary tabular-nums">
             {toLabel(parts)}
           </p>
         </div>
@@ -145,12 +148,12 @@ export function TimePicker({
         <div className="p-2.5">
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <p className="px-2 pb-1 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+              <p className="px-2 pb-1 text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
                 Hour
               </p>
               <div
                 ref={hourRef}
-                className="relative h-44 overflow-y-auto overscroll-contain rounded-lg bg-muted/30 p-1 [scrollbar-width:thin]"
+                className="relative h-44 [scrollbar-width:thin] overflow-y-auto overscroll-contain rounded-lg bg-muted/30 p-1"
               >
                 {HOURS.map((hour) => {
                   const selected = hour === parts.hour
@@ -163,7 +166,7 @@ export function TimePicker({
                       data-selected={selected}
                       onClick={() => update({ hour })}
                       className={cn(
-                        "flex h-8 w-full items-center justify-center rounded-md text-sm tabular-nums outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring/60 motion-reduce:transition-none",
+                        "flex h-8 w-full items-center justify-center rounded-md text-sm tabular-nums transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring/60 motion-reduce:transition-none",
                         selected
                           ? "bg-primary/15 font-bold text-primary"
                           : "text-muted-foreground hover:bg-background/80 hover:text-foreground"
@@ -177,12 +180,12 @@ export function TimePicker({
             </div>
 
             <div>
-              <p className="px-2 pb-1 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+              <p className="px-2 pb-1 text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
                 Minute
               </p>
               <div
                 ref={minuteRef}
-                className="relative h-44 overflow-y-auto overscroll-contain rounded-lg bg-muted/30 p-1 [scrollbar-width:thin]"
+                className="relative h-44 [scrollbar-width:thin] overflow-y-auto overscroll-contain rounded-lg bg-muted/30 p-1"
               >
                 {MINUTES.map((minute) => {
                   const selected = minute === parts.minute
@@ -195,7 +198,7 @@ export function TimePicker({
                       data-selected={selected}
                       onClick={() => update({ minute })}
                       className={cn(
-                        "flex h-8 w-full items-center justify-center rounded-md text-sm tabular-nums outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring/60 motion-reduce:transition-none",
+                        "flex h-8 w-full items-center justify-center rounded-md text-sm tabular-nums transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring/60 motion-reduce:transition-none",
                         selected
                           ? "bg-primary/15 font-bold text-primary"
                           : "text-muted-foreground hover:bg-background/80 hover:text-foreground"
@@ -220,7 +223,7 @@ export function TimePicker({
                   aria-pressed={selected}
                   onClick={() => update({ meridiem })}
                   className={cn(
-                    "h-8 rounded-md text-xs font-semibold outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring/60 motion-reduce:transition-none",
+                    "h-8 rounded-md text-xs font-semibold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-ring/60 motion-reduce:transition-none",
                     selected
                       ? "bg-primary text-primary-foreground shadow-sm shadow-primary/30"
                       : "text-muted-foreground hover:bg-background/70 hover:text-foreground"
@@ -240,7 +243,7 @@ export function TimePicker({
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="rounded-md px-3 py-1 text-xs font-semibold text-primary outline-none transition-colors duration-150 hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-ring/60"
+            className="rounded-md px-3 py-1 text-xs font-semibold text-primary transition-colors duration-150 outline-none hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-ring/60"
           >
             Done
           </button>

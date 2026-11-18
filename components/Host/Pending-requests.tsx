@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, LoaderCircle } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import * as React from "react"
@@ -17,20 +17,103 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
-import { hostRequests, type HostRequest } from "@/lib/Host-data"
-import { cn } from "@/lib/utils"
+import { toast } from "@/components/ui/toast"
+import { toHostBookingRequest } from "@/lib/Booking-api"
+import {
+  type BookingRequest,
+  type BookingStatus,
+} from "@/lib/Booking-requests-data"
+import {
+  getBookings,
+  MarketplaceApiError,
+  updateBookingStatus,
+} from "@/lib/Marketplace-api"
+import { cn, formatTaka } from "@/lib/utils"
+
+type PendingRequest = Pick<
+  BookingRequest,
+  | "id"
+  | "studioName"
+  | "image"
+  | "date"
+  | "time"
+  | "renter"
+  | "guests"
+  | "total"
+>
+
+function toPendingRequest(booking: BookingRequest): PendingRequest {
+  return {
+    id: booking.id,
+    studioName: booking.studioName,
+    image: booking.image,
+    date: booking.date,
+    time: booking.time,
+    renter: booking.renter,
+    guests: booking.guests,
+    total: booking.total,
+  }
+}
 
 export function PendingRequests() {
-  const [requests, setRequests] = React.useState(hostRequests)
-  const [target, setTarget] = React.useState<HostRequest | null>(null)
+  const [requests, setRequests] = React.useState<PendingRequest[]>([])
+  const [target, setTarget] = React.useState<PendingRequest | null>(null)
+  const [loading, setLoading] = React.useState(true)
+  const [error, setError] = React.useState<Error | null>(null)
+  const [updatingId, setUpdatingId] = React.useState<string | null>(null)
+  const [reloadKey, setReloadKey] = React.useState(0)
 
-  // TODO: replace both handlers with API calls
-  const remove = (id: string) =>
-    setRequests((list) => list.filter((r) => r.id !== id))
+  React.useEffect(() => {
+    const controller = new AbortController()
 
-  function confirmReject() {
-    if (target) remove(target.id)
-    setTarget(null)
+    getBookings("host", controller.signal)
+      .then((bookings) => {
+        setRequests(
+          bookings
+            .filter((booking) => booking.status === "Pending")
+            .map((booking) => toPendingRequest(toHostBookingRequest(booking)))
+        )
+      })
+      .catch((loadError: unknown) => {
+        if (loadError instanceof Error && loadError.name === "AbortError")
+          return
+        setError(
+          loadError instanceof Error
+            ? loadError
+            : new Error("Could not load pending booking requests.")
+        )
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false)
+      })
+
+    return () => controller.abort()
+  }, [reloadKey])
+
+  async function changeStatus(id: string, status: BookingStatus) {
+    if (updatingId) return
+    setUpdatingId(id)
+    try {
+      await updateBookingStatus(id, status)
+      setRequests((current) => current.filter((request) => request.id !== id))
+      setTarget(null)
+      toast.add({
+        title:
+          status === "Confirmed"
+            ? "Booking confirmed"
+            : "Booking request declined",
+        type: "success",
+      })
+    } catch (requestError) {
+      if (!(requestError instanceof MarketplaceApiError)) {
+        toast.add({
+          title: "Something went wrong. Please try again.",
+          type: "error",
+        })
+      }
+    } finally {
+      setUpdatingId(null)
+    }
   }
 
   return (
@@ -51,7 +134,36 @@ export function PendingRequests() {
         </Link>
       </div>
 
-      {requests.length === 0 ? (
+      {loading ? (
+        <div
+          aria-label="Loading pending requests"
+          aria-busy="true"
+          className="skeleton-pulse mt-6 h-40 rounded-2xl border border-border bg-card"
+        />
+      ) : error ? (
+        <div
+          role="alert"
+          className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive"
+        >
+          <p>{error.message}</p>
+          {error instanceof MarketplaceApiError && error.status === 401 && (
+            <Link href="/login" className="mr-3 underline">
+              Sign in
+            </Link>
+          )}
+          <button
+            type="button"
+            className="font-semibold underline underline-offset-2"
+            onClick={() => {
+              setLoading(true)
+              setError(null)
+              setReloadKey((key) => key + 1)
+            }}
+          >
+            Try again
+          </button>
+        </div>
+      ) : requests.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center">
           <p className="font-heading text-base font-bold text-foreground">
             No pending requests
@@ -71,8 +183,9 @@ export function PendingRequests() {
                 <div className="relative h-16 w-22 shrink-0 overflow-hidden rounded-xl">
                   <Image
                     src={request.image}
-                    alt={request.studio}
+                    alt={request.studioName}
                     fill
+                    unoptimized={!request.image.startsWith("/_next/static/")}
                     sizes="88px"
                     className="object-cover"
                   />
@@ -81,14 +194,14 @@ export function PendingRequests() {
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-heading text-sm font-bold text-foreground sm:text-base">
-                      {request.studio}
+                      {request.studioName}
                     </h3>
                     <Badge className="h-5 border-0 bg-warning/15 text-[10px] font-medium text-warning">
                       Pending
                     </Badge>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {request.when}
+                    {request.date} · {request.time}
                   </p>
                   <p className="mt-1 text-[11px] text-muted-foreground">
                     Renter:{" "}
@@ -97,7 +210,7 @@ export function PendingRequests() {
                     </span>{" "}
                     · #{request.id} · {request.guests} guests ·{" "}
                     <span className="font-bold text-foreground">
-                      ${request.total}
+                      {formatTaka(request.total)}
                     </span>
                   </p>
                 </div>
@@ -106,14 +219,20 @@ export function PendingRequests() {
               <div className="flex flex-wrap items-center gap-2 lg:justify-end">
                 <Button
                   type="button"
-                  onClick={() => remove(request.id)}
+                  disabled={updatingId !== null}
+                  onClick={() => changeStatus(request.id, "Confirmed")}
                   className="btn-alive h-8 rounded-lg px-3 text-[11px] font-semibold"
                 >
-                  Accept
+                  {updatingId === request.id ? (
+                    <LoaderCircle className="size-4 animate-spin" />
+                  ) : (
+                    "Accept"
+                  )}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
+                  disabled={updatingId !== null}
                   onClick={() => setTarget(request)}
                   className="btn-alive h-8 rounded-lg px-3 text-[11px] font-semibold"
                 >
@@ -134,19 +253,27 @@ export function PendingRequests() {
         </ul>
       )}
 
-      <AlertDialog open={!!target} onOpenChange={(open) => !open && setTarget(null)}>
+      <AlertDialog
+        open={!!target}
+        onOpenChange={(open) => !open && setTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Reject this request?</AlertDialogTitle>
             <AlertDialogDescription>
-              {target?.renter}&apos;s request for {target?.studio} on{" "}
-              {target?.when.split(" · ")[0]} will be declined. This can&apos;t
-              be undone.
+              {target?.renter}&apos;s request for {target?.studioName} on{" "}
+              {target?.date} will be declined. This can&apos;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Keep request</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={confirmReject}>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={updatingId !== null}
+              onClick={() => {
+                if (target) void changeStatus(target.id, "Rejected")
+              }}
+            >
               Reject request
             </AlertDialogAction>
           </AlertDialogFooter>

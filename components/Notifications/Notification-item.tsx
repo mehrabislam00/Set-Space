@@ -19,15 +19,32 @@ const typeMeta: Record<
   NotificationType,
   { icon: LucideIcon; label: string; tone: string }
 > = {
-  booking: { icon: CalendarCheck, label: "Booking", tone: "bg-success/15 text-success" },
-  request: { icon: Inbox, label: "Request", tone: "bg-primary/15 text-primary" },
+  booking: {
+    icon: CalendarCheck,
+    label: "Booking",
+    tone: "bg-success/15 text-success",
+  },
+  request: {
+    icon: Inbox,
+    label: "Request",
+    tone: "bg-primary/15 text-primary",
+  },
   review: { icon: Star, label: "Review", tone: "bg-warning/15 text-warning" },
-  cancelled: { icon: CalendarX, label: "Cancelled", tone: "bg-destructive/15 text-destructive" },
-  listing: { icon: Pencil, label: "Listing", tone: "bg-olive/20 text-muted-foreground" },
+  cancelled: {
+    icon: CalendarX,
+    label: "Cancelled",
+    tone: "bg-destructive/15 text-destructive",
+  },
+  listing: {
+    icon: Pencil,
+    label: "Listing",
+    tone: "bg-olive/20 text-muted-foreground",
+  },
 }
 
 type NotificationRowProps = {
   notification: NotificationItem
+  busy: boolean
   onRead: () => void
   onDelete: () => void
 }
@@ -35,6 +52,7 @@ type NotificationRowProps = {
 /** One row of the Notifications page. Unread rows get a gold edge, a dot and a tinted background. */
 export function NotificationRow({
   notification: n,
+  busy,
   onRead,
   onDelete,
 }: NotificationRowProps) {
@@ -42,6 +60,7 @@ export function NotificationRow({
 
   return (
     <li
+      aria-busy={busy}
       className={cn(
         "group relative flex items-start gap-3 p-4 transition-colors duration-300 hover:bg-muted/40 sm:gap-4 sm:p-5",
         n.unread &&
@@ -93,6 +112,7 @@ export function NotificationRow({
             aria-label={`Mark as read: ${n.title}`}
             title="Mark as read"
             onClick={onRead}
+            disabled={busy}
             className="btn-flat text-muted-foreground hover:text-primary"
           >
             <Check className="size-4" strokeWidth={1.5} />
@@ -105,6 +125,7 @@ export function NotificationRow({
           aria-label={`Delete notification: ${n.title}`}
           title="Delete"
           onClick={onDelete}
+          disabled={busy}
           className="btn-flat text-muted-foreground hover:text-destructive"
         >
           <Trash2 className="size-4" strokeWidth={1.5} />

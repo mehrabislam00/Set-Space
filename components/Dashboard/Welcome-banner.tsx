@@ -1,13 +1,19 @@
+"use client"
+
 import Image from "next/image"
 
 import heroStudio from "@/assets/hero-studio.jpg"
-import { dashboardUser } from "@/lib/Dashboard-data"
+import { useAccountProfile } from "@/components/Dashboard/Account-profile-provider"
 
 export function WelcomeBanner() {
-  const firstName = dashboardUser.name.split(" ")[0]
+  const { user, loading } = useAccountProfile()
+  const firstName = user?.name.split(" ")[0] || "there"
 
   return (
-    <section className="relative isolate overflow-hidden rounded-2xl border border-border">
+    <section
+      className="relative isolate overflow-hidden rounded-2xl border border-border"
+      aria-busy={loading}
+    >
       <Image
         src={heroStudio}
         alt=""
@@ -20,7 +26,16 @@ export function WelcomeBanner() {
 
       <div className="px-6 py-9 sm:px-9">
         <h1 className="font-heading text-2xl font-extrabold tracking-tight text-photo sm:text-4xl">
-          Welcome back, {firstName}!
+          Welcome back,{" "}
+          {loading ? (
+            <span
+              aria-hidden
+              className="skeleton-pulse inline-block h-6 w-24 rounded-md bg-white/20 align-middle sm:h-9 sm:w-36"
+            />
+          ) : (
+            firstName
+          )}
+          !
         </h1>
         <p className="mt-2 text-xs text-photo-muted sm:text-sm">
           Here&apos;s what&apos;s happening with your SetSpace account.

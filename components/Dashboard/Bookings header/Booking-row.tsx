@@ -3,11 +3,12 @@ import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { BookingStatus, UserBooking } from "@/lib/Dashboard-data"
-import { cn } from "@/lib/utils"
+import { cn, formatTaka } from "@/lib/utils"
 
 export const bookingStatusClass: Record<BookingStatus, string> = {
   Confirmed: "bg-success/15 text-success",
   Pending: "bg-warning/15 text-warning",
+  Rejected: "bg-destructive/15 text-destructive",
   Completed: "bg-muted text-foreground",
   Cancelled: "bg-destructive/15 text-destructive",
 }
@@ -32,6 +33,10 @@ export function BookingRow({ booking, onView, onCancel }: BookingRowProps) {
             src={booking.image}
             alt={booking.studio}
             fill
+            unoptimized={
+              typeof booking.image === "string" &&
+              !booking.image.startsWith("/_next/static/")
+            }
             sizes="88px"
             className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
           />
@@ -54,7 +59,9 @@ export function BookingRow({ booking, onView, onCancel }: BookingRowProps) {
           <p className="mt-1 text-xs text-muted-foreground">{booking.when}</p>
           <p className="mt-1 text-[11px] text-muted-foreground">
             #{booking.id} · {booking.guests} guests ·{" "}
-            <span className="font-bold text-foreground">${booking.total}</span>
+            <span className="font-bold text-foreground">
+              {formatTaka(booking.total)}
+            </span>
           </p>
         </div>
       </div>
@@ -64,7 +71,7 @@ export function BookingRow({ booking, onView, onCancel }: BookingRowProps) {
           <button
             type="button"
             onClick={() => onCancel(booking)}
-            className="rounded text-[11px] font-medium text-destructive underline-offset-4 outline-none transition-opacity hover:underline hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring"
+            className="rounded text-[11px] font-medium text-destructive underline-offset-4 transition-opacity outline-none hover:underline hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring"
           >
             Cancel
           </button>

@@ -33,10 +33,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { authClient, type SessionUser } from "@/lib/auth-client"
+import { toast } from "@/components/ui/toast"
+import { signOutCurrentUser, type SessionUser } from "@/lib/auth-client"
 import { navLinks } from "@/lib/Site-data"
 import { useSmoothTheme } from "@/lib/Use-smooth-theme"
 import { cn } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const accountLinks = [
   { label: "My Profile", href: "/dashboard/profile", icon: User },
@@ -54,9 +56,11 @@ const accountLinks = [
  *  Pass the navbar's `ghost` classes as className. */
 export function MobileMenu({
   user,
+  loading = false,
   className,
 }: {
   user: SessionUser | null
+  loading?: boolean
   className?: string
 }) {
   const [open, setOpen] = React.useState(false)
@@ -78,13 +82,22 @@ export function MobileMenu({
   async function signOut() {
     if (signingOut) return
     setSigningOut(true)
-    close()
 
     try {
-      await authClient.signOut()
-    } finally {
+      await signOutCurrentUser()
+      close()
+      toast.add({ title: "Signed out", type: "success" })
       router.push("/login")
       router.refresh()
+    } catch (error) {
+      toast.add({
+        title: "Could not sign out",
+        description:
+          error instanceof Error ? error.message : "Please try again.",
+        type: "error",
+      })
+    } finally {
+      setSigningOut(false)
     }
   }
 
@@ -165,64 +178,83 @@ export function MobileMenu({
 
           <div className="mx-3 my-4 border-t border-border" />
 
-          <p className="px-3 pb-2 text-[11px] tracking-wide text-muted-foreground uppercase">
-            {user ? user.name : "Account"}
-          </p>
-          <ul className="space-y-0.5">
-            {user ? (
-              <>
-                {accountLinks.map(({ label, href, icon: Icon }) => (
-                  <li key={label}>
-                    <Link
-                      href={href}
-                      onClick={close}
-                      className="flex items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/60 hover:text-primary"
-                    >
-                      <Icon className="size-4 text-primary" strokeWidth={1.5} />
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <button
-                    type="button"
-                    onClick={signOut}
-                    disabled={signingOut}
-                    className="flex w-full items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive transition-colors duration-200 hover:bg-destructive/10 disabled:pointer-events-none disabled:opacity-50"
-                  >
-                    <LogOut className="size-4" strokeWidth={1.5} />
-                    Sign Out
-                  </button>
-                </li>
-              </>
-            ) : (
-              <>
-                <li>
-                  <Link
-                    href="/login"
-                    onClick={close}
-                    className="flex items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/60 hover:text-primary"
-                  >
-                    <LogIn className="size-4 text-primary" strokeWidth={1.5} />
-                    Sign In
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/register"
-                    onClick={close}
-                    className="flex items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/60 hover:text-primary"
-                  >
-                    <UserPlus
-                      className="size-4 text-primary"
-                      strokeWidth={1.5}
-                    />
-                    Create Account
-                  </Link>
-                </li>
-              </>
-            )}
-          </ul>
+          {loading ? (
+            <div
+              role="status"
+              aria-label="Loading account"
+              className="space-y-2 px-3 py-2"
+            >
+              <Skeleton className="h-4 w-24 motion-reduce:animate-none" />
+              <Skeleton className="h-3 w-36 motion-reduce:animate-none" />
+            </div>
+          ) : (
+            <>
+              <p className="px-3 pb-2 text-[11px] tracking-wide text-muted-foreground uppercase">
+                {user ? user.name : "Account"}
+              </p>
+              <ul className="space-y-0.5">
+                {user ? (
+                  <>
+                    {accountLinks.map(({ label, href, icon: Icon }) => (
+                      <li key={label}>
+                        <Link
+                          href={href}
+                          onClick={close}
+                          className="flex items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/60 hover:text-primary"
+                        >
+                          <Icon
+                            className="size-4 text-primary"
+                            strokeWidth={1.5}
+                          />
+                          {label}
+                        </Link>
+                      </li>
+                    ))}
+                    <li>
+                      <button
+                        type="button"
+                        onClick={signOut}
+                        disabled={signingOut}
+                        className="flex w-full items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive transition-colors duration-200 hover:bg-destructive/10 disabled:pointer-events-none disabled:opacity-50"
+                      >
+                        <LogOut className="size-4" strokeWidth={1.5} />
+                        Sign Out
+                      </button>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      <Link
+                        href="/login"
+                        onClick={close}
+                        className="flex items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/60 hover:text-primary"
+                      >
+                        <LogIn
+                          className="size-4 text-primary"
+                          strokeWidth={1.5}
+                        />
+                        Sign In
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/register"
+                        onClick={close}
+                        className="flex items-center gap-3.5 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted/60 hover:text-primary"
+                      >
+                        <UserPlus
+                          className="size-4 text-primary"
+                          strokeWidth={1.5}
+                        />
+                        Create Account
+                      </Link>
+                    </li>
+                  </>
+                )}
+              </ul>
+            </>
+          )}
         </div>
 
         {/* Footer: theme + CTA */}
@@ -245,7 +277,11 @@ export function MobileMenu({
             </Button>
           </div>
 
-          <Button className="btn-alive mt-4 w-full" size="lg" onClick={close}>
+          <Button
+            render={<Link href="/host/my-studios/add-studio" onClick={close} />}
+            className="btn-alive mt-4 w-full"
+            size="lg"
+          >
             Add Studio
             <Plus className="size-4" />
           </Button>

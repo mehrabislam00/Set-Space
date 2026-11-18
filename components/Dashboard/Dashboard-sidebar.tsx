@@ -5,20 +5,20 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import * as React from "react"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import {
-  dashboardNav,
-  dashboardUser,
-  type NavItem,
-} from "@/lib/Dashboard-data"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAccountProfile } from "@/components/Dashboard/Account-profile-provider"
+import { Skeleton } from "@/components/ui/skeleton"
+import { toast } from "@/components/ui/toast"
+import { signOutCurrentUser } from "@/lib/auth-client"
+import { dashboardNav, type NavItem } from "@/lib/Dashboard-data"
 import { cn } from "@/lib/utils"
 import { SwitchIcon } from "./Switch-icon"
+import { useRouter } from "next/navigation"
 
 const itemClass =
   "flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-ring"
 
 type DashboardSidebarProps = {
-  user?: { name: string; email: string; initials: string }
   nav?: NavItem[]
   switchLink?: { label: string; href: string }
 }
@@ -27,12 +27,45 @@ type DashboardSidebarProps = {
  *  Stacks above the content on mobile, with the nav as a scrollable row.
  *  The blocks fade up on mount, so switching between the two dashboards feels alive. */
 export function DashboardSidebar({
-  user = dashboardUser,
   nav = dashboardNav,
   switchLink = { label: "Switch to Hosting", href: "/host" },
 }: DashboardSidebarProps) {
+  const { user: accountUser, loading } = useAccountProfile()
+  const user = accountUser ?? {
+    name: "SetSpace member",
+    email: "",
+    initials: "SS",
+    image: null,
+  }
+  const [loadedImage, setLoadedImage] = React.useState<string | null>(null)
+  const [failedImage, setFailedImage] = React.useState<string | null>(null)
+  const image = user.image
+  const imagePending =
+    loading || (!!image && loadedImage !== image && failedImage !== image)
   const pathname = usePathname()
+  const router = useRouter()
+  const [signingOut, setSigningOut] = React.useState(false)
   const [switching, setSwitching] = React.useState(false)
+
+  async function signOut() {
+    if (signingOut) return
+    setSigningOut(true)
+    try {
+      await signOutCurrentUser()
+      toast.add({ title: "Signed out", type: "success" })
+      router.push("/login")
+      router.refresh()
+    } catch (error) {
+      toast.add({
+        title: "Could not sign out",
+        description:
+          error instanceof Error ? error.message : "Please try again.",
+        type: "error",
+      })
+    } finally {
+      setSigningOut(false)
+    }
+  }
 
   // the longest matching href wins, so "/host/my-studios/add-studio"
   // highlights "Add Studio" and not "My Studios"
@@ -42,19 +75,40 @@ export function DashboardSidebar({
 
   return (
     <aside className="lg:sticky lg:top-28 lg:w-54 lg:shrink-0 lg:self-start">
-      <div className="stagger-in flex items-center gap-3">
+      <div className="stagger-in flex items-center gap-3" aria-busy={loading}>
         <Avatar className="size-11 border border-primary/40 bg-secondary">
+          {image && (
+            <AvatarImage
+              src={image}
+              alt=""
+              onLoad={() => setLoadedImage(image)}
+              onError={() => setFailedImage(image)}
+            />
+          )}
           <AvatarFallback className="bg-transparent text-xs font-semibold text-primary">
-            {user.initials}
+            {imagePending ? (
+              <Skeleton className="size-full rounded-full motion-reduce:animate-none" />
+            ) : (
+              user.initials
+            )}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <p className="truncate font-heading text-sm font-bold text-foreground">
-            {user.name}
-          </p>
-          <p className="truncate text-[11px] text-muted-foreground">
-            {user.email}
-          </p>
+          {loading ? (
+            <div className="space-y-1.5">
+              <Skeleton className="h-3.5 w-24 motion-reduce:animate-none" />
+              <Skeleton className="h-3 w-32 motion-reduce:animate-none" />
+            </div>
+          ) : (
+            <>
+              <p className="truncate font-heading text-sm font-bold text-foreground">
+                {user.name}
+              </p>
+              <p className="truncate text-[11px] text-muted-foreground">
+                {user.email}
+              </p>
+            </>
+          )}
         </div>
       </div>
 
@@ -108,12 +162,11 @@ export function DashboardSidebar({
 
         <button
           type="button"
-          onClick={() => {
-            // TODO: call your sign-out action
-          }}
+          onClick={signOut}
+          disabled={signingOut}
           className={cn(
             itemClass,
-            "group stagger-in text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            "group stagger-in text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
           )}
           style={{ animationDelay: `${160 + nav.length * 45}ms` }}
         >

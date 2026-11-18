@@ -25,6 +25,8 @@ import studioLoft from "@/assets/studio-loft.jpg"
 import studioMusic from "@/assets/studio-music.jpg"
 import studioPhoto from "@/assets/studio-photo.jpg"
 import studioPodcast from "@/assets/studio-podcast.jpg"
+import { DEFAULT_WEEKLY_OPENING_HOURS } from "@/lib/Opening-hours"
+import type { WeeklyOpeningHours } from "@/lib/Opening-hours"
 
 export const navLinks = [
   { label: "Home", href: "/" },
@@ -88,15 +90,6 @@ export const disciplines = [
   },
 ]
 
-export const featuredStudios = [
-  { id: 1, name: "The Aurora Studio", category: "Photo Studio", location: "New York, USA", price: 80, rating: 4.8, reviews: 245, image: studioPhoto },
-  { id: 2, name: "Velvet Sound Suite", category: "Music Suite", location: "Nashville, USA", price: 95, rating: 4.9, reviews: 302, image: studioMusic },
-  { id: 3, name: "Brick & Shadow Loft", category: "Photo Studio", location: "New York, USA", price: 110, rating: 4.9, reviews: 211, image: studioLoft },
-  { id: 5, name: "Lumen Film Stage", category: "Film Stage", location: "Los Angeles, USA", price: 120, rating: 4.7, reviews: 189, image: studioFilm },
-  { id: 6, name: "Hearth Creator Set", category: "Content Studio", location: "Austin, USA", price: 55, rating: 4.7, reviews: 156, image: studioContent },
-  { id: 7, name: "Echo Podcast Room", category: "Podcast Room", location: "Chicago, USA", price: 60, rating: 4.8, reviews: 120, image: studioPodcast },
-]
-
 export const whyFeatures = [
   {
     icon: WandSparkles,
@@ -113,8 +106,7 @@ export const whyFeatures = [
   {
     icon: CircleCheck,
     title: "Verified Studio Hosts",
-    description:
-      "Hosts are identity-checked and rated by real creators.",
+    description: "Hosts are identity-checked and rated by real creators.",
   },
   {
     icon: Sparkles,
@@ -137,8 +129,7 @@ export const steps = [
   },
   {
     title: "Create",
-    description:
-      "Arrive, set up and make your best work. The space is yours.",
+    description: "Arrive, set up and make your best work. The space is yours.",
   },
 ]
 
@@ -360,31 +351,21 @@ export const contactTopics = [
 /* ---------- Explore Studios page ---------- */
 
 export type ExploreStudioItem = {
-  id: number
+  id: number | string
   name: string
   category: string // badge text, singular
   discipline: string // matches an entry of `categories`
-  city: string // used for filtering, matches an entry of `locations`
+  city: string // used for filtering
   location: string // shown on the card, e.g. "New York, USA"
   price: number
   rating: number
   reviews: number
-  image: StaticImageData
+  createdAt: string | null
+  featured?: boolean
+  image: StaticImageData | string | null
   amenities: string[]
+  openingHours: WeeklyOpeningHours
 }
-
-export const locations = [
-  "All Locations",
-  "Atlanta",
-  "Austin",
-  "Chicago",
-  "Los Angeles",
-  "Miami",
-  "Nashville",
-  "New York",
-  "Portland",
-  "Seattle",
-]
 
 export const amenitiesList = [
   "Professional Lighting",
@@ -407,9 +388,9 @@ export const sortOptions = [
 ]
 
 export const priceRanges = [
-  { label: "$0–$50", min: 0, max: 50 },
-  { label: "$50–$100", min: 50, max: 100 },
-  { label: "$100–$200+", min: 100, max: 200 },
+  { label: "৳0–৳50", min: 0, max: 50 },
+  { label: "৳50–৳100", min: 50, max: 100 },
+  { label: "৳100–৳200+", min: 100, max: 200 },
 ]
 
 export const ratingOptions = [
@@ -428,24 +409,170 @@ export const categoryKeyMap: Record<string, string> = {
   content: "Content Studios",
 }
 
-type RawStudio = Omit<ExploreStudioItem, "city" | "location"> & {
+type RawStudio = Omit<
+  ExploreStudioItem,
+  "city" | "location" | "openingHours" | "rating" | "reviews" | "createdAt"
+> & {
   location: string // city name only; "USA" is added below
 }
 
 const rawExploreStudios: RawStudio[] = [
-  { id: 1, name: "The Aurora Studio", category: "Photo Studio", discipline: "Photo Studios", location: "New York", price: 80, rating: 4.8, reviews: 245, image: studioPhoto, amenities: ["Professional Lighting", "Air Conditioning", "Wi-Fi", "Photography Equipment", "Changing Room"] },
-  { id: 2, name: "Velvet Sound Suite", category: "Music Suite", discipline: "Music Suites", location: "Nashville", price: 95, rating: 4.9, reviews: 302, image: studioMusic, amenities: ["Soundproofing", "Air Conditioning", "Wi-Fi", "Parking"] },
-  { id: 3, name: "Brick & Shadow Loft", category: "Photo Studio", discipline: "Photo Studios", location: "New York", price: 110, rating: 4.9, reviews: 211, image: studioLoft, amenities: ["Professional Lighting", "Wi-Fi", "Makeup Station", "Photography Equipment"] },
-  { id: 4, name: "Moonlight Loft", category: "Photo Studio", discipline: "Photo Studios", location: "New York", price: 90, rating: 4.8, reviews: 41, image: studioLoft, amenities: ["Professional Lighting", "Air Conditioning", "Changing Room"] },
-  { id: 5, name: "Lumen Film Stage", category: "Film Stage", discipline: "Film Stages", location: "Los Angeles", price: 120, rating: 4.7, reviews: 189, image: studioFilm, amenities: ["Professional Lighting", "Soundproofing", "Parking", "Kitchen Access"] },
-  { id: 6, name: "Hearth Creator Set", category: "Content Studio", discipline: "Content Studios", location: "Austin", price: 55, rating: 4.7, reviews: 156, image: studioContent, amenities: ["Wi-Fi", "Professional Lighting", "Kitchen Access"] },
-  { id: 7, name: "Echo Podcast Room", category: "Podcast Room", discipline: "Podcast Rooms", location: "Chicago", price: 60, rating: 4.8, reviews: 120, image: studioPodcast, amenities: ["Soundproofing", "Wi-Fi", "Air Conditioning"] },
-  { id: 8, name: "Midnight Stage", category: "Film Stage", discipline: "Film Stages", location: "Atlanta", price: 150, rating: 4.8, reviews: 97, image: heroStudio, amenities: ["Professional Lighting", "Soundproofing", "Parking", "Air Conditioning"] },
-  { id: 9, name: "Golden Hour Studio", category: "Photo Studio", discipline: "Photo Studios", location: "Miami", price: 70, rating: 4.6, reviews: 134, image: studioContent, amenities: ["Professional Lighting", "Makeup Station", "Changing Room", "Photography Equipment"] },
-  { id: 10, name: "Canvas & Light Atelier", category: "Art Workshop", discipline: "Art Workshops", location: "Portland", price: 45, rating: 4.7, reviews: 88, image: studioArt, amenities: ["Wi-Fi", "Kitchen Access", "Parking"] },
-  { id: 11, name: "Northwind Sound", category: "Music Suite", discipline: "Music Suites", location: "Seattle", price: 85, rating: 4.6, reviews: 76, image: studioMusic, amenities: ["Soundproofing", "Wi-Fi", "Air Conditioning"] },
-  { id: 12, name: "The Clay Room", category: "Art Workshop", discipline: "Art Workshops", location: "Austin", price: 40, rating: 4.5, reviews: 63, image: studioArt, amenities: ["Air Conditioning", "Kitchen Access"] },
-  { id: 13, name: "Studio Pulse", category: "Podcast Room", discipline: "Podcast Rooms", location: "Nashville", price: 50, rating: 4.6, reviews: 52, image: studioPodcast, amenities: ["Soundproofing", "Wi-Fi", "Parking"] },
+  {
+    id: 1,
+    name: "The Aurora Studio",
+    category: "Photo Studio",
+    discipline: "Photo Studios",
+    location: "New York",
+    price: 80,
+    image: studioPhoto,
+    amenities: [
+      "Professional Lighting",
+      "Air Conditioning",
+      "Wi-Fi",
+      "Photography Equipment",
+      "Changing Room",
+    ],
+  },
+  {
+    id: 2,
+    name: "Velvet Sound Suite",
+    category: "Music Suite",
+    discipline: "Music Suites",
+    location: "Nashville",
+    price: 95,
+    image: studioMusic,
+    amenities: ["Soundproofing", "Air Conditioning", "Wi-Fi", "Parking"],
+  },
+  {
+    id: 3,
+    name: "Brick & Shadow Loft",
+    category: "Photo Studio",
+    discipline: "Photo Studios",
+    location: "New York",
+    price: 110,
+    image: studioLoft,
+    amenities: [
+      "Professional Lighting",
+      "Wi-Fi",
+      "Makeup Station",
+      "Photography Equipment",
+    ],
+  },
+  {
+    id: 4,
+    name: "Moonlight Loft",
+    category: "Photo Studio",
+    discipline: "Photo Studios",
+    location: "New York",
+    price: 90,
+    image: studioLoft,
+    amenities: ["Professional Lighting", "Air Conditioning", "Changing Room"],
+  },
+  {
+    id: 5,
+    name: "Lumen Film Stage",
+    category: "Film Stage",
+    discipline: "Film Stages",
+    location: "Los Angeles",
+    price: 120,
+    image: studioFilm,
+    amenities: [
+      "Professional Lighting",
+      "Soundproofing",
+      "Parking",
+      "Kitchen Access",
+    ],
+  },
+  {
+    id: 6,
+    name: "Hearth Creator Set",
+    category: "Content Studio",
+    discipline: "Content Studios",
+    location: "Austin",
+    price: 55,
+    image: studioContent,
+    amenities: ["Wi-Fi", "Professional Lighting", "Kitchen Access"],
+  },
+  {
+    id: 7,
+    name: "Echo Podcast Room",
+    category: "Podcast Room",
+    discipline: "Podcast Rooms",
+    location: "Chicago",
+    price: 60,
+    image: studioPodcast,
+    amenities: ["Soundproofing", "Wi-Fi", "Air Conditioning"],
+  },
+  {
+    id: 8,
+    name: "Midnight Stage",
+    category: "Film Stage",
+    discipline: "Film Stages",
+    location: "Atlanta",
+    price: 150,
+    image: heroStudio,
+    amenities: [
+      "Professional Lighting",
+      "Soundproofing",
+      "Parking",
+      "Air Conditioning",
+    ],
+  },
+  {
+    id: 9,
+    name: "Golden Hour Studio",
+    category: "Photo Studio",
+    discipline: "Photo Studios",
+    location: "Miami",
+    price: 70,
+    image: studioContent,
+    amenities: [
+      "Professional Lighting",
+      "Makeup Station",
+      "Changing Room",
+      "Photography Equipment",
+    ],
+  },
+  {
+    id: 10,
+    name: "Canvas & Light Atelier",
+    category: "Art Workshop",
+    discipline: "Art Workshops",
+    location: "Portland",
+    price: 45,
+    image: studioArt,
+    amenities: ["Wi-Fi", "Kitchen Access", "Parking"],
+  },
+  {
+    id: 11,
+    name: "Northwind Sound",
+    category: "Music Suite",
+    discipline: "Music Suites",
+    location: "Seattle",
+    price: 85,
+    image: studioMusic,
+    amenities: ["Soundproofing", "Wi-Fi", "Air Conditioning"],
+  },
+  {
+    id: 12,
+    name: "The Clay Room",
+    category: "Art Workshop",
+    discipline: "Art Workshops",
+    location: "Austin",
+    price: 40,
+    image: studioArt,
+    amenities: ["Air Conditioning", "Kitchen Access"],
+  },
+  {
+    id: 13,
+    name: "Studio Pulse",
+    category: "Podcast Room",
+    discipline: "Podcast Rooms",
+    location: "Nashville",
+    price: 50,
+    image: studioPodcast,
+    amenities: ["Soundproofing", "Wi-Fi", "Parking"],
+  },
 ]
 
 export const exploreStudios: ExploreStudioItem[] = rawExploreStudios.map(
@@ -453,6 +580,10 @@ export const exploreStudios: ExploreStudioItem[] = rawExploreStudios.map(
     ...studio,
     city: studio.location,
     location: `${studio.location}, USA`,
+    rating: 0,
+    reviews: 0,
+    createdAt: null,
+    openingHours: DEFAULT_WEEKLY_OPENING_HOURS,
   })
 )
 
@@ -468,14 +599,16 @@ export type StudioReview = {
 }
 
 export type StudioDetail = {
-  id: number
+  id: number | string
   name: string
   category: string
   location: string
   price: number
   rating: number
   reviews: number
-  images: { src: StaticImageData; alt: string }[]
+  createdAt: string | null
+  openingHours: WeeklyOpeningHours
+  images: { src: StaticImageData | string; alt: string }[]
   description: string
   size: string
   capacity: number
@@ -487,8 +620,8 @@ export type StudioDetail = {
   host: {
     name: string
     initials: string
-    rating: number
-    since: number
+    rating: number | null
+    since: number | null
     bio: string
   }
   ratingBreakdown: { stars: number; percent: number }[]
@@ -514,8 +647,10 @@ const auroraStudio: StudioDetail = {
   category: "Photo Studio",
   location: "Brooklyn, New York, USA",
   price: 80,
-  rating: 4.8,
-  reviews: 245,
+  rating: 0,
+  reviews: 0,
+  createdAt: null,
+  openingHours: DEFAULT_WEEKLY_OPENING_HOURS,
   images: [
     { src: studioPhoto, alt: "White cyclorama wall with two softbox lights" },
     { src: studioLoft, alt: "Brick loft corner with a leather armchair" },
@@ -529,7 +664,12 @@ const auroraStudio: StudioDetail = {
   capacity: 20,
   minHours: 2,
   serviceFeeRate: 0.08,
-  suitableFor: ["Fashion shoots", "Product photography", "Portraits", "Lookbooks"],
+  suitableFor: [
+    "Fashion shoots",
+    "Product photography",
+    "Portraits",
+    "Lookbooks",
+  ],
   rules: [
     "No confetti or glitter",
     "Shoes off on the cyc",
@@ -547,30 +687,15 @@ const auroraStudio: StudioDetail = {
   host: {
     name: "Maya Thompson",
     initials: "MT",
-    rating: 4.9,
+    rating: null,
     since: 2021,
     bio: "Fashion photographer turned studio owner. I built Aurora for the shoots I always wanted.",
   },
-  ratingBreakdown: [
-    { stars: 5, percent: 80 },
-    { stars: 4, percent: 20 },
-    { stars: 3, percent: 0 },
-    { stars: 2, percent: 0 },
-    { stars: 1, percent: 0 },
-  ],
-  reviewList: [
-    { id: "r1", name: "Leo Martins", initials: "LM", rating: 5, date: "May 1, 2026", comment: "Absolutely stunning space. Light was perfect and the host was incredibly helpful." },
-    { id: "r2", name: "Ava Johnson", initials: "AJ", rating: 5, date: "Jun 8, 2026", comment: "Everything we needed for a full-day shoot. Will be booking again for our next campaign." },
-    { id: "r3", name: "Noah Brooks", initials: "NB", rating: 5, date: "Jul 15, 2026", comment: "Clean, well-equipped and exactly as pictured. Check-in was effortless." },
-    { id: "r4", name: "Chloe Dubois", initials: "CD", rating: 5, date: "Aug 22, 2026", comment: "Great acoustics and a really calm vibe. Our team loved it." },
-    { id: "r5", name: "Ethan Wright", initials: "EW", rating: 4, date: "Sep 2, 2026", comment: "A couple of stands were missing, but the host sorted it within minutes." },
-  ],
+  ratingBreakdown: [5, 4, 3, 2, 1].map((stars) => ({ stars, percent: 0 })),
+  reviewList: [],
 }
 
-/** Looks up a studio by route param (any id in `exploreStudios`).
- *  Only Aurora has hand-written detail; every other studio takes its own
- *  name, price, rating, photo and amenities from `exploreStudios` and reuses
- *  Aurora's description, host and reviews until real data exists. */
+/** Looks up a legacy demo studio by its route param. */
 export function getStudioDetail(id: string): StudioDetail | undefined {
   const studio = exploreStudios.find((s) => String(s.id) === id)
   if (!studio) return undefined
@@ -585,8 +710,10 @@ export function getStudioDetail(id: string): StudioDetail | undefined {
     price: studio.price,
     rating: studio.rating,
     reviews: studio.reviews,
+    createdAt: studio.createdAt,
+    openingHours: studio.openingHours,
     images: [
-      { src: studio.image, alt: studio.name },
+      ...(studio.image ? [{ src: studio.image, alt: studio.name }] : []),
       ...auroraStudio.images
         .filter((img) => img.src !== studio.image)
         .slice(0, 4),
@@ -600,11 +727,7 @@ export function getStudioDetail(id: string): StudioDetail | undefined {
 /* ---------- Navbar notifications ---------- */
 
 export type NotificationType =
-  | "booking"
-  | "request"
-  | "review"
-  | "cancelled"
-  | "listing"
+  "booking" | "request" | "review" | "cancelled" | "listing"
 
 export type NotificationItem = {
   id: string
@@ -615,54 +738,6 @@ export type NotificationItem = {
   unread: boolean
   href: string
 }
-
-export const notifications: NotificationItem[] = [
-  {
-    id: "n1",
-    type: "booking",
-    title: "Booking confirmed",
-    body: "The Aurora Studio confirmed your booking for Nov 28, 9:00 AM.",
-    time: "2h ago",
-    unread: false,
-    href: "/explore-studio/1",
-  },
-  {
-    id: "n2",
-    type: "request",
-    title: "New booking request",
-    body: "Sarah Kim requested Moonlight Loft for Nov 22.",
-    time: "5h ago",
-    unread: true,
-    href: "/explore-studio/4",
-  },
-  {
-    id: "n3",
-    type: "review",
-    title: "New 5-star review",
-    body: "Noah Brooks left a review on Moonlight Loft.",
-    time: "1d ago",
-    unread: true,
-    href: "/explore-studio/4",
-  },
-  {
-    id: "n4",
-    type: "cancelled",
-    title: "Booking cancelled",
-    body: "Your Lumen Film Stage booking on Sep 20 was cancelled.",
-    time: "3d ago",
-    unread: false,
-    href: "/explore-studio/5",
-  },
-  {
-    id: "n5",
-    type: "listing",
-    title: "Listing updated",
-    body: "Your changes to The Sunroom Set were saved as a draft.",
-    time: "1w ago",
-    unread: false,
-    href: "/host/my-studios",
-  },
-]
 
 /** Routes with no hero photo behind the navbar. The navbar uses its solid
  *  (scrolled) look from the top of the page on these (see components/Navbar/navbar.tsx). */

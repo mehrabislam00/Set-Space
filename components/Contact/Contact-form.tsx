@@ -1,6 +1,6 @@
 "use client"
 
-import { Check } from "lucide-react"
+import { Check, Loader2 } from "lucide-react"
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
@@ -15,19 +15,48 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { toast } from "@/components/ui/toast"
+import {
+  MarketplaceApiError,
+  submitContactMessage,
+} from "@/lib/Marketplace-api"
 import { contactTopics } from "@/lib/Site-data"
 
-/** Contact form card. Replace the TODO in onSubmit with your API call. */
 export function ContactForm() {
   const [topic, setTopic] = React.useState(contactTopics[0])
   const [sent, setSent] = React.useState(false)
+  const [submitting, setSubmitting] = React.useState(false)
+  const submitGuard = React.useRef(false)
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const data = new FormData(e.currentTarget)
-    // TODO: send { name, email, topic, message } to your backend
-    console.log({ ...Object.fromEntries(data), topic })
-    setSent(true)
+    if (submitGuard.current) return
+
+    submitGuard.current = true
+    setSubmitting(true)
+    try {
+      await submitContactMessage({
+        name: String(data.get("name") ?? ""),
+        email: String(data.get("email") ?? ""),
+        topic,
+        message: String(data.get("message") ?? ""),
+      })
+      setSent(true)
+    } catch (error) {
+      if (error instanceof MarketplaceApiError) return
+      toast.add({
+        title: "Message not sent",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Please try again in a moment.",
+        type: "error",
+      })
+    } finally {
+      submitGuard.current = false
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -54,16 +83,31 @@ export function ContactForm() {
             </Button>
           </div>
         ) : (
-          <form onSubmit={onSubmit} className="space-y-5">
+          <form
+            onSubmit={onSubmit}
+            className="space-y-5"
+            aria-busy={submitting}
+          >
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-xs text-muted-foreground">
                   Name
                 </Label>
-                <Input id="name" name="name" required autoComplete="name" className="h-10" />
+                <Input
+                  id="name"
+                  name="name"
+                  required
+                  maxLength={100}
+                  autoComplete="name"
+                  disabled={submitting}
+                  className="h-10"
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-xs text-muted-foreground">
+                <Label
+                  htmlFor="email"
+                  className="text-xs text-muted-foreground"
+                >
                   Email
                 </Label>
                 <Input
@@ -71,7 +115,9 @@ export function ContactForm() {
                   name="email"
                   type="email"
                   required
+                  maxLength={254}
                   autoComplete="email"
+                  disabled={submitting}
                   className="h-10"
                 />
               </div>
@@ -79,7 +125,11 @@ export function ContactForm() {
 
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Topic</Label>
-              <Select value={topic} onValueChange={(v) => v && setTopic(v)}>
+              <Select
+                value={topic}
+                onValueChange={(v) => v && setTopic(v)}
+                disabled={submitting}
+              >
                 <SelectTrigger aria-label="Topic" className="h-10 w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -101,7 +151,10 @@ export function ContactForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="message" className="text-xs text-muted-foreground">
+              <Label
+                htmlFor="message"
+                className="text-xs text-muted-foreground"
+              >
                 Message
               </Label>
               <Textarea
@@ -109,12 +162,20 @@ export function ContactForm() {
                 name="message"
                 required
                 rows={5}
+                maxLength={5000}
+                disabled={submitting}
                 className="min-h-28 resize-y"
               />
             </div>
 
-            <Button type="submit" size="lg" className="btn-alive">
-              Send message
+            <Button
+              type="submit"
+              size="lg"
+              disabled={submitting}
+              className="btn-alive"
+            >
+              {submitting && <Loader2 className="size-4 animate-spin" />}
+              {submitting ? "Sending..." : "Send message"}
             </Button>
           </form>
         )}

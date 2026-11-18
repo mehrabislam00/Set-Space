@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import type { UserBooking } from "@/lib/Dashboard-data"
-import { cn } from "@/lib/utils"
+import { cn, formatTaka } from "@/lib/utils"
 import { bookingStatusClass } from "./Booking-row"
 
 type BookingDetailsDialogProps = {
@@ -50,6 +50,10 @@ export function BookingDetailsDialog({
                 src={booking.image}
                 alt={booking.studio}
                 fill
+                unoptimized={
+                  typeof booking.image === "string" &&
+                  !booking.image.startsWith("/_next/static/")
+                }
                 sizes="(min-width: 640px) 400px, 100vw"
                 className="object-cover"
               />
@@ -72,7 +76,7 @@ export function BookingDetailsDialog({
               <Detail label="Guests">{booking.guests}</Detail>
               <Detail label="Host">{booking.host}</Detail>
               <Detail label="Requested">{booking.requested}</Detail>
-              <Detail label="Total">${booking.total}</Detail>
+              <Detail label="Total">{formatTaka(booking.total)}</Detail>
             </dl>
 
             <div className="grid grid-cols-2 gap-3">
@@ -99,13 +103,7 @@ export function BookingDetailsDialog({
   )
 }
 
-function Detail({
-  label,
-  children,
-}: {
-  label: string
-  children: ReactNode
-}) {
+function Detail({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="min-w-0">
       <dt className="text-[11px] text-muted-foreground">{label}</dt>
