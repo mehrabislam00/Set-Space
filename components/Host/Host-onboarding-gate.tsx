@@ -14,6 +14,7 @@ import {
   User,
 } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
@@ -183,6 +184,7 @@ function HostOnboardingDialog({
   onboarding: HostOnboardingStatus
   onStatusChange: (status: HostOnboardingStatus) => void
 }) {
+  const router = useRouter()
   const activeStep = onboarding.currentStep
   const [completing, setCompleting] = React.useState(false)
   const [completionError, setCompletionError] = React.useState("")
@@ -256,12 +258,8 @@ function HostOnboardingDialog({
       const currentStatus = await getHostOnboardingStatus()
       onStatusChange(currentStatus)
 
-      if (currentStatus.currentStep >= 1 && !currentStatus.profileComplete) {
-        const profileStep = await updateHostOnboardingProgress(1)
-        onStatusChange(profileStep)
-        setCompletionError(
-          "Complete your profile first to continue your hosting journey."
-        )
+      if (!currentStatus.profileComplete) {
+        router.push("/dashboard/profile")
         return
       }
 
@@ -490,7 +488,11 @@ function HostOnboardingDialog({
                 ) : (
                   <ArrowRight />
                 )}
-                {completing ? "Checking..." : "Continue"}
+                {completing
+                  ? "Checking..."
+                  : onboarding.profileComplete
+                    ? "Continue"
+                    : "Complete Profile"}
               </Button>
             ) : (
               <Button
