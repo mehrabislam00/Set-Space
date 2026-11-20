@@ -18,7 +18,7 @@ import { getProfileImageUrl, type ProfileResponse } from "@/lib/Marketplace-api"
 /** Large avatar with a change-photo button, plus the account stats beneath it. */
 export function ProfileAvatar({ account }: { account: ProfileResponse }) {
   const inputRef = React.useRef<HTMLInputElement>(null)
-  const { pendingPhoto, setPendingPhoto } = useAccountProfile()
+  const { pendingPhoto, setPendingPhoto, user } = useAccountProfile()
   const [validating, setValidating] = React.useState(false)
   const [loadedPhoto, setLoadedPhoto] = React.useState<string | null>(null)
   const [failedPhoto, setFailedPhoto] = React.useState<string | null>(null)
@@ -59,7 +59,7 @@ export function ProfileAvatar({ account }: { account: ProfileResponse }) {
     }
   }
 
-  const profileImage = getProfileImageUrl(account.profile.image)
+  const profileImage = user?.image ?? getProfileImageUrl(account.profile.image)
   const photo = pendingPhoto?.previewUrl || profileImage
   const photoPending = !!photo && loadedPhoto !== photo && failedPhoto !== photo
 

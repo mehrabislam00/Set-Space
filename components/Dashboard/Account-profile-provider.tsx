@@ -9,6 +9,11 @@ import {
   type ProfileResponse,
   type UserProfile,
 } from "@/lib/Marketplace-api"
+import {
+  deleteProfileAvatarCache,
+  readProfileAvatarCache,
+  writeProfileAvatarCache,
+} from "@/lib/Profile-avatar-cache"
 
 type LoadedProfile = {
   userId: string
@@ -23,6 +28,10 @@ type FailedProfile = {
 }
 
 type ProfileState = LoadedProfile | FailedProfile
+type CachedAvatar = {
+  userId: string
+  url: string
+}
 
 export type PendingProfilePhoto = {
   file: File
@@ -48,7 +57,7 @@ type AccountProfileContextValue = {
   setPendingPhoto: (photo: PendingPhotoInput | null) => void
   clearPendingPhoto: (photo: PendingProfilePhoto) => void
   retry: () => void
-  updateProfile: (profile: UserProfile) => void
+  updateProfile: (profile: UserProfile, avatarFile?: File) => void
 }
 
 const AccountProfileContext =
@@ -66,6 +75,10 @@ function getInitials(name: string) {
   )
 }
 
+function getAvatarVersion(image: string | null, updatedAt: string | null) {
+  return `${encodeURIComponent(image ?? "")}:${encodeURIComponent(updatedAt ?? "")}`
+}
+
 export function AccountProfileProvider({
   children,
 }: {
@@ -79,6 +92,12 @@ export function AccountProfileProvider({
   const [retryCount, setRetryCount] = React.useState(0)
   const [pendingPhotoState, setPendingPhotoState] =
     React.useState<PendingProfilePhoto | null>(null)
+  const [cachedAvatar, setCachedAvatar] = React.useState<CachedAvatar | null>(
+    null
+  )
+  const [avatarCacheLoadingUserId, setAvatarCacheLoadingUserId] =
+    React.useState<string | null>(null)
+  const avatarCacheGeneration = React.useRef(0)
 
   React.useEffect(() => {
     return () => {
@@ -87,15 +106,103 @@ export function AccountProfileProvider({
   }, [pendingPhotoState])
 
   React.useEffect(() => {
+    return () => {
+      if (cachedAvatar) URL.revokeObjectURL(cachedAvatar.url)
+    }
+  }, [cachedAvatar])
+
+  React.useEffect(() => {
     if (!userId) return
 
     const controller = new AbortController()
+    let active = true
+    const generation = ++avatarCacheGeneration.current
+    const cacheAvatar = (blob: Blob) => {
+      if (!active || generation !== avatarCacheGeneration.current) return
+      setCachedAvatar({ userId, url: URL.createObjectURL(blob) })
+    }
+
+    const cachedAvatarPromise = readProfileAvatarCache(userId).catch(
+      (error: unknown) => {
+        console.warn("Could not read the cached profile avatar.", error)
+        return null
+      }
+    )
+    cachedAvatarPromise.then((cached) => {
+      if (cached && active) cacheAvatar(cached.blob)
+    })
+
+    const syncAvatar = async (account: ProfileResponse) => {
+      try {
+        const image = account.profile.image
+        if (!image) {
+          if (active) {
+            setCachedAvatar((current) =>
+              current?.userId === userId ? null : current
+            )
+          }
+          await deleteProfileAvatarCache(userId)
+          return
+        }
+
+        const imageUrl = getProfileImageUrl(image)
+        if (!imageUrl) return
+
+        const version = getAvatarVersion(image, account.profile.updatedAt)
+        const cached = await cachedAvatarPromise
+        if (!active) return
+        if (cached?.version === version) {
+          return
+        }
+
+        if (
+          new URL(imageUrl, window.location.origin).origin !==
+          window.location.origin
+        ) {
+          setCachedAvatar((current) =>
+            current?.userId === userId ? null : current
+          )
+          await deleteProfileAvatarCache(userId)
+          return
+        }
+
+        const response = await fetch(imageUrl, {
+          credentials: "include",
+          cache: "reload",
+          signal: controller.signal,
+        })
+        if (
+          !response.ok ||
+          !response.headers.get("content-type")?.startsWith("image/")
+        ) {
+          return
+        }
+
+        const blob = await response.blob()
+        if (!active || generation !== avatarCacheGeneration.current) return
+        await writeProfileAvatarCache(userId, blob, version)
+        cacheAvatar(blob)
+      } catch (error) {
+        if (controller.signal.aborted) return
+        console.warn("Could not refresh the cached profile avatar.", error)
+      } finally {
+        if (active) {
+          setAvatarCacheLoadingUserId((current) =>
+            current === userId ? null : current
+          )
+        }
+      }
+    }
+
     getMyProfile(controller.signal)
       .then((account) => {
+        if (!active) return
+        setAvatarCacheLoadingUserId(account.profile.image ? userId : null)
         setProfileState({ userId, account, error: null })
+        void syncAvatar(account)
       })
       .catch((error: unknown) => {
-        if (controller.signal.aborted) return
+        if (!active || controller.signal.aborted) return
         setProfileState({
           userId,
           account: null,
@@ -106,7 +213,10 @@ export function AccountProfileProvider({
         })
       })
 
-    return () => controller.abort()
+    return () => {
+      active = false
+      controller.abort()
+    }
   }, [retryCount, userId])
 
   const activeState = profileState?.userId === userId ? profileState : null
@@ -121,7 +231,15 @@ export function AccountProfileProvider({
         email:
           account?.profile.email || account?.user.email || session.user.email,
         initials: getInitials(name),
-        image: account ? getProfileImageUrl(account.profile.image) : null,
+        image:
+          (cachedAvatar && cachedAvatar.userId === userId
+            ? cachedAvatar.url
+            : null) ??
+          (avatarCacheLoadingUserId === userId
+            ? null
+            : account
+              ? getProfileImageUrl(account.profile.image)
+              : null),
       }
     : null
 
@@ -148,15 +266,29 @@ export function AccountProfileProvider({
   }, [])
 
   const updateProfile = React.useCallback(
-    (profile: UserProfile) => {
-      if (!userId || !account) return
-      setProfileState({
-        userId,
-        account: { ...account, profile },
-        error: null,
+    (profile: UserProfile, avatarFile?: File) => {
+      if (!userId) return
+      setProfileState((current) => {
+        if (current?.userId !== userId || !current.account) return current
+        return {
+          userId,
+          account: { ...current.account, profile },
+          error: null,
+        }
       })
+
+      if (avatarFile) {
+        avatarCacheGeneration.current += 1
+        const version = getAvatarVersion(profile.image, profile.updatedAt)
+        setCachedAvatar({ userId, url: URL.createObjectURL(avatarFile) })
+        writeProfileAvatarCache(userId, avatarFile, version).catch(
+          (error: unknown) => {
+            console.warn("Could not save the updated profile avatar.", error)
+          }
+        )
+      }
     },
-    [account, userId]
+    [userId]
   )
 
   return (

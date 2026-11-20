@@ -75,13 +75,8 @@ export function UserMenu({
 }) {
   const router = useRouter()
   const [signingOut, setSigningOut] = React.useState(false)
-  const [loadedImage, setLoadedImage] = React.useState<string | null>(null)
-  const [failedImage, setFailedImage] = React.useState<string | null>(null)
   const image = user.image ?? null
   const initials = getInitials(user)
-  const imagePending =
-    profileLoading ||
-    (!!image && loadedImage !== image && failedImage !== image)
 
   async function signOut() {
     if (signingOut) return
@@ -121,26 +116,14 @@ export function UserMenu({
               : "border-white/20 bg-black/40"
           )}
         >
-          {image && (
-            <AvatarImage
-              src={image}
-              alt=""
-              className="rounded-full"
-              onLoad={() => setLoadedImage(image)}
-              onError={() => setFailedImage(image)}
-            />
-          )}
+          {image && <AvatarImage src={image} alt="" className="rounded-full" />}
           <AvatarFallback
             className={cn(
               "bg-transparent text-[11px] font-semibold",
               scrolled ? "text-foreground" : "text-photo"
             )}
           >
-            {imagePending ? (
-              <Skeleton className="size-full rounded-full bg-foreground/10 motion-reduce:animate-none" />
-            ) : (
-              initials
-            )}
+            {initials}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

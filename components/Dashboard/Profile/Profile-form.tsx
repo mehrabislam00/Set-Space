@@ -100,7 +100,7 @@ export function ProfileForm({ account }: { account: ProfileResponse }) {
       if (pendingPhoto) {
         const photoToUpload = pendingPhoto
         const result = await uploadMyProfileImage(photoToUpload.file)
-        updateProfile(result.profile)
+        updateProfile(result.profile, photoToUpload.file)
         clearPendingPhoto(photoToUpload)
       }
 
