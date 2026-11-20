@@ -30,20 +30,47 @@ function getMongoUri() {
   return uri
 }
 
-const client = new MongoClient(getMongoUri())
+declare global {
+  var __setSpaceMongoClient: MongoClient | undefined
+}
+
+const mongoUri = getMongoUri()
+const client =
+  globalThis.__setSpaceMongoClient ??
+  new MongoClient(mongoUri, {
+    serverSelectionTimeoutMS: 10_000,
+    connectTimeoutMS: 10_000,
+    maxPoolSize: 10,
+    minPoolSize: 0,
+    retryWrites: true,
+    retryReads: true,
+  })
+
+globalThis.__setSpaceMongoClient = client
 const db = client.db("auth")
 
+const configuredBaseUrl = process.env.BETTER_AUTH_URL?.trim()
+const trustedOrigins = [
+  "https://set-space-ten.vercel.app",
+  "https://*.vercel.app",
+  "http://localhost:3000",
+  ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean) ?? []),
+]
+
 export const auth = betterAuth({
-  
+  baseURL: configuredBaseUrl || undefined,
+  trustedOrigins,
 
   emailAndPassword: {
     enabled: true,
   },
   socialProviders: {
-        google: { 
-            clientId: process.env.GOOGLE_CLIENT_ID as string, 
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
-        }, 
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
   },
   database: mongodbAdapter(db, {
     client,

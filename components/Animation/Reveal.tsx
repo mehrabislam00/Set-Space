@@ -26,16 +26,17 @@ export function Reveal({
   children,
 }: RevealProps) {
   const ref = React.useRef<HTMLElement | null>(null)
-  const [visible, setVisible] = React.useState(false)
+  const [visible, setVisible] = React.useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  )
 
   React.useEffect(() => {
     const el = ref.current
     if (!el) return
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setVisible(true)
-      return
-    }
+    if (visible) return
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -48,7 +49,7 @@ export function Reveal({
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [visible])
 
   const classes = cn("reveal", visible && "is-visible", className)
   const revealStyle = {
@@ -59,11 +60,7 @@ export function Reveal({
   const Tag = as as React.ElementType
 
   return (
-    <Tag
-      ref={ref as never}
-      className={classes}
-      style={revealStyle}
-    >
+    <Tag ref={ref as never} className={classes} style={revealStyle}>
       {children}
     </Tag>
   )

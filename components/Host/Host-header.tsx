@@ -1,9 +1,3 @@
-import { Plus } from "lucide-react"
-import Link from "next/link"
-
-import { buttonVariants } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-
 export function HostHeader() {
   return (
     <header className="flex flex-wrap items-start justify-between gap-4">
@@ -15,8 +9,6 @@ export function HostHeader() {
           Your studios at a glance
         </p>
       </div>
-
-     
     </header>
   )
 }
