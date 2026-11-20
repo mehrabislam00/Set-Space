@@ -29,7 +29,6 @@ import { authClient } from "@/lib/auth-client"
 import {
   completeHostOnboarding,
   getHostOnboardingStatus,
-  MarketplaceApiError,
   type HostOnboardingStatus,
   updateHostOnboardingProgress,
 } from "@/lib/Marketplace-api"
@@ -38,51 +37,114 @@ import { cn } from "@/lib/utils"
 const steps = [
   {
     title: "Become a Host",
+    heading: "Start Your Hosting Journey",
     description:
-      "Use your SetSpace account to list creative spaces and manage incoming booking requests.",
+      "Welcome to SetSpace! Become a host and start sharing your studio with people looking for the perfect space.",
     icon: Briefcase,
+    actions: [
+      "Create an account and sign in.",
+      "Explore hosting and renter workflows.",
+      "Prepare your studio information.",
+    ],
+    tip: "Hosting gives your studio more visibility and lets you manage every booking from one dashboard.",
   },
   {
     title: "Complete Your Profile",
+    heading: "Build Your Host Profile",
     description:
-      "Make sure your profile has your name. Your phone, location, and bio are optional.",
+      "Create a trustworthy host profile so renters can understand who you are and feel confident connecting with you.",
     icon: User,
+    actions: [
+      "Add your profile picture.",
+      "Provide your name and contact information.",
+      "Add a short introduction or bio.",
+      "Keep your profile details accurate and current.",
+    ],
+    tip: "A complete profile helps build trust with potential renters.",
   },
   {
     title: "Add Your Studio",
+    heading: "Showcase Your Studio",
     description:
-      "Add studio details, photos, facilities, location, hourly pricing, and weekly availability.",
+      "Add your studio to SetSpace and help potential renters discover your space.",
     icon: Building2,
+    actions: [
+      "Upload high-quality studio images.",
+      "Add a descriptive studio title.",
+      "Select the correct category and amenities.",
+      "Set the location, pricing, and availability.",
+    ],
+    tip: "Clear photos and specific details make your listing easier to compare.",
   },
   {
     title: "Publish When Ready",
+    heading: "Make Your Studio Discoverable",
     description:
-      "Keep a listing as a hidden draft, or publish it once the required listing details are complete. Publishing is automatic; no staff approval queue is configured.",
+      "Review your studio listing and publish it when you are satisfied with the information.",
     icon: Check,
+    actions: [
+      "Review studio information.",
+      "Check images and descriptions.",
+      "Verify pricing and availability.",
+      "Publish your listing when ready.",
+    ],
+    tip: "You can keep a listing in draft until it is ready.",
   },
   {
     title: "Manage Bookings",
+    heading: "Stay on Top of Your Bookings",
     description:
-      "New renter requests appear in Booking Requests and your notifications.",
+      "Manage incoming booking requests and keep track of your studio reservations.",
     icon: Inbox,
+    actions: [
+      "View booking requests.",
+      "Review renter information.",
+      "Check requested dates and times.",
+      "Track pending and confirmed bookings.",
+    ],
+    tip: "Check notifications regularly so requests are not left waiting.",
   },
   {
     title: "Confirm or Reject",
+    heading: "You're in Control of Your Bookings",
     description:
-      "Review each pending request and confirm or reject it. Renters can cancel pending or confirmed bookings.",
+      "Review booking requests and decide whether to accept or decline them.",
     icon: CalendarDays,
+    actions: [
+      "Review booking details.",
+      "Confirm suitable booking requests.",
+      "Reject requests when necessary.",
+      "Keep availability information up to date.",
+    ],
+    tip: "Prompt responses create a better experience for renters.",
   },
   {
     title: "Manage Your Studio",
+    heading: "Keep Your Studio Updated",
     description:
-      "Edit studio information, photos, pricing, opening hours, or return a published listing to draft.",
+      "Maintain your studio listing and make sure renters always see accurate information.",
     icon: Settings,
+    actions: [
+      "Update studio descriptions.",
+      "Change photos and amenities.",
+      "Modify pricing and availability.",
+      "Manage published listing information.",
+    ],
+    tip: "Updated listings reduce questions and scheduling conflicts.",
   },
   {
     title: "Track Your Activity",
+    heading: "Track Your Hosting Performance",
     description:
-      "Use the Host Dashboard to review studio and booking totals, pending requests, and earnings statistics.",
+      "Monitor your hosting activity and understand how your studio is performing.",
     icon: LayoutDashboard,
+    actions: [
+      "Review total bookings.",
+      "Track pending requests.",
+      "Monitor confirmed bookings.",
+      "Review earnings statistics.",
+    ],
+    tip: "Use the Host Dashboard to understand trends in your activity.",
   },
 ]
 
@@ -186,119 +248,39 @@ function HostOnboardingDialog({
 }) {
   const router = useRouter()
   const activeStep = onboarding.currentStep
-  const [completing, setCompleting] = React.useState(false)
-  const [completionError, setCompletionError] = React.useState("")
-  const actionLock = React.useRef(false)
-  const completedCount = onboarding.completedSteps.length
-  const progress = (completedCount / steps.length) * 100
   const ActiveIcon = steps[activeStep].icon
+  const progress =
+    activeStep === 0 ? 0 : (activeStep / (steps.length - 1)) * 100
 
-  function beginAction() {
-    if (actionLock.current) return false
-    actionLock.current = true
-    setCompleting(true)
-    return true
+  function navigateToStep(step: number) {
+    const nextStep = Math.max(0, Math.min(steps.length - 1, step))
+    if (nextStep === activeStep) return
+
+    const visitedSteps = new Set([
+      ...onboarding.completedSteps,
+      ...Array.from({ length: nextStep + 1 }, (_, index) => index + 1),
+    ])
+
+    onStatusChange({
+      ...onboarding,
+      currentStep: nextStep,
+      completedSteps: Array.from(visitedSteps).sort((a, b) => a - b),
+    })
+
+    void updateHostOnboardingProgress(nextStep).catch(() => {})
   }
 
-  function finishAction() {
-    actionLock.current = false
-    setCompleting(false)
+  function finishHosting() {
+    toast.add({
+      title: "Hosting journey complete",
+      description: "Opening your host dashboard.",
+      type: "success",
+    })
+    router.push("/host/dashboard")
+    void completeHostOnboarding()
+      .then(onStatusChange)
+      .catch(() => {})
   }
-
-  async function startHosting() {
-    if (!beginAction()) return
-    setCompletionError("")
-
-    try {
-      const currentStatus = await getHostOnboardingStatus()
-      onStatusChange(currentStatus)
-
-      if (currentStatus.hasHostedStudio || currentStatus.onboardingCompleted) {
-        return
-      }
-
-      if (!currentStatus.profileComplete) {
-        const profileStep = await updateHostOnboardingProgress(1)
-        onStatusChange(profileStep)
-        setCompletionError(
-          "Complete your profile first to continue your hosting journey."
-        )
-        return
-      }
-
-      const result = await completeHostOnboarding()
-      onStatusChange(result)
-
-      if (!result.onboardingCompleted && !result.hasHostedStudio) {
-        throw new Error("Something went wrong. Please try again.")
-      }
-
-      toast.add({
-        title: "You're ready to host",
-        description: "Your host dashboard is ready to use.",
-        type: "success",
-      })
-    } catch (error) {
-      if (!(error instanceof MarketplaceApiError)) {
-        toast.add({
-          title: "Something went wrong. Please try again.",
-          type: "error",
-        })
-      }
-    } finally {
-      finishAction()
-    }
-  }
-
-  async function continueOnboarding() {
-    if (!beginAction()) return
-    setCompletionError("")
-
-    try {
-      const currentStatus = await getHostOnboardingStatus()
-      onStatusChange(currentStatus)
-
-      if (!currentStatus.profileComplete) {
-        router.push("/dashboard/profile")
-        return
-      }
-
-      const nextStep = Math.min(steps.length - 1, currentStatus.currentStep + 1)
-      const updatedStatus = await updateHostOnboardingProgress(nextStep)
-      onStatusChange(updatedStatus)
-    } catch (error) {
-      if (!(error instanceof MarketplaceApiError)) {
-        toast.add({
-          title: "Could not verify your profile. Please try again.",
-          type: "error",
-        })
-      }
-    } finally {
-      finishAction()
-    }
-  }
-
-  async function goToStep(step: number) {
-    if (step === activeStep || !beginAction()) return
-    setCompletionError("")
-    try {
-      const status = await updateHostOnboardingProgress(step)
-      onStatusChange(status)
-    } catch (error) {
-      if (!(error instanceof MarketplaceApiError)) {
-        toast.add({
-          title: "Could not update your hosting journey. Please try again.",
-          type: "error",
-        })
-      }
-    } finally {
-      finishAction()
-    }
-  }
-
-  const missingProfileText = onboarding.missingFields.includes("name")
-    ? "Complete your profile first to continue your hosting journey. Your full name must be 1–80 characters."
-    : ""
 
   return (
     <Dialog open onOpenChange={() => {}}>
@@ -330,9 +312,6 @@ function HostOnboardingDialog({
               <span className="font-medium text-foreground">
                 Step {activeStep + 1} of {steps.length}
               </span>
-              <span className="text-muted-foreground">
-                {completedCount} of {steps.length} milestones verified
-              </span>
             </div>
             <div
               role="progressbar"
@@ -356,10 +335,8 @@ function HostOnboardingDialog({
             >
               {steps.map((step, index) => {
                 const isActive = activeStep === index
-                const isComplete = onboarding.completedSteps.includes(index + 1)
-                const isLocked =
-                  index > activeStep + 1 ||
-                  (index > 1 && !onboarding.profileComplete)
+                const isComplete =
+                  !isActive && onboarding.completedSteps.includes(index + 1)
 
                 return (
                   <li key={step.title} className="shrink-0 md:shrink">
@@ -367,10 +344,9 @@ function HostOnboardingDialog({
                       type="button"
                       aria-label={`Step ${index + 1}: ${step.title}`}
                       aria-current={isActive ? "step" : undefined}
-                      disabled={isLocked || completing}
-                      onClick={() => void goToStep(index)}
+                      onClick={() => navigateToStep(index)}
                       className={cn(
-                        "flex size-9 items-center justify-center rounded-full border text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 md:h-auto md:w-full md:justify-start md:gap-3 md:rounded-xl md:px-3 md:py-2.5 md:text-left",
+                        "flex size-9 items-center justify-center rounded-full border text-xs font-semibold transition-colors md:h-auto md:w-full md:justify-start md:gap-3 md:rounded-xl md:px-3 md:py-2.5 md:text-left",
                         isActive
                           ? "border-primary/30 bg-primary/10 text-primary"
                           : isComplete
@@ -392,78 +368,38 @@ function HostOnboardingDialog({
 
             <section
               aria-live="polite"
-              className="min-h-56 rounded-2xl border border-border bg-muted/30 p-5 sm:p-6"
+              className="rounded-2xl border border-border bg-muted/30 p-5 sm:p-6"
             >
               <div className="grid size-11 place-items-center rounded-xl bg-background text-primary shadow-sm">
                 <ActiveIcon className="size-5" />
               </div>
               <h2 className="mt-4 font-heading text-lg font-bold text-foreground">
-                {steps[activeStep].title}
+                {steps[activeStep].heading}
               </h2>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 {steps[activeStep].description}
               </p>
 
-              {activeStep === 1 && (
-                <div
-                  className={cn(
-                    "mt-5 rounded-xl border p-4",
-                    onboarding.profileComplete
-                      ? "border-success/20 bg-success/5"
-                      : "border-warning/30 bg-warning/5"
-                  )}
-                >
-                  {onboarding.profileComplete ? (
-                    <p className="text-sm leading-6 text-foreground">
-                      Your profile has a valid name. Phone, location, and bio
-                      are optional and can be added later.
-                    </p>
-                  ) : (
-                    <>
-                      <p className="text-sm leading-6 text-foreground">
-                        {missingProfileText ||
-                          "Complete the required profile information before starting."}{" "}
-                        Phone, location, and bio are optional.
-                      </p>
-                      <Button
-                        render={<Link href="/dashboard/profile" />}
-                        nativeButton={false}
-                        size="sm"
-                        className="mt-3"
-                      >
-                        Complete Profile
-                        <ArrowRight />
-                      </Button>
-                    </>
-                  )}
-                </div>
-              )}
+              <ul className="mt-4 space-y-2">
+                {steps[activeStep].actions.map((action) => (
+                  <li
+                    key={action}
+                    className="flex items-start gap-2.5 text-sm leading-5 text-foreground"
+                  >
+                    <Check className="mt-0.5 size-4 shrink-0 text-success" />
+                    <span>{action}</span>
+                  </li>
+                ))}
+              </ul>
 
-              {activeStep === steps.length - 1 &&
-                !onboarding.profileComplete && (
-                  <div className="mt-5 rounded-xl border border-warning/30 bg-warning/5 p-4">
-                    <p className="text-sm leading-6 text-foreground">
-                      {missingProfileText ||
-                        "Complete your required profile information before starting."}{" "}
-                      Phone, location, and bio are optional.
-                    </p>
-                    <Button
-                      render={<Link href="/dashboard/profile" />}
-                      nativeButton={false}
-                      size="sm"
-                      className="mt-3"
-                    >
-                      Complete Profile
-                      <ArrowRight />
-                    </Button>
-                  </div>
-                )}
-
-              {completionError && (
-                <p role="alert" className="mt-4 text-sm text-destructive">
-                  {completionError}
+              <div className="mt-5 rounded-xl border border-warning/20 bg-warning/5 px-4 py-3">
+                <p className="text-xs font-semibold text-warning">
+                  Helpful tip
                 </p>
-              )}
+                <p className="mt-1 text-sm leading-5 text-foreground/80">
+                  {steps[activeStep].tip}
+                </p>
+              </div>
             </section>
           </div>
 
@@ -471,8 +407,8 @@ function HostOnboardingDialog({
             <Button
               type="button"
               variant="outline"
-              disabled={activeStep === 0 || completing}
-              onClick={() => void goToStep(Math.max(0, activeStep - 1))}
+              disabled={activeStep === 0}
+              onClick={() => navigateToStep(activeStep - 1)}
             >
               <ArrowLeft />
               Back
@@ -480,28 +416,15 @@ function HostOnboardingDialog({
             {activeStep < steps.length - 1 ? (
               <Button
                 type="button"
-                disabled={completing}
-                onClick={continueOnboarding}
+                onClick={() => navigateToStep(activeStep + 1)}
               >
-                {completing ? (
-                  <Loader2 className="animate-spin" />
-                ) : (
-                  <ArrowRight />
-                )}
-                {completing
-                  ? "Checking..."
-                  : onboarding.profileComplete
-                    ? "Continue"
-                    : "Complete Profile"}
+                Next Step
+                <ArrowRight />
               </Button>
             ) : (
-              <Button
-                type="button"
-                disabled={completing}
-                onClick={startHosting}
-              >
-                {completing ? <Loader2 className="animate-spin" /> : <Check />}
-                {completing ? "Starting..." : "Get Started"}
+              <Button type="button" onClick={finishHosting}>
+                Finish &amp; Go to Dashboard
+                <Check />
               </Button>
             )}
           </footer>
